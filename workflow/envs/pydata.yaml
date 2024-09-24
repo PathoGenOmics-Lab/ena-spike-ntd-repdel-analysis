@@ -1,0 +1,4 @@
+channels:
+    - defaults
+dependencies:
+    - pandas==2.2.2
