@@ -1,0 +1,16 @@
+executor: slurm
+use-conda: True
+jobs: 1
+printshellcmds: True
+restart-times: 0
+default-resources:
+  nodes: 1
+  ntasks: 1
+  mem_mb: 8000
+  threads: 2
+  slurm_partition: "'global'"
+  slurm_extra: "'--qos=short'"
+  runtime: 180  # 3h
+keep-incomplete: True
+notemp: True
+rerun-incomplete: True
