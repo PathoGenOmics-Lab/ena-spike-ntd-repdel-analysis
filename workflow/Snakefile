@@ -1,6 +1,7 @@
 rule all:
     input:
-        "output/ena/search.tsv"
+        "output/ena/search.tsv",
+        "output/ena/search_summary.pdf"
 
 
 rule search_ena:
@@ -16,3 +17,19 @@ rule search_ena:
         table = "output/ena/search.tsv",
         query = "output/ena/search.json"
     script: "scripts/search_ena.py"
+
+
+rule summarize_ena_search:
+    conda: "envs/rdata.yaml"
+    input:
+        table = "output/ena/search.tsv"
+    params:
+        count_bins = 9,
+        plot_width_in = 25
+    output:
+        plot_pdf = "output/ena/search_summary.pdf",
+        plot_png = "output/ena/search_summary.png",
+        country_timeline_table = "output/ena/search_summary_country_timeline.csv",
+        tech_timeline_table = "output/ena/search_summary_tech_timeline.csv",
+        seqres_timeline_table = "output/ena/search_summary_seqres_timeline.csv"
+    script: "scripts/summarize_ena_search.R"
