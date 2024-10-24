@@ -2,41 +2,43 @@ from pathlib import Path
 import pandas as pd
 
 
+SEARCH_DF = None
+
+
+def read_search_df(wildcards):
+    global SEARCH_DF
+    if SEARCH_DF is None:
+        SEARCH_DF = pd.read_csv(checkpoints.search_ena.get(**wildcards).output.table, sep="\t", low_memory=False)
+
+
 def build_fastqc_targets(wildcards):
-    df = pd.read_csv(checkpoints.search_ena.get(**wildcards).output.table, sep="\t")
+    read_search_df(wildcards)
     return [
         f"output/preproc/fastqc/{study}/{sample}/{platform}/{run}/{layout}_{strategy}" \
-        for (platform, study, sample, run, layout, strategy), _ in df.groupby(
-            ["instrument_platform", "study_accession", "sample_accession", "run_accession", "library_layout", "library_strategy"]
-        )
+        for (platform, study, sample, run, layout, strategy), _ in SEARCH_DF.groupby(["instrument_platform", "study_accession", "sample_accession", "run_accession", "library_layout", "library_strategy"])
     ]
 
 
 def build_qc_targets(wildcards):
-    df = pd.read_csv(checkpoints.search_ena.get(**wildcards).output.table, sep="\t")
+    read_search_df(wildcards)
     return [
         f"output/preproc/fastp/{study}/{sample}/{platform}/{run}/{layout}_{strategy}/report.html" \
-        for (platform, study, sample, run, layout, strategy), _ in df.groupby(
-            ["instrument_platform", "study_accession", "sample_accession", "run_accession", "library_layout", "library_strategy"]
-        )
+        for (platform, study, sample, run, layout, strategy), _ in SEARCH_DF.groupby(["instrument_platform", "study_accession", "sample_accession", "run_accession", "library_layout", "library_strategy"])
     ]
 
 
 def build_sorted_bam_targets(wildcards):
-    df = pd.read_csv(checkpoints.search_ena.get(**wildcards).output.table, sep="\t")
+    read_search_df(wildcards)
     return [
         f"output/mappings/sorted_bam/{study}/{sample}/{platform}/{run}/{layout}_{strategy}/sample.sorted.bam" \
-        for (platform, study, sample, run, layout, strategy), _ in df.groupby(
-            ["instrument_platform", "study_accession", "sample_accession", "run_accession", "library_layout", "library_strategy"]
-        )
+        for (platform, study, sample, run, layout, strategy), _ in SEARCH_DF.groupby(["instrument_platform", "study_accession", "sample_accession", "run_accession", "library_layout", "library_strategy"])
     ]
 
 
 def build_multiqc_per_study_targets(wildcards):
-    df = pd.read_csv(checkpoints.search_ena.get(**wildcards).output.table, sep="\t")
+    read_search_df(wildcards)
     return [
-        f"output/preproc/multiqc/{study}" \
-        for study, _ in df.groupby("study_accession")
+        f"output/preproc/multiqc/{study}" for study, _ in SEARCH_DF.groupby(["study_accession"])
     ]
 
 
