@@ -12,8 +12,8 @@ rule multiqc:
     conda: "../envs/qc.yaml"
     shadow: "minimal"
     input:
-        lambda w: build_targets(w, "output/preproc/fastqc/{study}/{sample}/{platform}/{run}/{layout}_{strategy}"),
-        lambda w: build_targets(w, "output/preproc/fastp/{study}/{sample}/{platform}/{run}/{layout}_{strategy}/report.html")
+        lambda w: build_targets(w, "output/preproc/fastqc/{}/{}/{}/{}/{}_{}"),
+        lambda w: build_targets(w, "output/preproc/fastp/{}/{}/{}/{}/{}_{}/report.html")
     output:
         directory("output/preproc/multiqc/{study}")
     shell: "mkdir out && multiqc --outdir out --dirs -dd 5 {input:q} && mv out {output:q}"

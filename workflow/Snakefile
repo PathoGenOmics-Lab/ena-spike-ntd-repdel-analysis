@@ -3,28 +3,26 @@ import pandas as pd
 
 
 SEARCH_DF = None
+SEARCH_DF_COLS = ["study_accession", "sample_accession", "instrument_platform", "run_accession", "library_layout", "library_strategy"]
 
 
-def build_targets(wildcards, template: str):
+def build_targets(wildcards, template: str, columns=SEARCH_DF_COLS):
     global SEARCH_DF
     if SEARCH_DF is None:
         SEARCH_DF = pd.read_csv(
             checkpoints.search_ena.get(**wildcards).output.table,
             sep="\t",
-            usecols=["instrument_platform", "study_accession", "sample_accession", "run_accession", "library_layout", "library_strategy"]
+            usecols=SEARCH_DF_COLS
         )
-    return [
-        template.format(platform=platform, study=study, sample=sample, run=run, layout=layout, strategy=strategy) \
-        for (platform, study, sample, run, layout, strategy), _ in SEARCH_DF.groupby(["instrument_platform", "study_accession", "sample_accession", "run_accession", "library_layout", "library_strategy"])
-    ]
+    return [template.format(*groups) for groups, _ in SEARCH_DF.groupby(columns)]
 
 
 rule all:
     input:
         "output/ena/search.tsv",
         "output/ena/report/search/summary.pdf",
-        lambda w: build_targets(w, "output/preproc/multiqc/{study}"),
-        lambda w: build_targets(w, "output/mappings/sorted_bam/{study}/{sample}/{platform}/{run}/{layout}_{strategy}/sample.sorted.bam")
+        lambda w: build_targets(w, "output/preproc/multiqc/{}", ["study_accession"]),
+        lambda w: build_targets(w, "output/mappings/sorted_bam/{}/{}/{}/{}/{}_{}/sample.sorted.bam")
 
 
 rule efetch_fasta_reference:
