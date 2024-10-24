@@ -26,8 +26,7 @@ search <- read_tsv(
     snakemake@input$table,
     col_types = cols(
         .default = "c"
-    ),
-    n_max = 10000
+    )
 )
 message("Read ", nrow(search), " records")
 
