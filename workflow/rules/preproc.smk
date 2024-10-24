@@ -12,10 +12,10 @@ rule multiqc:
     conda: "../envs/qc.yaml"
     shadow: "minimal"
     input:
-        build_fastqc_targets
+        build_multiqc_targets
     output:
         directory("output/preproc/multiqc/{study}")
-    shell: "mkdir out && multiqc --outdir out --dirs {input:q} && mv out {output:q}"
+    shell: "mkdir out && multiqc --outdir out --dirs -dd 5 {input:q} && mv out {output:q}"
 
 
 rule fastp_single:

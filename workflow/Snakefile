@@ -11,10 +11,13 @@ def read_search_df(wildcards):
         SEARCH_DF = pd.read_csv(checkpoints.search_ena.get(**wildcards).output.table, sep="\t", low_memory=False)
 
 
-def build_fastqc_targets(wildcards):
+def build_multiqc_targets(wildcards):
     read_search_df(wildcards)
     return [
         f"output/preproc/fastqc/{study}/{sample}/{platform}/{run}/{layout}_{strategy}" \
+        for (platform, study, sample, run, layout, strategy), _ in SEARCH_DF.groupby(["instrument_platform", "study_accession", "sample_accession", "run_accession", "library_layout", "library_strategy"])
+    ] + [
+        f"output/preproc/fastp/{study}/{sample}/{platform}/{run}/{layout}_{strategy}/report.html" \
         for (platform, study, sample, run, layout, strategy), _ in SEARCH_DF.groupby(["instrument_platform", "study_accession", "sample_accession", "run_accession", "library_layout", "library_strategy"])
     ]
 
