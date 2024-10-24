@@ -5,43 +5,13 @@ import pandas as pd
 SEARCH_DF = None
 
 
-def read_search_df(wildcards):
+def build_targets(wildcards, template: str):
     global SEARCH_DF
     if SEARCH_DF is None:
-        SEARCH_DF = pd.read_csv(checkpoints.search_ena.get(**wildcards).output.table, sep="\t", low_memory=False)
-
-
-def build_multiqc_targets(wildcards):
-    read_search_df(wildcards)
+        SEARCH_DF = pd.read_csv(checkpoints.search_ena.get(**wildcards).output.table, sep="\t")
     return [
-        f"output/preproc/fastqc/{study}/{sample}/{platform}/{run}/{layout}_{strategy}" \
+        template.format(platform=platform, study=study, sample=sample, run=run, layout=layout, strategy=strategy) \
         for (platform, study, sample, run, layout, strategy), _ in SEARCH_DF.groupby(["instrument_platform", "study_accession", "sample_accession", "run_accession", "library_layout", "library_strategy"])
-    ] + [
-        f"output/preproc/fastp/{study}/{sample}/{platform}/{run}/{layout}_{strategy}/report.html" \
-        for (platform, study, sample, run, layout, strategy), _ in SEARCH_DF.groupby(["instrument_platform", "study_accession", "sample_accession", "run_accession", "library_layout", "library_strategy"])
-    ]
-
-
-def build_qc_targets(wildcards):
-    read_search_df(wildcards)
-    return [
-        f"output/preproc/fastp/{study}/{sample}/{platform}/{run}/{layout}_{strategy}/report.html" \
-        for (platform, study, sample, run, layout, strategy), _ in SEARCH_DF.groupby(["instrument_platform", "study_accession", "sample_accession", "run_accession", "library_layout", "library_strategy"])
-    ]
-
-
-def build_sorted_bam_targets(wildcards):
-    read_search_df(wildcards)
-    return [
-        f"output/mappings/sorted_bam/{study}/{sample}/{platform}/{run}/{layout}_{strategy}/sample.sorted.bam" \
-        for (platform, study, sample, run, layout, strategy), _ in SEARCH_DF.groupby(["instrument_platform", "study_accession", "sample_accession", "run_accession", "library_layout", "library_strategy"])
-    ]
-
-
-def build_multiqc_per_study_targets(wildcards):
-    read_search_df(wildcards)
-    return [
-        f"output/preproc/multiqc/{study}" for study, _ in SEARCH_DF.groupby(["study_accession"])
     ]
 
 
@@ -49,9 +19,8 @@ rule all:
     input:
         "output/ena/search.tsv",
         "output/ena/report/search/summary.pdf",
-        build_multiqc_per_study_targets,
-        build_qc_targets,
-        build_sorted_bam_targets
+        lambda w: build_targets(w, "output/preproc/multiqc/{study}"),
+        lambda w: build_targets(w, "output/mappings/sorted_bam/{study}/{sample}/{platform}/{run}/{layout}_{strategy}/sample.sorted.bam")
 
 
 rule efetch_fasta_reference:
