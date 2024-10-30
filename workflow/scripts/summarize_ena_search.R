@@ -331,11 +331,12 @@ plots <- list(
     date.seqres.p
 )
 
-ggarrange(plotlist = plots, ncol = 1)
+p <- ggarrange(plotlist = plots, ncol = 1)
 
 message("Saving PDF report")
 ggsave(
     snakemake@output$plot_pdf,
+    plot = p,
     width = snakemake@params$plot_width_in, height = 10 * length(plots),
     bg = "white"
 )
@@ -343,6 +344,7 @@ ggsave(
 message("Saving PNG report")
 ggsave(
     snakemake@output$plot_png,
+    plot = p,
     width = snakemake@params$plot_width_in, height = 10 * length(plots),
     bg = "white"
 )
