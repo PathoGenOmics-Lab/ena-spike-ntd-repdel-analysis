@@ -1,6 +1,6 @@
 from pathlib import Path
 import functools
-import pandas as pd
+import csv
 
 
 SEARCH_DF_COLS = (
@@ -9,22 +9,19 @@ SEARCH_DF_COLS = (
 )
 
 
-@functools.cache
-def read_search_output(wildcards, columns):
-    return pd.read_csv(
-        checkpoints.search_ena.get(**wildcards).output.table,
-        sep="\t",
-        usecols=columns
-    )
+def build_groups(wildcards, columns) -> list:
+    with open(checkpoints.search_ena.get(**wildcards).output.table) as f:
+        reader = csv.DictReader(f, delimiter="\t")
+        groups = {
+            tuple(row[col] for col in columns) \
+            for row in reader
+        }
+    return sorted(groups)
 
 
 @functools.cache
-def build_groups(wildcards, columns):
-    return [groups for groups, _ in read_search_output(wildcards, columns).groupby(list(columns))]
-
-
-def build_targets(wildcards, template: str, columns=SEARCH_DF_COLS):
-    return [template.format(*groups) for groups in build_groups(wildcards, columns)]
+def build_targets(wildcards, template: str, columns=SEARCH_DF_COLS) -> list:
+    return sorted(template.format(*groups) for groups in build_groups(wildcards, columns))
 
 
 rule all:
