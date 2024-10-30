@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #SBATCH --job-name search
-#SBATCH --mem 4GB
+#SBATCH --mem 16GB
 #SBATCH --cpus-per-task 1
 #SBATCH --ntasks 1
 #SBATCH --qos interactive

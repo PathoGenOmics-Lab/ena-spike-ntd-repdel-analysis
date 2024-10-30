@@ -3,7 +3,7 @@ checkpoint search_ena:
     params:
         start_date = "2021-11-01",  # outbreak.info approx BA.1 start date
         end_date = "2022-08-01",    # outbreak.info approx BA.1 end date
-        limit = 0,                 # 0 means no record limit
+        limit = 0,                  # 0 means no record limit
         taxonomy = "2697049",       # SARS-CoV-2
         host_scientific_name = "Homo sapiens",
         chunksize = 1024
@@ -20,6 +20,9 @@ rule summarize_ena_search:
     params:
         count_bins = 9,
         plot_width_in = 25
+    resources:
+        mem_mb = 12000,
+        runtime = "15m"
     output:
         plot_pdf = "output/ena/report/search/summary.pdf",
         plot_png = "output/ena/report/search/summary.png",
@@ -35,6 +38,8 @@ rule split_ena_search_results:
         table = "output/ena/search.tsv"
     output:
         table = "output/ena/search/{study}/{sample}/{platform}/{run}/{layout}_{strategy}/runs.csv"
+    resources:
+        runtime = "10m"
     run:
         import pandas as pd
         df = pd.read_csv(input.table, sep="\t")
