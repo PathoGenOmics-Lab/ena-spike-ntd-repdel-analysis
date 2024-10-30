@@ -36,7 +36,7 @@ rule efetch_fasta_reference:
     params:
         accession = "NC_045512.2"
     output:
-        fasta = "output/reference.fasta"
+        fasta = "output/reference/sequence.fasta"
     shell: 'curl -s -o {output.fasta:q} "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id={params.accession}&rettype=fasta"'
 
 

@@ -1,9 +1,17 @@
+rule map_index:
+    group: "mapping"
+    conda: "../envs/reads.yaml"
+    input: "output/reference/sequence.fasta"
+    output: "output/reference/{preset}.mmi"
+    shell: "minimap2 -x {wildcards.preset:q} -d {output:q} {input:q}"
+
+
 rule map_single_nanopore:
     threads: 8
     group: "mapping"
     conda: "../envs/reads.yaml"
     input:
-        reference = "output/reference.fasta",
+        reference = "output/reference/map-ont.mmi",
         fastq = "output/preproc/fastq/{study}/{sample}/OXFORD_NANOPORE/{run}/SINGLE_{strategy}/sample.fastp.fastq.gz"
     output:
         bam = "output/mappings/sorted_bam/{study}/{sample}/OXFORD_NANOPORE/{run}/SINGLE_{strategy}/sample.sorted.bam"
@@ -15,7 +23,7 @@ rule map_paired_illumina:
     group: "mapping"
     conda: "../envs/reads.yaml"
     input:
-        reference = "output/reference.fasta",
+        reference = "output/reference/sr.mmi",
         fastq_1 = "output/preproc/fastq/{study}/{sample}/ILLUMINA/{run}/PAIRED_{strategy}/sample.fastp.fastq.R1.gz",
         fastq_2 = "output/preproc/fastq/{study}/{sample}/ILLUMINA/{run}/PAIRED_{strategy}/sample.fastp.fastq.R2.gz"
     output:
@@ -28,7 +36,7 @@ rule map_single_illumina:
     group: "mapping"
     conda: "../envs/reads.yaml"
     input:
-        reference = "output/reference.fasta",
+        reference = "output/reference/sr.mmi",
         fastq = "output/preproc/fastq/{study}/{sample}/ILLUMINA/{run}/SINGLE_{strategy}/sample.fastp.fastq.gz"
     output:
         bam = "output/mappings/sorted_bam/{study}/{sample}/ILLUMINA/{run}/SINGLE_{strategy}/sample.sorted.bam"
@@ -40,7 +48,7 @@ use rule map_single_illumina as map_single_ion_torrent with:
     group: "mapping"
     conda: "../envs/reads.yaml"
     input:
-        reference = "output/reference.fasta",
+        reference = "output/reference/sr.mmi",
         fastq = "output/preproc/fastq/{study}/{sample}/ION_TORRENT/{run}/SINGLE_{strategy}/sample.fastp.fastq.gz"
     output:
         bam = "output/mappings/sorted_bam/{study}/{sample}/ION_TORRENT/{run}/SINGLE_{strategy}/sample.sorted.bam"
