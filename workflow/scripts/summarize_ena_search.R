@@ -132,7 +132,7 @@ date.seqtech.data <- search %>%
         Tech = paste(instrument_platform, instrument_model, library_layout, library_strategy, sep = "-")
     ) %>%
     count(
-        Tech,
+        Platform = instrument_platform, Tech,
         `Collection date`, `First created date`, `Last updated`
     ) %>%
     pivot_longer(
@@ -148,7 +148,7 @@ date.seqtech.p <- ggarrange(
     # Timeline
     date.seqtech.data %>%
     ggplot() +
-        aes(x = Date, y = n, fill = Tech) +
+        aes(x = Date, y = n, fill = Platform, alpha = Tech) +
         geom_bar(stat = "identity") +
         scale_x_date(date_breaks = "1 month", date_minor_breaks = "1 month") +
         facet_grid("DateType") +
@@ -156,7 +156,9 @@ date.seqtech.p <- ggarrange(
             axis.text.x = element_text(angle = 90, vjust = 0.5)
         ) +
         scale_fill_viridis_d() +
-        guides(fill = guide_legend(ncol = 3)),
+        guides(
+            fill = guide_legend(ncol = 4),
+            alpha = guide_legend(ncol = 3)),
     # Missing dates
     date.seqtech.data %>%
     mutate(`Has date` = !is.na(Date)) %>%
