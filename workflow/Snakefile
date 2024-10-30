@@ -1,27 +1,37 @@
 from pathlib import Path
+import functools
 import pandas as pd
 
 
-SEARCH_DF = None
-SEARCH_DF_COLS = ["study_accession", "sample_accession", "instrument_platform", "run_accession", "library_layout", "library_strategy"]
+SEARCH_DF_COLS = (
+    "study_accession", "sample_accession", "instrument_platform",
+    "run_accession", "library_layout", "library_strategy"
+)
+
+
+@functools.cache
+def read_search_output(wildcards, columns):
+    return pd.read_csv(
+        checkpoints.search_ena.get(**wildcards).output.table,
+        sep="\t",
+        usecols=columns
+    )
+
+
+@functools.cache
+def build_groups(wildcards, columns):
+    return [groups for groups, _ in read_search_output(wildcards, columns).groupby(list(columns))]
 
 
 def build_targets(wildcards, template: str, columns=SEARCH_DF_COLS):
-    global SEARCH_DF
-    if SEARCH_DF is None:
-        SEARCH_DF = pd.read_csv(
-            checkpoints.search_ena.get(**wildcards).output.table,
-            sep="\t",
-            usecols=SEARCH_DF_COLS
-        )
-    return [template.format(*groups) for groups, _ in SEARCH_DF.groupby(columns)]
+    return [template.format(*groups) for groups in build_groups(wildcards, columns)]
 
 
 rule all:
     input:
         "output/ena/search.tsv",
         "output/ena/report/search/summary.pdf",
-        lambda w: build_targets(w, "output/preproc/multiqc/{}", ["study_accession"]),
+        lambda w: build_targets(w, "output/preproc/multiqc/{}", ("study_accession",)),
         lambda w: build_targets(w, "output/mappings/sorted_bam/{}/{}/{}/{}/{}_{}/sample.sorted.bam")
 
 
