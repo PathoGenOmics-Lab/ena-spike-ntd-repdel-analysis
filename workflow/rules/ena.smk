@@ -13,10 +13,27 @@ checkpoint search_ena:
     script: "../scripts/search_ena.py"
 
 
+rule filter_search_ena:
+    input:
+        table = "output/ena/search.tsv"
+    params:
+        omit_platform = ["CAPILLARY", "DNBSEQ", "ELEMENT"],
+        omit_library_strategy = ["RNA-Seq"]
+    output:
+        table = "output/ena/search.filtered.tsv"        
+    run:
+        import pandas as pd
+        df = pd.read_csv(input.table, sep="\t")
+        df[
+            ~df["instrument_platform"].isin(params.omit_platform) & \
+            ~df["library_strategy"].isin(params.omit_library_strategy)
+        ].to_csv(output.table, sep="\t")
+
+
 rule summarize_ena_search:
     conda: "../envs/rdata.yaml"
     input:
-        table = "output/ena/search.tsv"
+        table = "output/ena/search.filtered.tsv"
     params:
         count_bins = 9,
         plot_width_in = 25
@@ -35,7 +52,7 @@ rule summarize_ena_search:
 rule split_ena_search_results:
     group: "download"
     input:
-        table = "output/ena/search.tsv"
+        table = "output/ena/search.filtered.tsv"
     output:
         table = "output/ena/search/{study}/{sample}/{platform}/{run}/{layout}_{strategy}/runs.csv"
     resources:
