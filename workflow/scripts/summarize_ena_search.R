@@ -38,8 +38,6 @@ message("Imputing missing collection dates")
 search <- search %>%
     format.date(collection_date, `Collection date`) %>%
     format.date(first_created, `First created date`) %>%
-    format.date(collection_date_end, `Collection date end`) %>%
-    format.date(collection_date_start, `Collection date start`) %>%
     format.date(last_updated, `Last updated`)
 
 # Country timeline
@@ -48,9 +46,9 @@ search <- search %>%
 message("Plotting samples per month, by country")
 date.country.data <- search %>%
     separate(country, into = c("Country", "Region"), sep = " *: *") %>%
-    count(Country, Region, `Collection date`, `First created date`, `Collection date start`, `Collection date end`, `Last updated`) %>%
+    count(Country, Region, `Collection date`, `First created date`, `Last updated`) %>%
     pivot_longer(
-        c(`Collection date`, `First created date`, `Collection date start`, `Collection date end`, `Last updated`),
+        c(`Collection date`, `First created date`, `Last updated`),
         names_to = "DateType",
         values_to = "Date"
     ) %>%
@@ -135,10 +133,10 @@ date.seqtech.data <- search %>%
     ) %>%
     count(
         Tech,
-        `Collection date`, `First created date`, `Collection date start`, `Collection date end`, `Last updated`
+        `Collection date`, `First created date`, `Last updated`
     ) %>%
     pivot_longer(
-        c(`Collection date`, `First created date`, `Collection date start`, `Collection date end`, `Last updated`),
+        c(`Collection date`, `First created date`, `Last updated`),
         names_to = "DateType",
         values_to = "Date"
     ) %>%
@@ -217,10 +215,10 @@ date.seqres.data <- search %>%
     ) %>%
     count(
         `Base count`, `Read count`,
-        `Collection date`, `First created date`, `Collection date start`, `Collection date end`, `Last updated`
+        `Collection date`, `First created date`, `Last updated`
     ) %>%
     pivot_longer(
-        c(`Collection date`, `First created date`, `Collection date start`, `Collection date end`, `Last updated`),
+        c(`Collection date`, `First created date`, `Last updated`),
         names_to = "DateType",
         values_to = "Date"
     ) %>%
