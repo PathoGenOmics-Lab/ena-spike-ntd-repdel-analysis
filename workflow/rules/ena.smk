@@ -56,7 +56,8 @@ rule split_ena_search_results:
     output:
         table = "output/ena/search/{study}/{sample}/{platform}/{run}/{layout}_{strategy}/runs.csv"
     resources:
-        runtime = "10m"
+        runtime = "10m",
+        mem_mb = 12000
     run:
         import pandas as pd
         df = pd.read_csv(input.table, sep="\t")
