@@ -3,7 +3,7 @@ checkpoint search_ena:
     params:
         start_date = "2021-11-01",  # outbreak.info approx BA.1 start date
         end_date = "2022-08-01",    # outbreak.info approx BA.1 end date
-        limit = 0,                  # 0 means no record limit
+        limit = 10,                  # 0 means no record limit
         taxonomy = "2697049",       # SARS-CoV-2
         host_scientific_name = "Homo sapiens",
         chunksize = 1024
@@ -20,7 +20,10 @@ rule filter_search_ena:
         omit_platform = ["CAPILLARY", "DNBSEQ", "ELEMENT"],
         omit_library_strategy = ["RNA-Seq"]
     output:
-        table = "output/ena/search.filtered.tsv"        
+        table = "output/ena/search.filtered.tsv",
+    resources:
+        mem_mb = 12000,
+        runtime = "15m"
     run:
         import pandas as pd
         df = pd.read_csv(input.table, sep="\t")
