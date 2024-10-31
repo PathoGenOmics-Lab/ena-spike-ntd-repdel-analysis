@@ -3,7 +3,7 @@ checkpoint search_ena:
     params:
         start_date = "2021-11-01",  # outbreak.info approx BA.1 start date
         end_date = "2022-08-01",    # outbreak.info approx BA.1 end date
-        limit = 10,                  # 0 means no record limit
+        limit = 0,                  # 0 means no record limit
         taxonomy = "2697049",       # SARS-CoV-2
         host_scientific_name = "Homo sapiens",
         chunksize = 1024
