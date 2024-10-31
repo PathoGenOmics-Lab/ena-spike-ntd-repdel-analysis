@@ -9,7 +9,7 @@ rule map_index:
 
 
 rule map_single_nanopore:
-    threads: 8
+    threads: 4
     group: "mapping"
     conda: "../envs/reads.yaml"
     input:
@@ -23,7 +23,7 @@ rule map_single_nanopore:
 
 
 rule map_paired_illumina:
-    threads: 8
+    threads: 4
     group: "mapping"
     conda: "../envs/reads.yaml"
     input:
@@ -38,7 +38,7 @@ rule map_paired_illumina:
 
 
 rule map_single_illumina:
-    threads: 8
+    threads: 4
     group: "mapping"
     conda: "../envs/reads.yaml"
     input:
@@ -52,7 +52,7 @@ rule map_single_illumina:
 
 
 use rule map_single_illumina as map_ion_torrent with:
-    threads: 8
+    threads: 4
     group: "mapping"
     conda: "../envs/reads.yaml"
     input:
@@ -62,7 +62,7 @@ use rule map_single_illumina as map_ion_torrent with:
         bam = "output/mappings/sorted_bam/{study}/{sample}/ION_TORRENT/{run}/{layout}_{strategy}/sample.sorted.bam"
 
 rule map_pacbio_hifi:
-    threads: 8
+    threads: 4
     group: "mapping"
     conda: "../envs/reads.yaml"
     input:
