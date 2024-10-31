@@ -28,16 +28,16 @@ rule fastp_single:
         report = "output/preproc/fastp/{study}/{sample}/{platform}/{run}/SINGLE_{strategy}/report.html",
         json = "output/preproc/fastp/{study}/{sample}/{platform}/{run}/SINGLE_{strategy}/report.json",
         fastq = "output/preproc/fastq/{study}/{sample}/{platform}/{run}/SINGLE_{strategy}/sample.fastp.fastq.gz"
-    shell: """fastqs=( {input.folder:q}/*.fastq.gz ) && fastp -i "${{fastqs[0]}}" -o {output.fastq:q} -h {output.report:q} -j {output.json:q}"""
-
-
-use rule fastp_single as fastp_paired_single with:
-    input:
-        folder = "output/ena/downloads/fastq/{study}/{sample}/{platform}/{run}/PAIRED_{strategy}"
-    output:
-        report = "output/preproc/fastp/{study}/{sample}/{platform}/{run}/PAIRED_{strategy}/report.html",
-        json = "output/preproc/fastp/{study}/{sample}/{platform}/{run}/PAIRED_{strategy}/report.json",
-        fastq = "output/preproc/fastq/{study}/{sample}/{platform}/{run}/PAIRED_{strategy}/sample.fastp.fastq.gz"
+    shell:
+        """
+        fastqs=( {input.folder:q}/*.fastq.gz )
+        if [ ${{#fastqs[@]}} -eq 1 ]; then
+            fastp -i "${{fastqs[0]}}" -o {output.fastq:q} -h {output.report:q} -j {output.json:q}
+        else
+            echo There are ${{#fastqs[@]}} FASTQ files in the input directory (must be 1)
+            exit 1
+        fi
+        """
 
 
 rule fastp_paired:
@@ -50,4 +50,16 @@ rule fastp_paired:
         json = "output/preproc/fastp/{study}/{sample}/{platform}/{run}/PAIRED_{strategy}/report.json",
         fastq_1 = "output/preproc/fastq/{study}/{sample}/{platform}/{run}/PAIRED_{strategy}/sample.fastp.R1.fastq.gz",
         fastq_2 = "output/preproc/fastq/{study}/{sample}/{platform}/{run}/PAIRED_{strategy}/sample.fastp.R2.fastq.gz"
-    shell: """fastqs=( {input.folder:q}/*.fastq.gz ) && fastp -i "${{fastqs[0]}}" -I "${{fastqs[1]}}" -o {output.fastq_1:q} -O {output.fastq_2:q} -h {output.report:q} -j {output.json:q}"""
+    shell:
+        """
+        fastqs=( {input.folder:q}/*.fastq.gz )
+        if [ ${{#fastqs[@]}} -eq 1 ]; then
+            fastp -i "${{fastqs[0]}}" -o {output.fastq:q} -h {output.report:q} -j {output.json:q}
+        elif [ ${{#fastqs[@]}} -eq 2 ]; then
+            fastq1=( {input.folder:q}/*.R1.fastq.gz ) && fastq2=( {input.folder:q}/*.R2.fastq.gz )
+            fastp -i "${{fastq1[0]}}" -I "${{fastq2[0]}}" -o {output.fastq_1:q} -O {output.fastq_2:q} -h {output.report:q} -j {output.json:q}
+        else
+            echo There are ${{#fastqs[@]}} FASTQ files in the input directory (must be 1 or 2)
+            exit 1
+        fi
+        """
