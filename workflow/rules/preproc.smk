@@ -31,6 +31,15 @@ rule fastp_single:
     shell: """fastqs=( {input.folder:q}/*.fastq.gz ) && fastp -i "${{fastqs[0]}}" -o {output.fastq:q} -h {output.report:q} -j {output.json:q}"""
 
 
+use rule fastp_single as fastp_paired_single with:
+    input:
+        folder = "output/ena/downloads/fastq/{study}/{sample}/{platform}/{run}/PAIRED_{strategy}"
+    output:
+        report = "output/preproc/fastp/{study}/{sample}/{platform}/{run}/PAIRED_{strategy}/report.html",
+        json = "output/preproc/fastp/{study}/{sample}/{platform}/{run}/PAIRED_{strategy}/report.json",
+        fastq = "output/preproc/fastq/{study}/{sample}/{platform}/{run}/PAIRED_{strategy}/sample.fastp.fastq.gz"
+
+
 rule fastp_paired:
     group: "preproc"
     conda: "../envs/qc.yaml"
