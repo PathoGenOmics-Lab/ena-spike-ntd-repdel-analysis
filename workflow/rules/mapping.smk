@@ -28,8 +28,8 @@ rule map_paired_illumina:
     conda: "../envs/reads.yaml"
     input:
         reference = "output/reference/sr.mmi",
-        fastq_1 = "output/preproc/fastq/{study}/{sample}/ILLUMINA/{run}/PAIRED_{strategy}/sample.fastp.fastq.R1.gz",
-        fastq_2 = "output/preproc/fastq/{study}/{sample}/ILLUMINA/{run}/PAIRED_{strategy}/sample.fastp.fastq.R2.gz"
+        fastq_1 = "output/preproc/fastq/{study}/{sample}/ILLUMINA/{run}/PAIRED_{strategy}/sample.fastp.R1.fastq.gz",
+        fastq_2 = "output/preproc/fastq/{study}/{sample}/ILLUMINA/{run}/PAIRED_{strategy}/sample.fastp.R2.fastq.gz"
     output:
         bam = "output/mappings/sorted_bam/{study}/{sample}/ILLUMINA/{run}/PAIRED_{strategy}/sample.sorted.bam"
     resources:
