@@ -61,4 +61,15 @@ use rule map_single_illumina as map_ion_torrent with:
     output:
         bam = "output/mappings/sorted_bam/{study}/{sample}/ION_TORRENT/{run}/{layout}_{strategy}/sample.sorted.bam"
 
-# TODO: PACBIO_SMRT
+rule map_pacbio_hifi:
+    threads: 8
+    group: "mapping"
+    conda: "../envs/reads.yaml"
+    input:
+        reference = "output/reference/map-hifi.mmi",
+        fastq = "output/preproc/fastq/{study}/{sample}/PACBIO_SMRT/{run}/{layout}_{strategy}/sample.fastp.fastq.gz"
+    output:
+        bam = "output/mappings/sorted_bam/{study}/{sample}/PACBIO_SMRT/{run}/{layout}_{strategy}/sample.sorted.bam"
+    resources:
+        runtime = "15m"
+    shell: "minimap2 -t {threads} -ax map-hifi {input.reference:q} {input.fastq:q} | samtools sort -o {output.bam:q}"
