@@ -3,6 +3,8 @@ rule map_index:
     conda: "../envs/reads.yaml"
     input: "output/reference/sequence.fasta"
     output: "output/reference/{preset}.mmi"
+    resources:
+        runtime = "15m"
     shell: "minimap2 -x {wildcards.preset:q} -d {output:q} {input:q}"
 
 
@@ -15,6 +17,8 @@ rule map_single_nanopore:
         fastq = "output/preproc/fastq/{study}/{sample}/OXFORD_NANOPORE/{run}/SINGLE_{strategy}/sample.fastp.fastq.gz"
     output:
         bam = "output/mappings/sorted_bam/{study}/{sample}/OXFORD_NANOPORE/{run}/SINGLE_{strategy}/sample.sorted.bam"
+    resources:
+        runtime = "15m"
     shell: "minimap2 -t {threads} -ax map-ont {input.reference:q} {input.fastq:q} | samtools sort -o {output.bam:q}"
 
 
@@ -28,6 +32,8 @@ rule map_paired_illumina:
         fastq_2 = "output/preproc/fastq/{study}/{sample}/ILLUMINA/{run}/PAIRED_{strategy}/sample.fastp.fastq.R2.gz"
     output:
         bam = "output/mappings/sorted_bam/{study}/{sample}/ILLUMINA/{run}/PAIRED_{strategy}/sample.sorted.bam"
+    resources:
+        runtime = "15m"
     shell: "minimap2 -t {threads} -ax sr {input.reference:q} {input.fastq_1:q} {input.fastq_2:q} | samtools sort -o {output.bam:q}"
 
 
@@ -40,6 +46,8 @@ rule map_single_illumina:
         fastq = "output/preproc/fastq/{study}/{sample}/ILLUMINA/{run}/SINGLE_{strategy}/sample.fastp.fastq.gz"
     output:
         bam = "output/mappings/sorted_bam/{study}/{sample}/ILLUMINA/{run}/SINGLE_{strategy}/sample.sorted.bam"
+    resources:
+        runtime = "15m"
     shell: "minimap2 -t {threads} -ax sr {input.reference:q} {input.fastq:q} | samtools sort -o {output.bam:q}"
 
 
