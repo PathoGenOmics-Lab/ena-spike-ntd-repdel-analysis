@@ -1,1 +1,2 @@
 PY_LOG_FMT: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+SEARCH_LIMIT: 0

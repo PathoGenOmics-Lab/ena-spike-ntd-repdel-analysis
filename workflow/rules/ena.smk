@@ -1,10 +1,10 @@
 checkpoint search_ena:
     conda: "../envs/pydata.yaml"
     params:
-        start_date = "2021-11-01",  # outbreak.info approx BA.1 start date
-        end_date = "2022-08-01",    # outbreak.info approx BA.1 end date
-        limit = 0,                  # 0 means no record limit
-        taxonomy = "2697049",       # SARS-CoV-2
+        start_date = "2021-11-01",       # outbreak.info approx BA.1 start date
+        end_date = "2022-08-01",         # outbreak.info approx BA.1 end date
+        limit = config["SEARCH_LIMIT"],  # 0 means no record limit
+        taxonomy = "2697049",            # SARS-CoV-2
         host_scientific_name = "Homo sapiens",
         chunksize = 1024
     output:
