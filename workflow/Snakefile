@@ -31,7 +31,7 @@ rule all:
         "output/ena/search.tsv",
         "output/ena/report/search/summary.pdf",
         lambda w: build_targets(w, "output/preproc/multiqc/{}", ("study_accession",)),
-        lambda w: build_targets(w, "output/mappings/sorted_bam/{}/{}/{}/{}/{}_{}/sample.sorted.bam")
+        lambda w: build_targets(w, "output/mapping/sorted_bam/{}/{}/{}/{}/{}_{}/sample.sorted.bam")
 
 
 rule efetch_fasta_reference:
