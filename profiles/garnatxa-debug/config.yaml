@@ -14,3 +14,10 @@ default-resources:
 keep-incomplete: True
 notemp: True
 rerun-incomplete: True
+resources:
+  ebi_api_calls_per_second: 50
+set-resources:
+  download_ena_one_fastq:
+    ebi_api_calls_per_second: 1
+  download_ena_two_fastq:
+    ebi_api_calls_per_second: 1

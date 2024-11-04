@@ -11,9 +11,10 @@ default-resources:
   slurm_partition: "'global'"
   slurm_extra: "'--qos=short'"
   runtime: 60
+resources:
+  ebi_api_calls_per_second: 50
 set-resources:
-  # Set maximum limits for the EBI API (50/s)
   download_ena_one_fastq:
-    jobs: 24
+    ebi_api_calls_per_second: 1
   download_ena_two_fastq:
-    jobs: 24
+    ebi_api_calls_per_second: 1
