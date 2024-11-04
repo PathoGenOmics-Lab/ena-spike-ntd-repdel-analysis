@@ -39,7 +39,7 @@ rule variant_calling:
         min_depth = 30
     input:
         reference = "output/reference/sequence.fasta",
-        gff = "output/reference/features.filtered.gff",
+        gff = "output/reference/features.filtered.gff3",
         pileup = "output/variants/pileup/{study}/{sample}/{platform}/{run}/{layout}_{strategy}/sample.pileup"
     output:
         tsv = "output/variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{strategy}/sample.tsv"
