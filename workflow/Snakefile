@@ -2,6 +2,8 @@ from pathlib import Path
 import functools
 import csv
 
+configfile: "config/config.yaml"
+
 
 SEARCH_DF_COLS = (
     "study_accession", "sample_accession", "instrument_platform",

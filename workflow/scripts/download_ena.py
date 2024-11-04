@@ -1,4 +1,5 @@
 import sys
+import logging
 import time
 import requests
 from pathlib import Path
@@ -11,9 +12,12 @@ def download_file(url, path):
     if r.status_code == 200:
         with open(path, "wb") as fw:
             fw.write(r.content)
+        logging.debug(f"Downloaded {len(r.content)} bytes; sleeping {snakemake.params.sleep} s")
         time.sleep(snakemake.params.sleep)
     else:
-        sys.exit(f"Could not download {url} to {path} (status {r.status_code})")
+        msg = f"Could not download {url} to {path} (status {r.status_code})"
+        logging.error(msg)
+        sys.exit(msg)
 
 
 def format_url(text: str) -> str:
@@ -21,13 +25,19 @@ def format_url(text: str) -> str:
 
 
 if __name__ == "__main__":
+
+    logging.basicConfig(
+        level=logging.INFO,
+        format=snakemake.config.PY_LOG_FMT,
+        filename=snakemake.log
+    )
     
     # Read download index
     run = pd.read_csv(snakemake.input.table)
-    print(f"Read {len(run)} search records", flush=True)
+    logging.info(f"Read {len(run)} search records")
 
     # Prepare file download
-    print("Downloading data", flush=True)
+    logging.info("Downloading data")
     folder = Path(snakemake.output.folder)
     folder.mkdir(parents=True)
     
@@ -36,5 +46,5 @@ if __name__ == "__main__":
         for url in row.fastq_ftp.split(";"):
             url = format_url(url)
             file_name = Path(url).name
-            print(f"Downloading {url} to {folder / file_name}", flush=True)
+            logging.info(f"Downloading {url} to {folder / file_name}")
             download_file(url, folder / file_name)

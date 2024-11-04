@@ -9,8 +9,10 @@ rule variant_calling:
         ivar_depth = 30
     input:
         reference = "output/reference/sequence.fasta",
-        features = "output/reference/features.filtered.gff"
+        gff = "output/reference/features.filtered.gff",
+        bam = "output/mappings/sorted_bam/{study}/{sample}/{platform}/{run}/{layout}_{strategy}/sample.sorted.bam"
+    log: "output/logs/variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{strategy}.txt"
     shell:
         "samtools mpileup -aa -x -A -d {params.max_depth} -B -Q {params.min_quality} -f {input.reference:q} {input.bam:q} | "
-        "ivar variants -p result -q {params.ivar_quality} -t {params.ivar_freq} -m {params.ivar_depth} -g {input.gff} -r {input.reference:q} -g {input.features:q} &&"
+        "ivar variants -p result -q {params.ivar_quality} -t {params.ivar_freq} -m {params.ivar_depth} -g {input.gff} -r {input.reference:q} -g {input.features:q} 2>{log} &&"
         "mv result.tsv {output.tsv:q}"

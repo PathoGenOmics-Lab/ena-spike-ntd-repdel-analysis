@@ -1,11 +1,9 @@
 import sys
-import csv
-from typing import Mapping, List, Iterator
+import logging
+from typing import Iterator
 import json
 import requests
 import urllib.parse
-
-import pandas as pd
 
 
 SEARCH_FIELDS_URL = "https://www.ebi.ac.uk/ena/portal/api/returnFields?dataPortal=ena&result=read_run&format=json"
@@ -51,12 +49,18 @@ def write_iter(content: Iterator, path: str):
 
 if __name__ == "__main__":
 
+    logging.basicConfig(
+        level=logging.INFO,
+        format=snakemake.config.PY_LOG_FMT,
+        filename=snakemake.log
+    )
+
     # Init search
-    print("Searching ENA fields", flush=True)
+    logging.info("Searching ENA fields")
     fields = get_ENA_text_fields()
 
     # Perform search
-    print("Performing ENA search", flush=True)
+    logging.info("Performing ENA search")
     data = REQUEST_DATA_TEMPLATE.copy()
     query_txt = build_query(
         snakemake.params.start_date,
@@ -68,12 +72,12 @@ if __name__ == "__main__":
     data["fields"] = ",".join(fields)
     with requests.post(POST_URL, data=data, headers=HEADERS, stream=True) as r:
         if r.status_code == 200:
-            print("Writing ENA search results", flush=True)
+            logging.info("Writing ENA search results")
             write_iter(r.iter_content(chunk_size=snakemake.params.chunksize), snakemake.output.table)
         else:
             sys.exit(f"Request failed with code {r.status_code}: {r.text}")
 
     # Write query
-    print("Saving query data", flush=True)
+    logging.info("Saving query data")
     with open(snakemake.output.query, "w") as fw:
         json.dump(data | {"query": query_txt}, fw, indent=2)

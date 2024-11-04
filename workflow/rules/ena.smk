@@ -10,6 +10,7 @@ checkpoint search_ena:
     output:
         table = "output/ena/search.tsv",
         query = "output/ena/search.json"
+    log: "output/logs/ena/search_ena.txt"
     script: "../scripts/search_ena.py"
 
 
@@ -49,6 +50,7 @@ rule summarize_ena_search:
         country_timeline_table = "output/ena/report/search/summary_country_timeline.csv",
         tech_timeline_table = "output/ena/report/search/summary_tech_timeline.csv",
         seqres_timeline_table = "output/ena/report/search/summary_seqres_timeline.csv"
+    log: "output/logs/ena/summarize_ena_search.txt"
     script: "../scripts/summarize_ena_search.R"
 
 
@@ -82,4 +84,5 @@ rule download_ena:
         sleep = 1
     output:
         folder = directory("output/ena/downloads/fastq/{study}/{sample}/{platform}/{run}/{layout}_{strategy}")
+    log: "output/logs/ena/download_ena/{study}/{sample}/{platform}/{run}/{layout}_{strategy}.txt"
     script: "../scripts/download_ena.py"
