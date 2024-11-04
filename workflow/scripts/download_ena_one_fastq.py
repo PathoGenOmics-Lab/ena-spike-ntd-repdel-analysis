@@ -33,18 +33,13 @@ if __name__ == "__main__":
     )
     
     # Read download index
+    logging.info(f"Reading search records")
     run = pd.read_csv(snakemake.input.table)
-    logging.info(f"Read {len(run)} search records")
-
-    # Prepare file download
-    logging.info("Downloading data")
-    folder = Path(snakemake.output.folder)
-    folder.mkdir(parents=True)
+    assert(len(run) == 1)
     
-    # Perform file download
-    for i, row in run.iterrows():
-        for url in row.fastq_ftp.split(";"):
-            url = format_url(url)
-            file_name = Path(url).name
-            logging.info(f"Downloading {url} to {folder / file_name}")
-            download_file(url, folder / file_name)
+    # Download two FASTQ files
+    urls = run.iloc[:, 0].fastq_ftp.split(";")
+    assert(len(urls) == 1)
+    url = format_url(urls[0])
+    logging.info(f"Downloading {url} to {snakemake.output.fastq}")
+    download_file(url, snakemake.output.fastq)

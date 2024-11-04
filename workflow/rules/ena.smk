@@ -59,7 +59,7 @@ rule split_ena_search_results:
     input:
         table = "output/ena/search.filtered.tsv"
     output:
-        table = "output/ena/search/{study}/{sample}/{platform}/{run}/{layout}_{strategy}/runs.csv"
+        table = "output/ena/search/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/runs.csv"
     resources:
         runtime = "10m",
         mem_mb = 12000
@@ -75,14 +75,28 @@ rule split_ena_search_results:
         ].to_csv(output.table)
 
 
-rule download_ena:
+rule download_ena_one_fastq:
     group: "download"
     conda: "../envs/pydata.yaml"
     input:
-        table = "output/ena/search/{study}/{sample}/{platform}/{run}/{layout}_{strategy}/runs.csv"
+        table = "output/ena/search/{study}/{sample}/{platform}/{run}/{layout}_1_{strategy}/runs.csv"
     params:
         sleep = 1
     output:
-        folder = directory("output/ena/downloads/fastq/{study}/{sample}/{platform}/{run}/{layout}_{strategy}")
-    log: "output/logs/ena/download_ena/{study}/{sample}/{platform}/{run}/{layout}_{strategy}.txt"
-    script: "../scripts/download_ena.py"
+        fastq = "output/ena/downloads/fastq/{study}/{sample}/{platform}/{run}/{layout}_1_{strategy}/sample.fastq.gz"
+    log: "output/logs/ena/download_ena/{study}/{sample}/{platform}/{run}/{layout}_1_{strategy}.txt"
+    script: "../scripts/download_ena_one_fastq.py"
+
+
+rule download_ena_two_fastq:
+    group: "download"
+    conda: "../envs/pydata.yaml"
+    input:
+        table = "output/ena/search/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}/runs.csv"
+    params:
+        sleep = 1
+    output:
+        fastq_1 = "output/ena/downloads/fastq/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}/sample.R1.fastq.gz",
+        fastq_2 = "output/ena/downloads/fastq/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}/sample.R2.fastq.gz"
+    log: "output/logs/ena/download_ena/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}.txt"
+    script: "../scripts/download_ena_two_fastq.py"

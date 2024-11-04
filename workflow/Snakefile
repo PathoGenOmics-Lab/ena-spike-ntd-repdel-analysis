@@ -7,15 +7,19 @@ configfile: "config/config.yaml"
 
 SEARCH_DF_COLS = (
     "study_accession", "sample_accession", "instrument_platform",
-    "run_accession", "library_layout", "library_strategy"
+    "run_accession", "library_layout", "fastq_ftp", "library_strategy"
 )
+
+
+def count_fastq(row: dict) -> int:
+    return row["fastq_ftp"].count(";") + 1
 
 
 def build_groups(wildcards, columns) -> list:
     with open(checkpoints.search_ena.get(**wildcards).output.table) as f:
         reader = csv.DictReader(f, delimiter="\t")
         groups = {
-            tuple(row[col] for col in columns) \
+            tuple(row[col] if col != "fastq_ftp" else count_fastq(row) for col in columns) \
             for row in reader
         }
     return sorted(groups)
@@ -31,8 +35,8 @@ rule all:
         "output/ena/search.tsv",
         "output/ena/report/search/summary.pdf",
         lambda w: build_targets(w, "output/preproc/multiqc/{}", ("study_accession",)),
-        lambda w: build_targets(w, "output/variants/variant_calling/{}/{}/{}/{}/{}_{}/sample.tsv"),
-        lambda w: build_targets(w, "output/variants/consensus/{}/{}/{}/{}/{}_{}/sample.fasta")
+        lambda w: build_targets(w, "output/variants/variant_calling/{}/{}/{}/{}/{}_{}_{}/sample.tsv"),
+        lambda w: build_targets(w, "output/variants/consensus/{}/{}/{}/{}/{}_{}_{}/sample.fasta")
 
 
 rule efetch_fasta_reference:
