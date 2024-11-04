@@ -31,7 +31,7 @@ rule filter_search_ena:
         df[
             ~df["instrument_platform"].isin(params.omit_platform) & \
             ~df["library_strategy"].isin(params.omit_library_strategy)
-        ].to_csv(output.table, sep="\t")
+        ].to_csv(output.table, sep="\t", index=False)
 
 
 rule summarize_ena_search:

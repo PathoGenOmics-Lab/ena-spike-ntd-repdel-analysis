@@ -68,10 +68,10 @@ rule filter_gff3_reference:
         import pandas as pd
         # see: https://gmod.org/wiki/GFF3
         COLUMNS = ("seqid", "source", "type", "start", "end", "score", "strand", "phase", "attributes", "tags")
-        gff3 = pd.read_csv(input[0], sep="\t", header=COLUMNS, comment="#")
+        gff3 = pd.read_csv(input[0], sep="\t", names=COLUMNS, comment="#")
         for column, values in params.selection.items():
             gff3 = gff3[gff3[column].isin(values)]
-        gff3.to_csv(output[0], sep="\t")
+        gff3.to_csv(output[0], sep="\t", index=False)
 
 
 include: "rules/ena.smk"
