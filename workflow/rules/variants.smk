@@ -27,7 +27,7 @@ rule consensus:
         fasta = "output/variants/consensus/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.fasta",
         quality = "output/variants/consensus/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.qual.txt"
     log: "output/logs/variants/consensus/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}.txt"
-    shell: "ivar consensus -p result -q {params.min_quality} -t {params.min_frequency} -m {params.min_depth} -c {params.min_ins_frequency} -n {params.char_under_min_depth} <{input.pileup:q} 2>{log} && mv result.fasta {output.fasta:q} && mv result.qual.txt {output.quality:q}"
+    shell: "ivar consensus -p result -q {params.min_quality} -t {params.min_frequency} -m {params.min_depth} -c {params.min_ins_frequency} -n {params.char_under_min_depth} <{input.pileup:q} 2>{log} && mv result.fa {output.fasta:q} && mv result.qual.txt {output.quality:q}"
 
 
 rule variant_calling:
