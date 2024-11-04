@@ -38,7 +38,8 @@ if __name__ == "__main__":
     assert(len(run) == 1)
     
     # Download two FASTQ files
-    urls = run.iloc[:, 0].fastq_ftp.split(";")
+    logging.info("Formatting URL")
+    urls = run.iloc[0].fastq_ftp.split(";")
     assert(len(urls) == 1)
     url = format_url(urls[0])
     logging.info(f"Downloading {url} to {snakemake.output.fastq}")
