@@ -81,6 +81,7 @@ rule download_ena_one_fastq:
     input:
         table = "output/ena/search/{study}/{sample}/{platform}/{run}/{layout}_1_{strategy}/runs.csv"
     params:
+        retries = 3,
         sleep = 1
     output:
         fastq = "output/ena/downloads/fastq/{study}/{sample}/{platform}/{run}/{layout}_1_{strategy}/sample.fastq.gz"
@@ -94,6 +95,7 @@ rule download_ena_two_fastq:
     input:
         table = "output/ena/search/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}/runs.csv"
     params:
+        retries = 3,
         sleep = 1
     output:
         fastq_1 = "output/ena/downloads/fastq/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}/sample.R1.fastq.gz",

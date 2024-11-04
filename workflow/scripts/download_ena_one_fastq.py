@@ -1,19 +1,18 @@
 import sys
 import logging
-import time
 import requests
-from pathlib import Path
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 import pandas as pd
 
 
-def download_file(url, path):
-    r = requests.get(url)
+def download_file(session, url, path):
+    r = session.get(url)
     if r.status_code == 200:
         with open(path, "wb") as fw:
             fw.write(r.content)
         logging.debug(f"Downloaded {len(r.content)} bytes; sleeping {snakemake.params.sleep} s")
-        time.sleep(snakemake.params.sleep)
     else:
         msg = f"Could not download {url} to {path} (status {r.status_code})"
         logging.error(msg)
@@ -31,9 +30,17 @@ if __name__ == "__main__":
         format=snakemake.config["PY_LOG_FMT"],
         filename=snakemake.log[0]
     )
+
+    session = requests.Session()
+    retry = Retry(
+        connect=snakemake.params.retries,
+        backoff_factor=snakemake.params.sleep
+    )
+    adapter = HTTPAdapter(max_retries=retry)
+    session.mount("http://", adapter)
     
     # Read download index
-    logging.info(f"Reading search records")
+    logging.info("Reading search records")
     run = pd.read_csv(snakemake.input.table)
     assert(len(run) == 1)
     
@@ -43,4 +50,4 @@ if __name__ == "__main__":
     assert(len(urls) == 1)
     url = format_url(urls[0])
     logging.info(f"Downloading {url} to {snakemake.output.fastq}")
-    download_file(url, snakemake.output.fastq)
+    download_file(session, url, snakemake.output.fastq)
