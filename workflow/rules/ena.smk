@@ -72,7 +72,7 @@ rule split_ena_search_results:
             (df["sample_accession"] == wildcards.sample) & \
             (df["study_accession"] == wildcards.study) & \
             (df["library_layout"] == wildcards.layout)
-        ].to_csv(output.table)
+        ].to_csv(output.table, index=False)
 
 
 rule download_ena_one_fastq:
