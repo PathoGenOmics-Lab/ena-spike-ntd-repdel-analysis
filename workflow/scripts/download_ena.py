@@ -29,7 +29,7 @@ if __name__ == "__main__":
     logging.basicConfig(
         level=logging.INFO,
         format=snakemake.config["PY_LOG_FMT"],
-        filename=snakemake.log
+        filename=snakemake.log[0]
     )
     
     # Read download index
