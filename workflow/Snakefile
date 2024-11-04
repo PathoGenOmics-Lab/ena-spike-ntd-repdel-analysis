@@ -73,3 +73,4 @@ rule filter_gff3_reference:
 include: "rules/ena.smk"
 include: "rules/preproc.smk"
 include: "rules/mapping.smk"
+include: "rules/variants.smk"
