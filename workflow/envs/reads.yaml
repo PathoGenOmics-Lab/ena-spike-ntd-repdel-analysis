@@ -5,3 +5,4 @@ channels:
 dependencies:
   - samtools==1.20
   - minimap2==2.28
+  - ivar==1.4.3
