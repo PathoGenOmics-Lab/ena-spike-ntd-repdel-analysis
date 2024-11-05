@@ -62,27 +62,33 @@ rule split_ena_search_results:
         table = "output/ena/search/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/runs.csv"
     resources:
         runtime = "10m",
-        mem_mb = 12000
+        mem_gb = 2
     log: "output/logs/ena/split_ena_search_results/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}.txt"
     run:
         import logging
-        import pandas as pd
+        import csv
         logging.basicConfig(
             level=logging.INFO,
             format=config["PY_LOG_FMT"],
             filename=log[0]
         )
-        df = pd.read_csv(input.table, sep="\t")
-        selection = df[
-            (df["instrument_platform"] == wildcards.platform) & \
-            (df["run_accession"] == wildcards.run) & \
-            (df["sample_accession"] == wildcards.sample) & \
-            (df["study_accession"] == wildcards.study) & \
-            (df["library_layout"] == wildcards.layout) & \
-            (df["library_strategy"] == wildcards.strategy)
-        ]
-        logging.info(f"Writing {len(selection)} records with study={wildcards.study}, sample={wildcards.sample}, platform={wildcards.platform}, run={wildcards.run}, layout={wildcards.layout} and strategy={wildcards.strategy}")
-        selection.to_csv(output.table, index=False)
+        n = 0
+        with open(input.table) as f, open(output.table, "w") as fw:
+            reader = csv.DictReader(f, delimiter="\t")
+            writer = csv.DictWriter(fw, delimiter="\t", fieldnames=reader.fieldnames)
+            writer.writeheader()
+            for row in reader:
+                if all(
+                    row["run_accession"] == wildcards.run,
+                    row["sample_accession"] == wildcards.sample,
+                    row["study_accession"] == wildcards.study,
+                    row["instrument_platform"] == wildcards.platform,
+                    row["library_layout"] == wildcards.layout,
+                    row["library_strategy"] == wildcards.strategy
+                ):
+                    writer.writerow(row)
+                    n += 1
+        logging.info(f"Wrote {n} records with study={wildcards.study}, sample={wildcards.sample}, platform={wildcards.platform}, run={wildcards.run}, layout={wildcards.layout} and strategy={wildcards.strategy}")
 
 
 rule download_ena_one_fastq:
