@@ -30,6 +30,18 @@ def build_targets(wildcards, template: str, columns=SEARCH_DF_COLS) -> list:
     return sorted(template.format(*groups) for groups in build_groups(wildcards, columns))
 
 
+def build_targets_filtering(wildcards, template: str, columns=SEARCH_DF_COLS, **kwargs) -> list:
+    filters = {}
+    for group in build_groups(wildcards, columns):
+        filters[group] = []
+        for column, values in kwargs.items():
+            if type(value) is not list or type(value) is not tuple:
+                values = [values]
+            index = columns.find(column)
+            filters[group].append(group[index] in values)
+    return sorted(filter(lambda group: all(filters[group]), groups))
+
+
 rule all:
     input:
         "output/ena/search.tsv",

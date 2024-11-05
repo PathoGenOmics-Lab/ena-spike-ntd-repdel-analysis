@@ -1,5 +1,5 @@
-rule consensus_merge:
-    input: lambda w: build_targets(w, f"output/variants/consensus/{w.study}/{{}}/{{}}/{{}}/{{}}_{{}}_{{}}/sample.fasta", ("sample_accession", "instrument_platform", "run_accession", "library_layout", "fastq_ftp", "library_strategy"))
+rule consensus_merge:  # TODO: ta mal
+    input: lambda w: build_targets_filtering(w, f"output/variants/consensus/{w.study}/{{}}/{{}}/{{}}/{{}}_{{}}_{{}}/sample.fasta", study_accession=w.study)
     output: temp("output/pangolin/consensus_merge/{study}/sequences.fasta")
     resources:
         runtime = "15m",
