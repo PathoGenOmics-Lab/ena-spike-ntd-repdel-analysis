@@ -30,16 +30,23 @@ def build_targets(wildcards, template: str, columns=SEARCH_DF_COLS) -> list:
     return sorted(template.format(*groups) for groups in build_groups(wildcards, columns))
 
 
-def build_targets_filtering(wildcards, template: str, columns=SEARCH_DF_COLS, **kwargs) -> list:
-    filters = {}
+def build_groups_filtering(wildcards, columns, **kwargs) -> list:
+    groups = set()
     for group in build_groups(wildcards, columns):
-        filters[group] = []
+        filters = []
         for column, values in kwargs.items():
             if type(values) is not list or type(value) is not tuple:
                 values = [values]
-            index = list(columns).find(column)
-            filters[group].append(group[index] in values)
-    return sorted(filter(lambda group: all(filters[group]), groups))
+            index = columns.index(column)
+            filters.append(group[index] in values)
+        if all(filters):
+            groups.add(group)
+    return groups
+
+
+def build_targets_filtering(wildcards, template: str, columns=SEARCH_DF_COLS, **kwargs) -> list:
+    columns = tuple(list(columns) + [column for column in kwargs.keys()])
+    return sorted(template.format(*groups) for groups in build_groups_filtering(wildcards, columns, **kwargs))
 
 
 rule all:
