@@ -75,7 +75,7 @@ rule split_ena_search_results:
         n = 0
         with open(input.table) as f, open(output.table, "w") as fw:
             reader = csv.DictReader(f, delimiter="\t")
-            writer = csv.DictWriter(fw, delimiter="\t", fieldnames=reader.fieldnames)
+            writer = csv.DictWriter(fw, fieldnames=reader.fieldnames)
             writer.writeheader()
             for row in reader:
                 if all((
