@@ -81,14 +81,16 @@ rule download_ena_one_fastq:
     input:
         table = "output/ena/search/{study}/{sample}/{platform}/{run}/{layout}_1_{strategy}/runs.csv"
     params:
-        retries = 3,
-        sleep = 1
+        retries = 5,
+        backoff_factor = 1,
+        backoff_jitter = 1
     output:
         fastq = "output/ena/downloads/fastq/{study}/{sample}/{platform}/{run}/{layout}_1_{strategy}/sample.fastq.gz"
     log: "output/logs/ena/download_ena/{study}/{sample}/{platform}/{run}/{layout}_1_{strategy}.txt"
     resources:
         ebi_api_calls_per_second = 1,
         runtime = "30m"
+    retries: 2
     script: "../scripts/download_ena_one_fastq.py"
 
 
@@ -98,13 +100,15 @@ rule download_ena_two_fastq:
     input:
         table = "output/ena/search/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}/runs.csv"
     params:
-        retries = 3,
-        sleep = 1
+        retries = 5,
+        backoff_factor = 1,
+        backoff_jitter = 1
     output:
         fastq_1 = "output/ena/downloads/fastq/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}/sample.R1.fastq.gz",
         fastq_2 = "output/ena/downloads/fastq/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}/sample.R2.fastq.gz"
     resources:
         ebi_api_calls_per_second = 1,
         runtime = "30m"
+    retries: 2
     log: "output/logs/ena/download_ena/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}.txt"
     script: "../scripts/download_ena_two_fastq.py"

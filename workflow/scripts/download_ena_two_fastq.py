@@ -1,4 +1,5 @@
 import sys
+import time
 import logging
 import requests
 from requests.adapters import HTTPAdapter
@@ -13,6 +14,7 @@ def download_file(session, url, path):
         with open(path, "wb") as fw:
             fw.write(r.content)
         logging.debug(f"Downloaded {len(r.content)} bytes; sleeping {snakemake.params.sleep} s")
+        time.sleep(snakemake.params.backoff_factor)
     else:
         msg = f"Could not download {url} to {path} (status {r.status_code})"
         logging.error(msg)
@@ -34,7 +36,8 @@ if __name__ == "__main__":
     session = requests.Session()
     retry = Retry(
         connect=snakemake.params.retries,
-        backoff_factor=snakemake.params.sleep
+        backoff_factor=snakemake.params.backoff_factor,
+        backoff_jitter=snakemake.params.backoff_jitter
     )
     adapter = HTTPAdapter(max_retries=retry)
     session.mount("http://", adapter)
