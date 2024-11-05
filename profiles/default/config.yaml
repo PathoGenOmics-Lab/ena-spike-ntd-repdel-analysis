@@ -4,3 +4,7 @@ restart-times: 0
 cores: all
 resources:
   ebi_api_calls_per_second: 50
+default-resources:
+  mem_mb: 4000
+  threads: 1
+  runtime: 60
