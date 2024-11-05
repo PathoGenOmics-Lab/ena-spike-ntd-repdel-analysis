@@ -86,6 +86,9 @@ rule download_ena_one_fastq:
     output:
         fastq = "output/ena/downloads/fastq/{study}/{sample}/{platform}/{run}/{layout}_1_{strategy}/sample.fastq.gz"
     log: "output/logs/ena/download_ena/{study}/{sample}/{platform}/{run}/{layout}_1_{strategy}.txt"
+    resources:
+        download_ena_one_fastq = 1,
+        runtime = "30m"
     script: "../scripts/download_ena_one_fastq.py"
 
 
@@ -100,5 +103,8 @@ rule download_ena_two_fastq:
     output:
         fastq_1 = "output/ena/downloads/fastq/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}/sample.R1.fastq.gz",
         fastq_2 = "output/ena/downloads/fastq/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}/sample.R2.fastq.gz"
+    resources:
+        download_ena_one_fastq = 1,
+        runtime = "30m"
     log: "output/logs/ena/download_ena/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}.txt"
     script: "../scripts/download_ena_two_fastq.py"
