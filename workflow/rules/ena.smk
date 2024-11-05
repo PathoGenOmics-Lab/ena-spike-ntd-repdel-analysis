@@ -78,14 +78,14 @@ rule split_ena_search_results:
             writer = csv.DictWriter(fw, delimiter="\t", fieldnames=reader.fieldnames)
             writer.writeheader()
             for row in reader:
-                if all(
+                if all((
                     row["run_accession"] == wildcards.run,
                     row["sample_accession"] == wildcards.sample,
                     row["study_accession"] == wildcards.study,
                     row["instrument_platform"] == wildcards.platform,
                     row["library_layout"] == wildcards.layout,
                     row["library_strategy"] == wildcards.strategy
-                ):
+                )):
                     writer.writerow(row)
                     n += 1
         logging.info(f"Wrote {n} records with study={wildcards.study}, sample={wildcards.sample}, platform={wildcards.platform}, run={wildcards.run}, layout={wildcards.layout} and strategy={wildcards.strategy}")
