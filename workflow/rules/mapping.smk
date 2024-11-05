@@ -19,7 +19,9 @@ rule map_single_nanopore:
     output:
         bam = "output/mapping/sorted_bam/{study}/{sample}/OXFORD_NANOPORE/{run}/SINGLE_1_{strategy}/sample.sorted.bam"
     resources:
-        runtime = "15m"
+        runtime = lambda wc, attempt: 15 * attempt,
+        mem_gb = lambda wc, attempt: 4 * attempt
+    retries: 2
     log:
         "output/logs/mapping/map_single_nanopore/{study}/{sample}/OXFORD_NANOPORE/{run}/SINGLE_1_{strategy}_minimap2.txt",
         "output/logs/mapping/map_single_nanopore/{study}/{sample}/OXFORD_NANOPORE/{run}/SINGLE_1_{strategy}_samtools.txt"
@@ -37,7 +39,9 @@ rule map_paired_illumina:
     output:
         bam = "output/mapping/sorted_bam/{study}/{sample}/ILLUMINA/{run}/PAIRED_2_{strategy}/sample.sorted.bam"
     resources:
-        runtime = "15m"
+        runtime = lambda wc, attempt: 15 * attempt,
+        mem_gb = lambda wc, attempt: 4 * attempt
+    retries: 2
     log:
         "output/logs/mapping/map_paired_illumina/{study}/{sample}/ILLUMINA/{run}/PAIRED_2_{strategy}_minimap2.txt",
         "output/logs/mapping/map_paired_illumina/{study}/{sample}/ILLUMINA/{run}/PAIRED_2_{strategy}_samtools.txt",
@@ -54,7 +58,9 @@ rule map_single_illumina:
     output:
         bam = "output/mapping/sorted_bam/{study}/{sample}/ILLUMINA/{run}/SINGLE_1_{strategy}/sample.sorted.bam"
     resources:
-        runtime = "15m"
+        runtime = lambda wc, attempt: 15 * attempt,
+        mem_gb = lambda wc, attempt: 4 * attempt
+    retries: 2
     log:
         "output/logs/mapping/map_single_illumina/{study}/{sample}/ILLUMINA/{run}/SINGLE_1_{strategy}_minimap2.txt",
         "output/logs/mapping/map_single_illumina/{study}/{sample}/ILLUMINA/{run}/SINGLE_1_{strategy}_samtools.txt"
@@ -85,7 +91,9 @@ rule map_pacbio_hifi:
     output:
         bam = "output/mapping/sorted_bam/{study}/{sample}/PACBIO_SMRT/{run}/{layout}_1_{strategy}/sample.sorted.bam"
     resources:
-        runtime = "15m"
+        runtime = lambda wc, attempt: 15 * attempt,
+        mem_gb = lambda wc, attempt: 4 * attempt
+    retries: 2
     log:
         "output/logs/mapping/map_pacbio_hifi/{study}/{sample}/PACBIO_SMRT/{run}/{layout}_1_{strategy}_minimap2.txt",
         "output/logs/mapping/map_pacbio_hifi/{study}/{sample}/PACBIO_SMRT/{run}/{layout}_1_{strategy}_samtools.txt"
