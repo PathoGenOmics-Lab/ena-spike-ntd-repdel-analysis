@@ -3,4 +3,5 @@ channels:
   - bioconda
   - defaults
 dependencies:
+  - snakemake-minimal==7.24.0
   - pangolin==4.3
