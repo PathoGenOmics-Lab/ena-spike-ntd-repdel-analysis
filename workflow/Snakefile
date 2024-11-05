@@ -36,7 +36,7 @@ rule all:
         "output/ena/report/search/summary.pdf",
         lambda w: build_targets(w, "output/preproc/multiqc/{}", ("study_accession",)),
         lambda w: build_targets(w, "output/variants/variant_calling/{}/{}/{}/{}/{}_{}_{}/sample.tsv"),
-        lambda w: build_targets(w, "output/variants/consensus/{}/{}/{}/{}/{}_{}_{}/sample.fasta")
+        "output/pangolin/pangolin.csv"
 
 
 rule efetch_fasta_reference:
