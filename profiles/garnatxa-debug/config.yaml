@@ -15,4 +15,4 @@ keep-incomplete: True
 notemp: True
 rerun-incomplete: True
 resources:
-  ebi_api_calls_per_second: 50
+  ena_api_calls_per_second: 50
