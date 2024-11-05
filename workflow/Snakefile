@@ -35,7 +35,7 @@ def build_targets_filtering(wildcards, template: str, columns=SEARCH_DF_COLS, **
     for group in build_groups(wildcards, columns):
         filters[group] = []
         for column, values in kwargs.items():
-            if type(value) is not list or type(value) is not tuple:
+            if type(values) is not list or type(value) is not tuple:
                 values = [values]
             index = columns.find(column)
             filters[group].append(group[index] in values)
