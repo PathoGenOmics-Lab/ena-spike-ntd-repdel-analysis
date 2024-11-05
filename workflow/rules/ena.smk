@@ -63,16 +63,20 @@ rule split_ena_search_results:
     resources:
         runtime = "10m",
         mem_mb = 12000
+    log: "output/logs/ena/split_ena_search_results/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}.txt"
     run:
         import pandas as pd
         df = pd.read_csv(input.table, sep="\t")
-        df[
+        selection = df[
             (df["instrument_platform"] == wildcards.platform) & \
             (df["run_accession"] == wildcards.run) & \
             (df["sample_accession"] == wildcards.sample) & \
             (df["study_accession"] == wildcards.study) & \
-            (df["library_layout"] == wildcards.layout)
-        ].to_csv(output.table, index=False)
+            (df["library_layout"] == wildcards.layout) & \
+            (df["library_strategy"] == wildcards.strategy)
+        ]
+        print(f"Writing {len(selection)} records with study={wildcards.study}, sample={wildcards.sample}, platform={wildcards.platform}, run={wildcards.run}, layout={wildcards.layout} and strategy={wildcards.strategy}")
+        selection.to_csv(output.table, index=False)
 
 
 rule download_ena_one_fastq:
