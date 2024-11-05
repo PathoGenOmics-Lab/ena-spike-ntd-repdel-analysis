@@ -16,7 +16,7 @@ def count_fastq(row: dict) -> int:
 
 
 def build_groups(wildcards, columns) -> list:
-    with open(checkpoints.search_ena.get(**wildcards).output.table) as f:
+    with open(checkpoints.filter_search_ena.get(**wildcards).output.table) as f:
         reader = csv.DictReader(f, delimiter="\t")
         groups = {
             tuple(row[col] if col != "fastq_ftp" else count_fastq(row) for col in columns) \

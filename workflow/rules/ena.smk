@@ -1,4 +1,4 @@
-checkpoint search_ena:
+rule search_ena:
     conda: "../envs/pydata.yaml"
     params:
         start_date = "2021-11-01",       # outbreak.info approx BA.1 start date
@@ -14,7 +14,7 @@ checkpoint search_ena:
     script: "../scripts/search_ena.py"
 
 
-rule filter_search_ena:
+checkpoint filter_search_ena:
     input:
         table = "output/ena/search.tsv"
     params:
