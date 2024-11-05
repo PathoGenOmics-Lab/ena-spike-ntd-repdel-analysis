@@ -1,5 +1,5 @@
 rule consensus_merge:
-    input: lambda w: build_targets(w, "output/variants/consensus/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.fasta")
+    input: lambda w: build_targets(w, "output/variants/consensus/{}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.fasta", ("study_accession",))
     output: temp("output/pangolin/consensus_merge/{study}/sequences.fasta")
     resources:
         runtime = "15m",
@@ -22,7 +22,7 @@ rule pangolin_assignment:
 
 
 rule pangolin_assignment_merge:
-    input: lambda w: build_targets(w, "output/pangolin/pangolin_assignment/{study}/pangolin.csv", ("study_accession",))
+    input: lambda w: build_targets(w, "output/pangolin/pangolin_assignment/{}/pangolin.csv", ("study_accession",))
     output: "output/pangolin/pangolin.csv"
     resources:
         runtime = "15m",
