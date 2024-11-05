@@ -65,7 +65,13 @@ rule split_ena_search_results:
         mem_mb = 12000
     log: "output/logs/ena/split_ena_search_results/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}.txt"
     run:
+        import logging
         import pandas as pd
+        logging.basicConfig(
+            level=logging.INFO,
+            format=config["PY_LOG_FMT"],
+            filename=log[0]
+        )
         df = pd.read_csv(input.table, sep="\t")
         selection = df[
             (df["instrument_platform"] == wildcards.platform) & \
@@ -75,7 +81,7 @@ rule split_ena_search_results:
             (df["library_layout"] == wildcards.layout) & \
             (df["library_strategy"] == wildcards.strategy)
         ]
-        print(f"Writing {len(selection)} records with study={wildcards.study}, sample={wildcards.sample}, platform={wildcards.platform}, run={wildcards.run}, layout={wildcards.layout} and strategy={wildcards.strategy}")
+        logging.info(f"Writing {len(selection)} records with study={wildcards.study}, sample={wildcards.sample}, platform={wildcards.platform}, run={wildcards.run}, layout={wildcards.layout} and strategy={wildcards.strategy}")
         selection.to_csv(output.table, index=False)
 
 
