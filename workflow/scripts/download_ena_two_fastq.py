@@ -13,7 +13,7 @@ def download_file(session, url, path):
     if r.status_code == 200:
         with open(path, "wb") as fw:
             fw.write(r.content)
-        logging.debug(f"Downloaded {len(r.content)} bytes; sleeping {snakemake.params.sleep} s")
+        logging.debug(f"Downloaded {len(r.content)} bytes; sleeping {snakemake.params.backoff_factor} s")
         time.sleep(snakemake.params.backoff_factor)
     else:
         msg = f"Could not download {url} to {path} (status {r.status_code})"
