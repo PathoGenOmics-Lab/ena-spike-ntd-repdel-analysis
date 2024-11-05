@@ -27,4 +27,4 @@ rule pangolin_assignment_merge:
     resources:
         runtime = "15m",
         mem_gb = 2
-    shell: "head -1 {input[0]:q} >{output:q} && tail +2 -q {input:q} >>{output:q}"
+    shell: "head -n 1 {input[0]:q} >{output:q} && tail -n +2 -q {input:q} >>{output:q}"
