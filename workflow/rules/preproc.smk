@@ -28,7 +28,7 @@ rule fastp_single:
     output:
         report = "output/preproc/fastp/{study}/{sample}/{platform}/{run}/{layout}_1_{strategy}/report.html",
         json = "output/preproc/fastp/{study}/{sample}/{platform}/{run}/{layout}_1_{strategy}/report.json",
-        fastq = "output/preproc/fastq/{study}/{sample}/{platform}/{run}/{layout}_1_{strategy}/sample.fastp.fastq.gz"
+        fastq =temp("output/preproc/fastq/{study}/{sample}/{platform}/{run}/{layout}_1_{strategy}/sample.fastp.fastq.gz")
     log: "output/logs/preproc/fastp_single/{study}/{sample}/{platform}/{run}/{layout}_1_{strategy}.txt"
     shell: "fastp -i {input.fastq:q} -o {output.fastq:q} -h {output.report:q} -j {output.json:q} 2>{log}"
 
@@ -42,7 +42,7 @@ rule fastp_paired:
     output:
         report = "output/preproc/fastp/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}/report.html",
         json = "output/preproc/fastp/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}/report.json",
-        fastq_1 = "output/preproc/fastq/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}/sample.fastp.R1.fastq.gz",
-        fastq_2 = "output/preproc/fastq/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}/sample.fastp.R2.fastq.gz"
+        fastq_1 = temp("output/preproc/fastq/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}/sample.fastp.R1.fastq.gz"),
+        fastq_2 = temp("output/preproc/fastq/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}/sample.fastp.R2.fastq.gz")
     log: "output/logs/preproc/fastp_paired/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}.txt"
     shell: "fastp -i {input.fastq_1:q} -I {input.fastq_2:q} -o {output.fastq_1:q} -O {output.fastq_2:q} -h {output.report:q} -j {output.json:q} 2>{log}"

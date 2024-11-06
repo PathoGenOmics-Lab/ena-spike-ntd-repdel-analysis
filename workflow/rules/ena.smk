@@ -101,7 +101,7 @@ rule download_ena_one_fastq:
         backoff_factor = 1,
         backoff_jitter = 1
     output:
-        fastq = "output/ena/downloads/fastq/{study}/{sample}/{platform}/{run}/{layout}_1_{strategy}/sample.fastq.gz"
+        fastq = temp("output/ena/downloads/fastq/{study}/{sample}/{platform}/{run}/{layout}_1_{strategy}/sample.fastq.gz")
     log: "output/logs/ena/download_ena/{study}/{sample}/{platform}/{run}/{layout}_1_{strategy}.txt"
     resources:
         ena_api_calls_per_second = 1,
@@ -120,8 +120,8 @@ rule download_ena_two_fastq:
         backoff_factor = 1,
         backoff_jitter = 1
     output:
-        fastq_1 = "output/ena/downloads/fastq/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}/sample.R1.fastq.gz",
-        fastq_2 = "output/ena/downloads/fastq/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}/sample.R2.fastq.gz"
+        fastq_1 = temp("output/ena/downloads/fastq/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}/sample.R1.fastq.gz"),
+        fastq_2 = temp("output/ena/downloads/fastq/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}/sample.R2.fastq.gz")
     resources:
         ena_api_calls_per_second = 1,
         runtime = "30m"
