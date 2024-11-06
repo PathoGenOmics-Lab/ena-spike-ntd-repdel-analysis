@@ -9,8 +9,9 @@ def count_fastq(row: dict) -> int:
 
 
 def build_groups(wildcards, table, columns) -> list:
+    delimiter = "\t" if table.endswith(".tsv") else ","
     with open(table) as f:
-        reader = csv.DictReader(f, delimiter="\t")
+        reader = csv.DictReader(f, delimiter=delimiter)
         groups = {
             tuple(row[col] if col != "fastq_ftp" else count_fastq(row) for col in columns) \
             for row in reader
