@@ -14,7 +14,7 @@ rule all:
         "output/ena/report/search/summary.pdf",
         lambda w: build_pangolin_targets(w, "output/preproc/multiqc/{}", ("study_accession",)),
         lambda w: build_pangolin_targets(w, "output/variants/variant_calling/{}/{}/{}/{}/{}_{}_{}/sample.tsv"),
-        "output/pangolin/pangolin.filtered.csv"
+        "output/ena/search.filtered.pangolin.tsv"
 
 
 include: "rules/fetch.smk"
