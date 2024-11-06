@@ -5,51 +5,7 @@ import csv
 configfile: "config/config.yaml"
 
 
-SEARCH_DF_COLS = (
-    "study_accession", "sample_accession", "instrument_platform",
-    "run_accession", "library_layout", "fastq_ftp", "library_strategy"
-)
-
-
-def count_fastq(row: dict) -> int:
-    return row["fastq_ftp"].count(";") + 1
-
-
-def build_groups(wildcards, table, columns) -> list:
-    with open(table) as f:
-        reader = csv.DictReader(f, delimiter="\t")
-        groups = {
-            tuple(row[col] if col != "fastq_ftp" else count_fastq(row) for col in columns) \
-            for row in reader
-        }
-    return sorted(groups)
-
-
-def build_search_targets(wildcards, template: str, columns=SEARCH_DF_COLS) -> list:
-    return sorted(template.format(*groups) for groups in build_groups(wildcards, checkpoints.filter_search_ena.get(**wildcards).output.table, columns))
-
-
-def build_search_groups_filtering(wildcards, columns, **kwargs) -> list:
-    groups = set()
-    for group in build_groups(wildcards, checkpoints.filter_search_ena.get(**wildcards).output.table, columns):
-        filters = []
-        for column, values in kwargs.items():
-            if type(values) is not list or type(value) is not tuple:
-                values = [values]
-            index = columns.index(column)
-            filters.append(group[index] in values)
-        if all(filters):
-            groups.add(group)
-    return groups
-
-
-def build_search_targets_filtering(wildcards, template: str, columns=SEARCH_DF_COLS, **kwargs) -> list:
-    columns = tuple(list(columns) + [column for column in kwargs.keys()])
-    return sorted(template.format(*groups) for groups in build_search_groups_filtering(wildcards, columns, **kwargs))
-
-
-def build_pangolin_targets(wildcards, template: str, columns=SEARCH_DF_COLS) -> list:
-    return sorted(template.format(*groups) for groups in build_groups(wildcards, checkpoints.filter_pangolin.get(**wildcards).output.table, columns))
+include: "rules/common.smk"
 
 
 rule all:
@@ -61,41 +17,7 @@ rule all:
         "output/pangolin/pangolin.filtered.csv"
 
 
-rule efetch_fasta_reference:
-    params:
-        accession = "NC_045512.2"
-    output: "output/reference/sequence.fasta"
-    resources:
-        runtime = "10m"
-    shell: 'curl -s -o {output:q} "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id={params.accession}&rettype=fasta"'
-
-
-rule efetch_gff3_reference:
-    params:
-        accession = "NC_045512.2"
-    output: "output/reference/features.gff3"
-    resources:
-        runtime = "10m"
-    shell: 'curl -s -o {output:q} "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id={params.accession}&rettype=gff3"'
-
-
-rule filter_gff3_reference:
-    input: "output/reference/features.gff3"
-    params:
-        selection = {"type": ["gene"]}
-    output: "output/reference/features.filtered.gff3"
-    resources:
-        runtime = "10m"
-    run:
-        import pandas as pd
-        # see: https://gmod.org/wiki/GFF3
-        COLUMNS = ("seqid", "source", "type", "start", "end", "score", "strand", "phase", "attributes", "tags")
-        gff3 = pd.read_csv(input[0], sep="\t", names=COLUMNS, comment="#")
-        for column, values in params.selection.items():
-            gff3 = gff3[gff3[column].isin(values)]
-        gff3.to_csv(output[0], sep="\t", index=False)
-
-
+include: "rules/fetch.smk"
 include: "rules/ena.smk"
 include: "rules/preproc.smk"
 include: "rules/mapping.smk"
