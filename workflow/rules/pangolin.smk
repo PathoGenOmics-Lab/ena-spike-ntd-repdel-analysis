@@ -53,7 +53,7 @@ checkpoint filter_pangolin:
         n = 0
         ntotal = 0
         with open(input.table) as f, open(output.table, "w") as fw:
-            reader = csv.DictReader(f, delimiter="\t")
+            reader = csv.DictReader(f)
             writer = csv.DictWriter(fw, fieldnames=reader.fieldnames)
             writer.writeheader()
             for row in reader:
