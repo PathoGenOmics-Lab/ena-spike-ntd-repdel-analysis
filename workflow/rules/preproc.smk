@@ -17,7 +17,7 @@ rule multiqc:
     output:
         directory("output/preproc/multiqc/{study}")
     log: "output/logs/preproc/multiqc/{study}.txt"
-    shell: "multiqc --outdir {output:q} --dirs -dd 5 {input:q} 2>{log:q}"
+    shell: "mkdir -p {output:q} && multiqc --outdir {output:q} --dirs -dd 5 {input:q} 2>{log:q}"
 
 
 rule fastp_single:
