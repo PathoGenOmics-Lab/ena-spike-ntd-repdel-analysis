@@ -89,4 +89,4 @@ rule snpeff_annotate:
     output:
         vcf = "output/variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.annotated.vcf"
     log: "output/logs/variants/snpeff_annotate/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}.txt"
-    shell: "snpEff -dataDir {input.datadir:q} {params.reference} {input.vcf:q} >{output.vcf:q} 2>{log:q}"
+    shell: "snpEff eff -dataDir {input.datadir:q} {params.reference} {input.vcf:q} >{output.vcf:q} 2>{log:q}"
