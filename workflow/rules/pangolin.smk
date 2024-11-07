@@ -87,7 +87,7 @@ checkpoint filter_search_ena_with_pangolin:
             filename=log[0]
         )
         columns = [
-            "study_accession", "sample_accesion", "instrument_platform",
+            "study_accession", "sample_accession", "instrument_platform",
             "run_accession", "library_layout", "library_strategy"
         ]
         id_pattern = re.compile(params.pattern)
@@ -97,7 +97,7 @@ checkpoint filter_search_ena_with_pangolin:
         logging.info(f"Read {len(pangolin)} records")
         # Extract sample metadata from record ID
         logging.info("Extracting metadata from taxons")
-        pangolin[columns] = pangolin["taxon"].apply(lambda record_id: id_pattern.match(record_id).groups())
+        pangolin[columns] = pangolin["taxon"].apply(lambda record_id: id_pattern.match(record_id).groups()).tolist()
         # Keep only sample metadata
         pangolin = pangolin.drop([col for col in columns if col not in columns], axis="columns")
         # Read filtered search results
