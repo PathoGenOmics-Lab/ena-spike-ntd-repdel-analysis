@@ -30,7 +30,7 @@ checkpoint filter_search_ena:
         df[
             ~df["instrument_platform"].isin(params.omit_platform) & \
             ~df["library_strategy"].isin(params.omit_library_strategy) & \
-            df["fastq_ftp"].str.count(";").isin([1, 2])
+            df["fastq_ftp"].str.count(";").isin([0, 1])
         ].to_csv(output.table, sep="\t", index=False)
 
 
