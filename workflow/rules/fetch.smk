@@ -31,3 +31,16 @@ rule filter_gff3_reference:
         for column, values in params.selection.items():
             gff3 = gff3[gff3[column].isin(values)]
         gff3.to_csv(output[0], sep="\t", index=False)
+
+
+rule download_snpeff_database:
+    shadow: "minimal"
+    params:
+        identifier = "NC_045512.2"
+    output:
+        folder = directory("output/reference/snpeff/NC_045512.2"),
+        file = "output/reference/snpeff/NC_045512.2/snpEffectPredictor.bin"
+    shell:
+        'curl -s -o database.zip "https://snpeff.blob.core.windows.net/databases/v5_0/snpEff_v5_0_{params.identifier}.zip" && '
+        'unzip database.zip && '
+        'mkdir -p {output.folder:q} && mv data/{params.identifier}/snpEffectPredictor.bin {output.file:q}'

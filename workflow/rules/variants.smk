@@ -63,9 +63,29 @@ rule variant_calling:
 
 
 rule ivar_tsv_to_vcf:
+    conda: "../envs/pydata.yaml"
     input:
-        tsv = "output/variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.tsv"
+        tsv = "output/variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.tsv",
+        reference = "output/reference/sequence.fasta"
+    params:
+        pass_only = False,
+        allele_freq_threshold = 0,
+        ignore_strand_bias = False,
+        ignore_merge_codons = False
     output:
         vcf = "output/variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.vcf"
     log: "output/logs/variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/ivar_tsv_to_vcf.txt"
     script: "../scripts/ivar_tsv_to_vcf.py"
+
+
+rule snpeff_annotate:
+    conda: "../envs/annotation.yaml"
+    input:
+        datadir = "output/reference/snpeff/NC_045512.2",
+        vcf = "output/variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.vcf"
+    params:
+        reference = "NC_045512.2"
+    output:
+        vcf = "output/variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.annotated.vcf"
+    log: "output/logs/variants/snpeff_annotate/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}.txt"
+    shell: "snpEff -dataDir {input.datadir:q} {params.reference} {input.vcf:q} >{output.vcf:q} 2>{log:q}"
