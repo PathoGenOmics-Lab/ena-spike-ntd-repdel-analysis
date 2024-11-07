@@ -29,7 +29,8 @@ checkpoint filter_search_ena:
         df = pd.read_csv(input.table, sep="\t")
         df[
             ~df["instrument_platform"].isin(params.omit_platform) & \
-            ~df["library_strategy"].isin(params.omit_library_strategy)
+            ~df["library_strategy"].isin(params.omit_library_strategy) & \
+            df["fastq_ftp"].str.count(";").isin([1, 2])
         ].to_csv(output.table, sep="\t", index=False)
 
 
