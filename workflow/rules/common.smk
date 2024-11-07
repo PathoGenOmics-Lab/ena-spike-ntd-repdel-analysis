@@ -72,7 +72,7 @@ def build_pangolin_targets_filtering(wildcards, template: str, columns=SEARCH_DF
     columns = tuple(list(columns) + [column for column in kwargs.keys()])
     return sorted(
         template.format(*groups) \
-        for groups in build_search_groups_filtering(
+        for groups in build_groups_filtering(
             wildcards,
             checkpoints.filter_search_ena_with_pangolin.get(**wildcards).output.search_table,
             columns,
