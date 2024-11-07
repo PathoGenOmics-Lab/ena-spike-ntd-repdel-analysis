@@ -70,7 +70,7 @@ checkpoint filter_search_ena_with_pangolin:
         pangolin_table = "output/pangolin/pangolin.filtered.csv"
     params:
         # Consensus_{study}__{sample}__{platform}__{run}__{layout}__{strategy}_threshold_{threshold}_quality_{quality}
-        pattern = "Consensus_([A-Z0-9]+)__([A-Z0-9]+)__([A-Z]+)__([A-Z0-9]+)__([A-Z]+)__([A-Z]+)_threshold_[0-9\.]+_quality_[0-9\.]+"
+        pattern = r"Consensus_([A-Z0-9]+)__([A-Z0-9]+)__([A-Z]+)__([A-Z0-9]+)__([A-Z]+)__([A-Z]+)_threshold_[0-9\.]+_quality_[0-9\.]+"
     output:
         search_table = "output/ena/search.filtered.pangolin.tsv"
     resources:
