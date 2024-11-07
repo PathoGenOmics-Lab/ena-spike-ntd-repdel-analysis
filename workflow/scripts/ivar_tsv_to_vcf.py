@@ -383,7 +383,7 @@ if __name__ == "__main__":
     #################################
     ## Read and process input file ##
     #################################
-    with open(snakemake.input.vcf, "r") as fin:
+    with open(snakemake.input.tsv, "r") as fin:
         for line in fin:
             if "REGION" not in line:
                 ################
