@@ -1,5 +1,4 @@
 rule search_ena:
-    conda: "../envs/pydata.yaml"
     params:
         start_date = "2021-11-01",       # outbreak.info approx BA.1 start date
         end_date = "2022-08-01",         # outbreak.info approx BA.1 end date
@@ -93,7 +92,6 @@ rule split_ena_search_results:
 
 rule download_ena_one_fastq:
     group: "download"
-    conda: "../envs/pydata.yaml"
     input:
         table = "output/ena/search/{study}/{sample}/{platform}/{run}/{layout}_1_{strategy}/runs.csv"
     params:
@@ -112,7 +110,6 @@ rule download_ena_one_fastq:
 
 rule download_ena_two_fastq:
     group: "download"
-    conda: "../envs/pydata.yaml"
     input:
         table = "output/ena/search/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}/runs.csv"
     params:
