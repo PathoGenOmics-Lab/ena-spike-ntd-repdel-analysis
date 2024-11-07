@@ -19,13 +19,9 @@ def build_groups(wildcards, table, columns) -> list:
     return sorted(groups)
 
 
-def build_search_targets(wildcards, template: str, columns=SEARCH_DF_COLS) -> list:
-    return sorted(template.format(*groups) for groups in build_groups(wildcards, checkpoints.filter_search_ena.get(**wildcards).output.table, columns))
-
-
-def build_search_groups_filtering(wildcards, columns, **kwargs) -> list:
+def build_groups_filtering(wildcards, table, columns, **kwargs) -> list:
     groups = set()
-    for group in build_groups(wildcards, checkpoints.filter_search_ena.get(**wildcards).output.table, columns):
+    for group in build_groups(wildcards, table, columns):
         filters = []
         for column, values in kwargs.items():
             if type(values) is not list or type(value) is not tuple:
@@ -37,9 +33,28 @@ def build_search_groups_filtering(wildcards, columns, **kwargs) -> list:
     return groups
 
 
+def build_search_targets(wildcards, template: str, columns=SEARCH_DF_COLS) -> list:
+    return sorted(
+        template.format(*groups) \
+        for groups in build_groups(
+            wildcards,
+            checkpoints.filter_search_ena.get(**wildcards).output.table,
+            columns
+        )
+    )
+
+
 def build_search_targets_filtering(wildcards, template: str, columns=SEARCH_DF_COLS, **kwargs) -> list:
     columns = tuple(list(columns) + [column for column in kwargs.keys()])
-    return sorted(template.format(*groups) for groups in build_search_groups_filtering(wildcards, columns, **kwargs))
+    return sorted(
+        template.format(*groups) \
+        for groups in build_groups_filtering(
+            wildcards,
+            checkpoints.filter_search_ena.get(**wildcards).output.table,
+            columns,
+            **kwargs
+        )
+    )
 
 
 def build_pangolin_targets(wildcards, template: str, columns=SEARCH_DF_COLS) -> list:
