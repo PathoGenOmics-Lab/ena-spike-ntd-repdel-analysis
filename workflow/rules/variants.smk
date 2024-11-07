@@ -8,7 +8,7 @@ rule pileup:
         max_depth = 0,   # 0 means unrestricted
         min_quality = 0  # filtered later with iVar
     output:
-        pileup = "output/variants/pileup/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.pileup"
+        pileup = temp("output/variants/pileup/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.pileup")
     resources:
         runtime = lambda wc, attempt: 15 * attempt,
         mem_gb = lambda wc, attempt: 4 * attempt
