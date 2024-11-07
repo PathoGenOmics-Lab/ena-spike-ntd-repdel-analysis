@@ -11,7 +11,8 @@ include: "rules/common.smk"
 rule all:
     input:
         "output/ena/search.tsv",
-        "output/ena/report/search/summary.pdf",
+        "output/ena/summarize_ena_search/summary.png",
+        "output/ena/summarize_ena_search_pangolin/summary.png",
         lambda w: build_pangolin_targets(w, "output/preproc/multiqc/{}", ("study_accession",)),
         lambda w: build_pangolin_targets(w, "output/variants/variant_calling/{}/{}/{}/{}/{}_{}_{}/sample.annotated.vcf"),
         "output/repdel/report_region/region.png"

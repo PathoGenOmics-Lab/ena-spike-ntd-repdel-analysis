@@ -45,13 +45,27 @@ rule summarize_ena_search:
         mem_mb = 12000,
         runtime = "15m"
     output:
-        plot_pdf = "output/ena/report/search/summary.pdf",
-        plot_png = "output/ena/report/search/summary.png",
-        country_timeline_table = "output/ena/report/search/summary_country_timeline.csv",
-        tech_timeline_table = "output/ena/report/search/summary_tech_timeline.csv",
-        seqres_timeline_table = "output/ena/report/search/summary_seqres_timeline.csv"
+        plot_pdf = "output/ena/summarize_ena_search/summary.pdf",
+        plot_png = "output/ena/summarize_ena_search/summary.png",
+        country_timeline_table = "output/ena/summarize_ena_search/summary_country_timeline.csv",
+        tech_timeline_table = "output/ena/summarize_ena_search/summary_tech_timeline.csv",
+        seqres_timeline_table = "output/ena/summarize_ena_search/summary_seqres_timeline.csv",
+        studies_table = "output/ena/summarize_ena_search/studies.csv"
     log: "output/logs/ena/summarize_ena_search.txt"
     script: "../scripts/summarize_ena_search.R"
+
+
+use rule summarize_ena_search as summarize_ena_search_pangolin with:
+    input:
+        table = "output/ena/search.filtered.pangolin.tsv"
+    output:
+        plot_pdf = "output/ena/summarize_ena_search_pangolin/summary.pdf",
+        plot_png = "output/ena/summarize_ena_search_pangolin/summary.png",
+        country_timeline_table = "output/ena/summarize_ena_search_pangolin/summary_country_timeline.csv",
+        tech_timeline_table = "output/ena/summarize_ena_search_pangolin/summary_tech_timeline.csv",
+        seqres_timeline_table = "output/ena/summarize_ena_search_pangolin/summary_seqres_timeline.csv",
+        studies_table = "output/ena/summarize_ena_search_pangolin/studies.csv"
+    log: "output/logs/ena/summarize_ena_search_pangolin.txt"
 
 
 rule split_ena_search_results:
