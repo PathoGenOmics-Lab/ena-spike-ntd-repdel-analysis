@@ -353,7 +353,12 @@ ggsave(
     bg = "white"
 )
 
+message("Counting studies")
+studies.data <- search %>%
+    count(study_accession)
+
 message("Saving data tables")
 write_csv(date.country.data, snakemake@output$country_timeline_table)
 write_csv(date.seqtech.data, snakemake@output$tech_timeline_table)
 write_csv(date.seqres.data, snakemake@output$seqres_timeline_table)
+write_csv(studies.data, snakemake@output$studies_table)
