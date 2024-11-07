@@ -22,7 +22,6 @@
 
 # modified from: https://github.com/nf-core/viralrecon/blob/5b85276575ed6de972031034968e394f60b4a1c0/bin/ivar_variants_to_vcf.py
 
-import os
 import logging
 from collections import OrderedDict
 from collections import deque
@@ -356,11 +355,6 @@ def process_variants(variants, num_collapse):
     return chrom, pos, id, ref, alt, qual, filter, info, format
 
 
-def create_f_string(str_size, placement="^"):
-    row_size = "{: " + placement + str(str_size) + "}"
-    return row_size
-
-
 if __name__ == "__main__":
 
     logging.basicConfig(
@@ -370,7 +364,6 @@ if __name__ == "__main__":
     )
 
     # Initialize vars
-    filename = os.path.splitext(snakemake.input.vcf)[0]
     var_list = []  # store variants
     var_count_dict = {"SNP": 0, "INS": 0, "DEL": 0}  # variant counts
     variants = OrderedDict()  # variant dict (merge codon)
@@ -384,7 +377,7 @@ if __name__ == "__main__":
         snakemake.input.reference,
         snakemake.params.ignore_strand_bias,
         snakemake.output.vcf,
-        filename
+        snakemake.params.sample_name
     )
 
     #################################
@@ -533,21 +526,3 @@ if __name__ == "__main__":
                 for _ in range(num_collapse):
                     variants.popitem(last=False)
                     q_pos.popleft()
-
-    #############################################
-    ##  variant counts to pass to MultiQC      ##
-    #############################################
-    var_count_list = [(k, str(v)) for k, v in sorted(var_count_dict.items())]
-
-    # format output table a little more cleanly
-    # row_spacing = len(filename)
-
-    row = create_f_string(30, "<")  # an arbitraily long value to fit most sample names
-    row += create_f_string(10) * len(var_count_list)  # A spacing of ten looks pretty
-
-    headers = ["sample"]
-    headers.extend([x[0] for x in var_count_list])
-    data = [filename]
-    data.extend([x[1] for x in var_count_list])
-    logging.info(row.format(*headers))
-    logging.info(row.format(*data))

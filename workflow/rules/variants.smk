@@ -71,7 +71,8 @@ rule ivar_tsv_to_vcf:
         pass_only = False,
         allele_freq_threshold = 0,
         ignore_strand_bias = False,
-        ignore_merge_codons = False
+        ignore_merge_codons = False,
+        sample_name = "{study}_{sample}_{platform}_{run}_{layout}_{strategy}"
     output:
         vcf = "output/variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.vcf"
     log: "output/logs/variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/ivar_tsv_to_vcf.txt"
