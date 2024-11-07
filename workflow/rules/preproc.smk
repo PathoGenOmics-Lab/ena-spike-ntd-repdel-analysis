@@ -13,7 +13,7 @@ rule multiqc:
     conda: "../envs/qc.yaml"
     shadow: "minimal"
     input:
-        lambda w: build_targets(w, "output/preproc/fastp/{}/{}/{}/{}/{}_{}_{}/report.html")
+        lambda w: build_pangolin_targets(w, "output/preproc/fastp/{}/{}/{}/{}/{}_{}_{}/report.html")
     output:
         directory("output/preproc/multiqc/{study}")
     log: "output/logs/preproc/multiqc/{study}.txt"
