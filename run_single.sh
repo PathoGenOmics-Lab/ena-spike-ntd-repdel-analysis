@@ -6,4 +6,4 @@
 #SBATCH --qos short
 #SBATCH --time 1-00:00:00
 
-snakemake --workflow-profile profiles/default --resources mem_gb=96 --cores 32
+snakemake --workflow-profile profiles/default --resources mem_gb=96 --cores 32 --scheduler greedy
