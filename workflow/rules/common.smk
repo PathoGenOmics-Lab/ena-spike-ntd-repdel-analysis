@@ -43,4 +43,24 @@ def build_search_targets_filtering(wildcards, template: str, columns=SEARCH_DF_C
 
 
 def build_pangolin_targets(wildcards, template: str, columns=SEARCH_DF_COLS) -> list:
-    return sorted(template.format(*groups) for groups in build_groups(wildcards, checkpoints.filter_search_ena_with_pangolin.get(**wildcards).output.search_table, columns))
+    return sorted(
+        template.format(*groups) \
+        for groups in build_groups(
+            wildcards,
+            checkpoints.filter_search_ena_with_pangolin.get(**wildcards).output.search_table,
+            columns
+        )
+    )
+
+
+def build_pangolin_targets_filtering(wildcards, template: str, columns=SEARCH_DF_COLS, **kwargs) -> list:
+    columns = tuple(list(columns) + [column for column in kwargs.keys()])
+    return sorted(
+        template.format(*groups) \
+        for groups in build_search_groups_filtering(
+            wildcards,
+            checkpoints.filter_search_ena_with_pangolin.get(**wildcards).output.search_table,
+            columns,
+            **kwargs
+        )
+    )
