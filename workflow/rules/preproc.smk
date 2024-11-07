@@ -13,11 +13,11 @@ rule multiqc:
     conda: "../envs/qc.yaml"
     shadow: "minimal"
     input:
-        lambda w: build_pangolin_targets(w, "output/preproc/fastp/{}/{}/{}/{}/{}_{}_{}/report.html")
+        lambda w: build_pangolin_targets(w, "output/preproc/fastp/{}/{}/{}/{}/{}_{}_{}/report.json")
     output:
         directory("output/preproc/multiqc/{study}")
     log: "output/logs/preproc/multiqc/{study}.txt"
-    shell: "mkdir out && multiqc --outdir out --dirs -dd 5 {input:q} 2>{log} && mv out {output:q}"
+    shell: "multiqc --outdir {output:q} --dirs -dd 5 {input:q} 2>{log:q}"
 
 
 rule fastp_single:
