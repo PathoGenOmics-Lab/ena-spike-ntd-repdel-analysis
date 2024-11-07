@@ -107,6 +107,6 @@ checkpoint filter_search_ena_with_pangolin:
         logging.info("Filtering and writing")
         search.merge(
             pangolin,
-            how="left",
+            how="right",
             on=columns
         ).to_csv(output.search_table, sep="\t", index=False)
