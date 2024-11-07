@@ -34,7 +34,7 @@ rule filter_gff3_reference:
 
 
 rule download_snpeff_database:
-    shadow: "minimal"
+    shadow: "shallow"
     params:
         identifier = "NC_045512.2"
     output:
