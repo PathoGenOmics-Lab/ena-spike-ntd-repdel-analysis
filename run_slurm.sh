@@ -8,7 +8,7 @@
 
 set -e
 
-NBATCHES=10000
+NBATCHES=100
 
 for i in {1..$NBATCHES}; do
     echo ">>> START BATCH $i"
