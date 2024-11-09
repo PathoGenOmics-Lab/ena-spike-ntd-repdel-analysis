@@ -1,5 +1,5 @@
 rule consensus_merge:
-    group: "group_{study}"
+    group: "group_pangolin_{study}"
     input: lambda w: build_search_targets_filtering(w, f"output/variants/consensus/{w.study}/{{}}/{{}}/{{}}/{{}}_{{}}_{{}}/sample.fasta", ("sample_accession", "instrument_platform", "run_accession", "library_layout", "fastq_ftp", "library_strategy"), study_accession=w.study)
     output: temp("output/pangolin/consensus_merge/{study}/sequences.fasta")
     resources:
@@ -10,7 +10,7 @@ rule consensus_merge:
 
 rule pangolin_assignment:
     threads: 8
-    group: "group_{study}"
+    group: "group_pangolin_{study}"
     conda: "../envs/lineages.yaml"
     shadow: "minimal"
     input:

@@ -1,5 +1,5 @@
 rule fastqc:
-    group: "group_{study}"
+    group: "group_preproc_{study}"
     conda: "../envs/qc.yaml"
     shadow: "minimal"
     input: "output/ena/downloads/fastq/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}"
@@ -9,7 +9,7 @@ rule fastqc:
 
 
 rule multiqc:
-    group: "group_{study}"
+    group: "group_preproc_{study}"
     conda: "../envs/qc.yaml"
     input:
         lambda w: build_pangolin_targets_filtering(w, f"output/preproc/fastp/{w.study}/{{}}/{{}}/{{}}/{{}}_{{}}_{{}}/report.json", ("sample_accession", "instrument_platform", "run_accession", "library_layout", "fastq_ftp", "library_strategy"), study_accession=w.study)
@@ -20,20 +20,20 @@ rule multiqc:
 
 
 rule fastp_single:
-    group: "group_{study}"
+    group: "group_preproc_{study}"
     conda: "../envs/qc.yaml"
     input:
         fastq = "output/ena/downloads/fastq/{study}/{sample}/{platform}/{run}/{layout}_1_{strategy}/sample.fastq.gz"
     output:
         report = "output/preproc/fastp/{study}/{sample}/{platform}/{run}/{layout}_1_{strategy}/report.html",
         json = "output/preproc/fastp/{study}/{sample}/{platform}/{run}/{layout}_1_{strategy}/report.json",
-        fastq =temp("output/preproc/fastq/{study}/{sample}/{platform}/{run}/{layout}_1_{strategy}/sample.fastp.fastq.gz")
+        fastq = temp("output/preproc/fastq/{study}/{sample}/{platform}/{run}/{layout}_1_{strategy}/sample.fastp.fastq.gz")
     log: "output/logs/preproc/fastp_single/{study}/{sample}/{platform}/{run}/{layout}_1_{strategy}.txt"
     shell: "fastp -i {input.fastq:q} -o {output.fastq:q} -h {output.report:q} -j {output.json:q} 2>{log}"
 
 
 rule fastp_paired:
-    group: "group_{study}"
+    group: "group_preproc_{study}"
     conda: "../envs/qc.yaml"
     input:
         fastq_1 = "output/ena/downloads/fastq/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}/sample.R1.fastq.gz",
