@@ -126,7 +126,6 @@ rule snpsift_filter:
 
 
 rule snpsift_haplotype_merge:
-    group: "group_{run}"
     conda: "../envs/annotation.yaml"
     input:
         lambda w: build_pangolin_targets(w, "output/variants/snpsift_filter/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.annotated.filtered_{haplotype}.vcf")
