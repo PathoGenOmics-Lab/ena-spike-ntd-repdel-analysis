@@ -50,7 +50,8 @@ rule summarize_ena_search:
         country_timeline_table = "output/ena/summarize_ena_search/summary_country_timeline.csv",
         tech_timeline_table = "output/ena/summarize_ena_search/summary_tech_timeline.csv",
         seqres_timeline_table = "output/ena/summarize_ena_search/summary_seqres_timeline.csv",
-        studies_table = "output/ena/summarize_ena_search/studies.csv"
+        studies_table = "output/ena/summarize_ena_search/studies.csv",
+        tech_table = "output/ena/summarize_ena_search/technologies.csv"
     log: "output/logs/ena/summarize_ena_search.txt"
     script: "../scripts/summarize_ena_search.R"
 

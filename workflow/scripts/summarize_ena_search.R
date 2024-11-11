@@ -357,8 +357,21 @@ message("Counting studies")
 studies.data <- search %>%
     count(study_accession)
 
+message("Counting sequencing technologies")
+tech.data <- search %>%
+    count(
+        instrument_model, instrument_platform,
+        library_construction_protocol, library_gen_protocol,
+        library_layout, library_max_fragment_size,
+        library_min_fragment_size, library_name, library_pcr_isolation_protocol,
+        library_prep_date, library_prep_date_format, library_prep_latitude,
+        library_prep_location, library_prep_longitude, library_selection,
+        library_source, library_strategy
+    )
+
 message("Saving data tables")
 write_csv(date.country.data, snakemake@output$country_timeline_table)
 write_csv(date.seqtech.data, snakemake@output$tech_timeline_table)
 write_csv(date.seqres.data, snakemake@output$seqres_timeline_table)
 write_csv(studies.data, snakemake@output$studies_table)
+write_csv(tech.data, snakemake@output$tech_table)
