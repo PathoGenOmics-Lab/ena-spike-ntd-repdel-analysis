@@ -40,7 +40,8 @@ ggsave(
     plot = p,
     height = snakemake@params$plot_height_in,
     width = snakemake@params$plot_width_per_position_in *
-        length(snakemake@params$positions)
+        length(snakemake@params$positions),
+    bg = "white"
 )
 
 message("Writing plot data")
