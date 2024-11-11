@@ -12,5 +12,5 @@ NBATCHES=100
 
 for i in {1..$NBATCHES}; do
     echo ">>> START BATCH $i"
-    snakemake --workflow-profile profiles/garnatxa --scheduler greedy --batch all=$i/$NBATCHES
+    srun snakemake --workflow-profile profiles/garnatxa --scheduler greedy --batch all=$i/$NBATCHES
 end
