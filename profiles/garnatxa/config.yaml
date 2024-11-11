@@ -13,3 +13,5 @@ default-resources:
   runtime: 30
 resources:
   ena_api_calls_per_second: 50
+group-components:
+   group_{run}: 20

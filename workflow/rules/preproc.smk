@@ -1,5 +1,5 @@
 rule fastqc:
-    group: "group_preproc_{study}"
+    group: "group_{run}"
     conda: "../envs/qc.yaml"
     shadow: "minimal"
     input: "output/ena/downloads/fastq/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}"
@@ -9,7 +9,7 @@ rule fastqc:
 
 
 rule multiqc:
-    group: "group_preproc_{study}"
+    group: "group_{run}"
     conda: "../envs/qc.yaml"
     input:
         lambda w: build_pangolin_targets_filtering(w, f"output/preproc/fastp/{w.study}/{{}}/{{}}/{{}}/{{}}_{{}}_{{}}/report.json", ("sample_accession", "instrument_platform", "run_accession", "library_layout", "fastq_ftp", "library_strategy"), study_accession=w.study)
@@ -20,7 +20,7 @@ rule multiqc:
 
 
 rule fastp_single:
-    group: "group_preproc_{study}"
+    group: "group_{run}"
     conda: "../envs/qc.yaml"
     input:
         fastq = "output/ena/downloads/fastq/{study}/{sample}/{platform}/{run}/{layout}_1_{strategy}/sample.fastq.gz"
@@ -33,7 +33,7 @@ rule fastp_single:
 
 
 rule fastp_paired:
-    group: "group_preproc_{study}"
+    group: "group_{run}"
     conda: "../envs/qc.yaml"
     input:
         fastq_1 = "output/ena/downloads/fastq/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}/sample.R1.fastq.gz",

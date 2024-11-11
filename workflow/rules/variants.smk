@@ -1,5 +1,5 @@
 rule pileup:
-    group: "group_variants_{study}"
+    group: "group_{run}"
     conda: "../envs/reads.yaml"
     input:
         reference = "output/reference/sequence.fasta",
@@ -18,7 +18,7 @@ rule pileup:
 
 
 rule consensus:
-    group: "group_variants_{study}"
+    group: "group_{run}"
     conda: "../envs/reads.yaml"
     shadow: "minimal"
     input:
@@ -44,7 +44,7 @@ rule consensus:
 
 
 rule variant_calling:
-    group: "group_variants_{study}"
+    group: "group_{run}"
     conda: "../envs/reads.yaml"
     shadow: "minimal"
     params:
@@ -66,7 +66,7 @@ rule variant_calling:
 
 
 rule ivar_tsv_to_vcf:
-    group: "group_variants_{study}"
+    group: "group_{run}"
     conda: "../envs/pydata.yaml"
     input:
         tsv = "output/variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.tsv",
@@ -84,7 +84,7 @@ rule ivar_tsv_to_vcf:
 
 
 rule snpeff_annotate:
-    group: "group_variants_{study}"
+    group: "group_{run}"
     conda: "../envs/annotation.yaml"
     input:
         datadir = "output/reference/snpeff/NC_045512.2",

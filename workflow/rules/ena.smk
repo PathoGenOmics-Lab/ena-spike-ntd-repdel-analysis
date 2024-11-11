@@ -69,7 +69,7 @@ use rule summarize_ena_search as summarize_ena_search_pangolin with:
 
 
 rule split_ena_search_results:
-    group: "group_ena_{study}"
+    group: "group_{run}"
     input:
         table = "output/ena/search.filtered.tsv"
     output:
@@ -106,7 +106,7 @@ rule split_ena_search_results:
 
 
 rule download_ena_one_fastq:
-    group: "group_ena_{study}"
+    group: "group_{run}"
     input:
         table = "output/ena/search/{study}/{sample}/{platform}/{run}/{layout}_1_{strategy}/runs.csv"
     params:
@@ -124,7 +124,7 @@ rule download_ena_one_fastq:
 
 
 rule download_ena_two_fastq:
-    group: "group_ena_{study}"
+    group: "group_{run}"
     input:
         table = "output/ena/search/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}/runs.csv"
     params:
