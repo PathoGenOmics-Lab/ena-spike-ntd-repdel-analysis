@@ -95,3 +95,42 @@ rule snpeff_annotate:
         vcf = "output/variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.annotated.vcf"
     log: "output/logs/variants/snpeff_annotate/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}.txt"
     shell: "snpEff eff -dataDir {input.datadir:q} {params.reference} {input.vcf:q} >{output.vcf:q} 2>{log:q}"
+
+
+def build_hgvs_p_filter(wildcards, include=True):
+    key, sign, index = ("include_hgvs_p", "=", "*") if include else ("exclude_hgvs_p", "!=", "ALL")
+    items = []
+    for marker in config["HAPLOTYPES"][w.haplotype].get(key, []):
+        for gene, expression in marker.items():
+            items.append(f"( ANN[*].GENE = '{gene}' & ANN[{index}].HGVS_P {sign} '{expression}')")
+    if len(items) > 0:
+        return "& ( " + " & ".join(items) + " )"
+    else:
+        return ""
+
+
+rule snpsift_filter:
+    group: "group_{run}"
+    conda: "../envs/annotation.yaml"
+    input:
+        vcf = "output/variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.annotated.vcf"
+    params:
+        min_depth = 40,
+        min_quality = 30,
+        include_hgvs_p_filter = lambda w: build_hgvs_p_filter(w, include=True),
+        exclude_hgvs_p_filter = lambda w: build_hgvs_p_filter(w, include=False)
+    output:
+        vcf = "output/variants/snpsift_filter/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.annotated.filtered_{haplotype}.vcf"
+    log: "output/logs/variants/snpsift_filter/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/{haplotype}.txt"
+    shell: 'snpSift filter "( DP >= {params.min_depth} ) & ( QUAL >= {params.min_quality} ){params.include_hgvs_p_filter}{params.exclude_hgvs_p_filter}" {input.vcf:q} >{output.vcf:q} 2>{log:q}'
+
+
+rule snpsift_haplotype_merge:
+    group: "group_{run}"
+    conda: "../envs/annotation.yaml"
+    input:
+        lambda w: build_pangolin_targets(w, "output/variants/snpsift_filter/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.annotated.filtered_{haplotype}.vcf")
+    output:
+        vcf = "output/variants/snpsift_haplotype_merge/{haplotype}.annotated.filtered.vcf"
+    log: "output/logs/variants/snpsift_haplotype_merge/{haplotype}.txt"
+    shell: "bcftools merge {input:q} >{output.vcf:q} 2>{log:q}"

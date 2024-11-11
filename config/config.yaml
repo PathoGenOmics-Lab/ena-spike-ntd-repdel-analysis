@@ -1,2 +1,23 @@
 PY_LOG_FMT: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 SEARCH_LIMIT: 0
+HAPLOTYPES:
+  Rep_69_70:
+    include_hgvs_p:
+      - gene: S
+        expression: p.Gly142_Tyr145delinsAsp
+    exclude_hgvs_p:
+      - gene: S
+        expression: p.His69_Val70del
+  Rep_143_145:
+    include_hgvs_p:
+      - gene: S
+        expression: p.His69_Val70del
+    exclude_hgvs_p:
+      - gene: S
+        expression: p.Gly142_Tyr145delinsAsp
+  Rep_Both:
+    exclude_hgvs_p:
+      - gene: S
+        expression: p.His69_Val70del
+      - gene: S
+        expression: p.Gly142_Tyr145delinsAsp
