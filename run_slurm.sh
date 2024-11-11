@@ -5,7 +5,7 @@
 #SBATCH --ntasks 1
 #SBATCH --qos short
 #SBATCH --time 1-00:00:00
-#SBATCH --output slurm-%x-%j-%J.out
+#SBATCH --output slurm-%x-%J.out
 
 set -e
 
