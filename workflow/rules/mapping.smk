@@ -43,7 +43,7 @@ rule map_paired_illumina:
     retries: 2
     log:
         "output/logs/mapping/map_paired_illumina/{study}/{sample}/ILLUMINA/{run}/{layout}_2_{strategy}_minimap2.txt",
-        "output/logs/mapping/map_paired_illumina/{study}/{sample}/ILLUMINA/{run}/{layout}_2_{strategy}_samtools.txt",
+        "output/logs/mapping/map_paired_illumina/{study}/{sample}/ILLUMINA/{run}/{layout}_2_{strategy}_samtools.txt"
     shell: "minimap2 -t {threads} -ax sr {input.reference:q} {input.fastq_1:q} {input.fastq_2:q} 2>{log[0]:q} | samtools sort -o {output.bam:q} 2>{log[1]:q}"
 
 
@@ -66,7 +66,7 @@ rule map_single_illumina:
     shell: "minimap2 -t {threads} -ax sr {input.reference:q} {input.fastq:q} 2>{log[1]:q} | samtools sort -o {output.bam:q} 2>{log[1]:q}"
 
 
-use rule map_single_illumina as map_ion_torrent with:
+use rule map_single_illumina as map_single_ion_torrent with:
     threads: 4
     group: "group_mapping"
     conda: "../envs/reads.yaml"
@@ -74,10 +74,25 @@ use rule map_single_illumina as map_ion_torrent with:
         reference = "output/reference/sr.mmi",
         fastq = "output/preproc/fastq/{study}/{sample}/ION_TORRENT/{run}/{layout}_1_{strategy}/sample.fastp.fastq.gz"
     log:
-        "output/logs/mapping/map_ion_torrent/{study}/{sample}/ION_TORRENT/{run}/{layout}_1_{strategy}_minimap2.txt",
-        "output/logs/mapping/map_ion_torrent/{study}/{sample}/ION_TORRENT/{run}/{layout}_1_{strategy}_samtools.txt"
+        "output/logs/mapping/map_single_ion_torrent/{study}/{sample}/ION_TORRENT/{run}/{layout}_1_{strategy}_minimap2.txt",
+        "output/logs/mapping/map_single_ion_torrent/{study}/{sample}/ION_TORRENT/{run}/{layout}_1_{strategy}_samtools.txt"
     output:
         bam = "output/mapping/sorted_bam/{study}/{sample}/ION_TORRENT/{run}/{layout}_1_{strategy}/sample.sorted.bam"
+
+
+use rule map_paired_illumina as map_paired_ion_torrent with:
+    threads: 4
+    group: "group_mapping"
+    conda: "../envs/reads.yaml"
+    input:
+        reference = "output/reference/sr.mmi",
+        fastq_1 = "output/preproc/fastq/{study}/{sample}/ION_TORRENT/{run}/{layout}_2_{strategy}/sample.fastp.R1.fastq.gz",
+        fastq_2 = "output/preproc/fastq/{study}/{sample}/ION_TORRENT/{run}/{layout}_2_{strategy}/sample.fastp.R2.fastq.gz"
+    output:
+        bam = "output/mapping/sorted_bam/{study}/{sample}/ION_TORRENT/{run}/{layout}_2_{strategy}/sample.sorted.bam"
+    log:
+        "output/logs/mapping/map_paired_ion_torrent/{study}/{sample}/ION_TORRENT/{run}/{layout}_2_{strategy}_minimap2.txt",
+        "output/logs/mapping/map_paired_ion_torrent/{study}/{sample}/ION_TORRENT/{run}/{layout}_2_{strategy}_samtools.txt"
 
 
 rule map_pacbio_hifi:
