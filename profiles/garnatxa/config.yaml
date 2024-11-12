@@ -1,6 +1,7 @@
 executor: slurm
 use-conda: True
 jobs: 64
+cores: 200
 printshellcmds: True
 restart-times: 1
 default-resources:
