@@ -5,9 +5,10 @@ cores: 200
 slurm-requeue: True
 printshellcmds: True
 restart-times: 1
+max-status-checks-per-second: 1
 default-resources:
-  nnodes: 1
-  ntasks: 1
+  nodes: 1
+  tasks: 1
   mem_mb: 4000
   slurm_partition: "'global'"
   slurm_extra: "'--qos=short'"
