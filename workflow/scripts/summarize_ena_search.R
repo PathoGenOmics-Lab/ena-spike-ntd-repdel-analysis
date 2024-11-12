@@ -360,13 +360,14 @@ studies.data <- search %>%
 message("Counting sequencing technologies")
 tech.data <- search %>%
     count(
-        instrument_model, instrument_platform,
-        library_construction_protocol, library_gen_protocol,
-        library_layout, library_max_fragment_size,
-        library_min_fragment_size, library_name, library_pcr_isolation_protocol,
-        library_prep_date, library_prep_date_format, library_prep_latitude,
-        library_prep_location, library_prep_longitude, library_selection,
-        library_source, library_strategy
+        instrument_model,
+        instrument_platform,
+        library_construction_protocol,
+        library_layout,
+        library_pcr_isolation_protocol,
+        library_selection,
+        library_source,
+        library_strategy
     )
 
 message("Saving data tables")
