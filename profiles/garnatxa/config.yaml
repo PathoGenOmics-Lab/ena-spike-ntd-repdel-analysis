@@ -2,7 +2,7 @@ executor: slurm
 use-conda: True
 jobs: 64
 printshellcmds: True
-restart-times: 0
+restart-times: 1
 default-resources:
   nodes: 1
   ntasks: 1
@@ -13,4 +13,16 @@ default-resources:
 resources:
   ena_api_calls_per_second: 50
 group-components:
-   group_{run}: 20
+  group_pangolin: 8
+  group_preproc: 32
+  group_mapping: 16
+  group_variants: 32
+set-resources:
+  group_pangolin:
+    threads: 64
+  group_preproc:
+    threads: 32
+  group_mapping:
+    threads: 64
+  group_variants:
+    threads: 32
