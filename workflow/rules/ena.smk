@@ -72,7 +72,7 @@ use rule summarize_ena_search as summarize_ena_search_pangolin with:
 
 
 rule split_ena_search_results:
-    group: "group_{run}"
+    group: "group_{study}"
     input:
         table = "output/ena/search.filtered.tsv"
     output:
