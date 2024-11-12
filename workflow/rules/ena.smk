@@ -18,7 +18,8 @@ checkpoint filter_search_ena:
         table = "output/ena/search.tsv"
     params:
         omit_platform = ["CAPILLARY", "DNBSEQ", "ELEMENT"],
-        omit_library_strategy = ["RNA-Seq"]
+        omit_library_strategy = ["RNA-Seq"],
+        omit_library_source = ["TRANSCRIPTOMIC", "METAGENOMIC", "METATRANSCRIPTOMIC"]
     output:
         table = "output/ena/search.filtered.tsv",
     resources:
@@ -30,6 +31,7 @@ checkpoint filter_search_ena:
         df[
             ~df["instrument_platform"].isin(params.omit_platform) & \
             ~df["library_strategy"].isin(params.omit_library_strategy) & \
+            ~df["library_source"].isin(params.omit_library_source) & \
             df["fastq_ftp"].str.count(";").isin([0, 1])
         ].to_csv(output.table, sep="\t", index=False)
 
@@ -70,7 +72,7 @@ use rule summarize_ena_search as summarize_ena_search_pangolin with:
 
 
 rule split_ena_search_results:
-    group: "group_{study}"
+    group: "group_{run}"
     input:
         table = "output/ena/search.filtered.tsv"
     output:
