@@ -17,9 +17,8 @@ default-resources:
 resources:
   ena_api_calls_per_second: 50
 group-components:
-  group_{study}: 20
   group_pangolin: 1
-  group_preproc: 32
+  group_prepare_{run}: 16
   group_mapping: 16
-  group_variants: 32
+  group_variants: 16
 scheduler: greedy
