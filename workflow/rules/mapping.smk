@@ -14,16 +14,16 @@ rule map_single_nanopore:
     conda: "../envs/reads.yaml"
     input:
         reference = "output/reference/map-ont.mmi",
-        fastq = "output/preproc/fastq/{study}/{sample}/OXFORD_NANOPORE/{run}/SINGLE_1_{strategy}/sample.fastp.fastq.gz"
+        fastq = "output/preproc/fastq/{study}/{sample}/OXFORD_NANOPORE/{run}/{layout}_1_{strategy}/sample.fastp.fastq.gz"
     output:
-        bam = "output/mapping/sorted_bam/{study}/{sample}/OXFORD_NANOPORE/{run}/SINGLE_1_{strategy}/sample.sorted.bam"
+        bam = "output/mapping/sorted_bam/{study}/{sample}/OXFORD_NANOPORE/{run}/{layout}_1_{strategy}/sample.sorted.bam"
     resources:
         runtime = lambda wc, attempt: 15 * attempt,
         mem_gb = lambda wc, attempt: 4 * attempt
     retries: 2
     log:
-        "output/logs/mapping/map_single_nanopore/{study}/{sample}/OXFORD_NANOPORE/{run}/SINGLE_1_{strategy}_minimap2.txt",
-        "output/logs/mapping/map_single_nanopore/{study}/{sample}/OXFORD_NANOPORE/{run}/SINGLE_1_{strategy}_samtools.txt"
+        "output/logs/mapping/map_single_nanopore/{study}/{sample}/OXFORD_NANOPORE/{run}/{layout}_1_{strategy}_minimap2.txt",
+        "output/logs/mapping/map_single_nanopore/{study}/{sample}/OXFORD_NANOPORE/{run}/{layout}_1_{strategy}_samtools.txt"
     shell: "minimap2 -t {threads} -ax map-ont {input.reference:q} {input.fastq:q} 2>{log[0]:q} | samtools sort -o {output.bam:q} 2>{log[1]:q}"
 
 
@@ -33,17 +33,17 @@ rule map_paired_illumina:
     conda: "../envs/reads.yaml"
     input:
         reference = "output/reference/sr.mmi",
-        fastq_1 = "output/preproc/fastq/{study}/{sample}/ILLUMINA/{run}/PAIRED_2_{strategy}/sample.fastp.R1.fastq.gz",
-        fastq_2 = "output/preproc/fastq/{study}/{sample}/ILLUMINA/{run}/PAIRED_2_{strategy}/sample.fastp.R2.fastq.gz"
+        fastq_1 = "output/preproc/fastq/{study}/{sample}/ILLUMINA/{run}/{layout}_2_{strategy}/sample.fastp.R1.fastq.gz",
+        fastq_2 = "output/preproc/fastq/{study}/{sample}/ILLUMINA/{run}/{layout}_2_{strategy}/sample.fastp.R2.fastq.gz"
     output:
-        bam = "output/mapping/sorted_bam/{study}/{sample}/ILLUMINA/{run}/PAIRED_2_{strategy}/sample.sorted.bam"
+        bam = "output/mapping/sorted_bam/{study}/{sample}/ILLUMINA/{run}{layout}_2_{strategy}/sample.sorted.bam"
     resources:
         runtime = lambda wc, attempt: 15 * attempt,
         mem_gb = lambda wc, attempt: 4 * attempt
     retries: 2
     log:
-        "output/logs/mapping/map_paired_illumina/{study}/{sample}/ILLUMINA/{run}/PAIRED_2_{strategy}_minimap2.txt",
-        "output/logs/mapping/map_paired_illumina/{study}/{sample}/ILLUMINA/{run}/PAIRED_2_{strategy}_samtools.txt",
+        "output/logs/mapping/map_paired_illumina/{study}/{sample}/ILLUMINA/{run}/{layout}_2_{strategy}_minimap2.txt",
+        "output/logs/mapping/map_paired_illumina/{study}/{sample}/ILLUMINA/{run}/{layout}_2_{strategy}_samtools.txt",
     shell: "minimap2 -t {threads} -ax sr {input.reference:q} {input.fastq_1:q} {input.fastq_2:q} 2>{log[0]:q} | samtools sort -o {output.bam:q} 2>{log[1]:q}"
 
 
