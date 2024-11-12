@@ -1,15 +1,17 @@
 executor: slurm
 use-conda: True
-jobs: 64
+jobs: 1000
 cores: 200
+slurm-requeue: True
 printshellcmds: True
 restart-times: 1
 default-resources:
-  nodes: 1
+  nnodes: 1
   ntasks: 1
   mem_mb: 4000
   slurm_partition: "'global'"
   slurm_extra: "'--qos=short'"
+  slurm_account: pgo
   runtime: 30
 resources:
   ena_api_calls_per_second: 50
@@ -19,19 +21,3 @@ group-components:
   group_preproc: 32
   group_mapping: 16
   group_variants: 32
-set-resources:
-  group_{study}:
-    threads: 20
-    nodes: 1
-  group_pangolin:
-    threads: 64
-    nodes: 1
-  group_preproc:
-    threads: 32
-    nodes: 1
-  group_mapping:
-    threads: 64
-    nodes: 1
-  group_variants:
-    threads: 32
-    nodes: 1
