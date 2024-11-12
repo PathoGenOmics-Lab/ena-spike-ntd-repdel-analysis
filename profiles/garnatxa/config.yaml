@@ -22,3 +22,4 @@ group-components:
   group_preproc: 32
   group_mapping: 16
   group_variants: 32
+scheduler: greedy
