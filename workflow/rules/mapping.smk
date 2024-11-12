@@ -36,7 +36,7 @@ rule map_paired_illumina:
         fastq_1 = "output/preproc/fastq/{study}/{sample}/ILLUMINA/{run}/{layout}_2_{strategy}/sample.fastp.R1.fastq.gz",
         fastq_2 = "output/preproc/fastq/{study}/{sample}/ILLUMINA/{run}/{layout}_2_{strategy}/sample.fastp.R2.fastq.gz"
     output:
-        bam = "output/mapping/sorted_bam/{study}/{sample}/ILLUMINA/{run}{layout}_2_{strategy}/sample.sorted.bam"
+        bam = "output/mapping/sorted_bam/{study}/{sample}/ILLUMINA/{run}/{layout}_2_{strategy}/sample.sorted.bam"
     resources:
         runtime = lambda wc, attempt: 15 * attempt,
         mem_gb = lambda wc, attempt: 4 * attempt
