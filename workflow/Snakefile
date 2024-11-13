@@ -15,7 +15,7 @@ rule all:
         "output/ena/summarize_ena_search_pangolin/summary.png",
         lambda w: build_pangolin_targets(w, "output/preproc/multiqc/{}", ("study_accession",)),
         expand(
-            "output/repdel/filter_repdel/{haplotype}.inclpct_{inclpct}.exclpct_{exclpct}.csv",
+            "output/repdel/filter_haplotype/{haplotype}.inclpct_{inclpct}.exclpct_{exclpct}.csv",
             haplotype=config["HAPLOTYPES"].keys(),
             inclpct=config["MIN_INCLUDE_FREQ"],
             exclpct=config["MAX_EXCLUDE_FREQ"]
