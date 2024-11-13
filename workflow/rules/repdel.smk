@@ -4,7 +4,7 @@ rule filter_haplotype:
         lambda w: build_pangolin_targets(w, f"output/variants/snpsift_extract_variants/{{study}}/{{sample}}/{{platform}}/{{run}}/{{layout}}_{{nfastq}}_{{strategy}}/{w.haplotype}.tsv")
     params:
         columns = ["CHROM", "REF", "POS", "ALT", "DP", "ALT_DP", "ALT_RV", "ALT_FREQ", "ALT_QUAL", "GENE", "HGVS_P"],
-        markers = config["HAPLOTYPES"]["{haplotype}"]
+        markers = lambda w: config["HAPLOTYPES"][w.haplotype]
     output:
         # inclpct: int - minimum frequency threshold (%) to pass an "included" marker
         # exclpct: int - maximum frequency threshold (%) to pass an "excluded" marker
