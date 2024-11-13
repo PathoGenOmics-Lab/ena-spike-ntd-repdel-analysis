@@ -14,9 +14,12 @@ rule all:
         "output/ena/summarize_ena_search/summary.png",
         "output/ena/summarize_ena_search_pangolin/summary.png",
         lambda w: build_pangolin_targets(w, "output/preproc/multiqc/{}", ("study_accession",)),
-        lambda w: build_pangolin_targets(w, "output/variants/variant_calling/{}/{}/{}/{}/{}_{}_{}/sample.annotated.vcf"),
-        expand("output/variants/snpsift_haplotype_merge/{haplotype}.annotated.filtered.vcf", haplotype=config["HAPLOTYPES"].keys()),
-        "output/repdel/report_region/region.png"
+        expand(
+            "output/repdel/filter_repdel/{haplotype}.inclpct_{inclpct}.exclpct_{exclpct}.csv",
+            haplotype=config["HAPLOTYPES"].keys(),
+            inclpct=config["MIN_INCLUDE_FREQ"],
+            exclpct=config["MIN_EXCLUDE_FREQ"]
+        )
 
 
 include: "rules/fetch.smk"

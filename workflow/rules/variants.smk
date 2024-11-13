@@ -78,7 +78,7 @@ rule ivar_tsv_to_vcf:
         ignore_merge_codons = False,
         sample_name = "{study}_{sample}_{platform}_{run}_{layout}_{strategy}"
     output:
-        vcf = "output/variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.vcf"
+        vcf = temp("output/variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.vcf")
     log: "output/logs/variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/ivar_tsv_to_vcf.txt"
     script: "../scripts/ivar_tsv_to_vcf.py"
 
@@ -92,44 +92,37 @@ rule snpeff_annotate:
     params:
         reference = "NC_045512.2"
     output:
-        vcf = "output/variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.annotated.vcf"
-    log: "output/logs/variants/snpeff_annotate/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}.txt"
+        vcf = temp("output/variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.annotated.vcf")
+    log: "output/logs/variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/snpeff_annotate.txt"
     shell: "snpEff eff -dataDir {input.datadir:q} {params.reference} {input.vcf:q} >{output.vcf:q} 2>{log:q}"
 
 
-def build_hgvs_p_filter(wildcards, include=True):
-    key, sign, index = ("include_hgvs_p", "=", "*") if include else ("exclude_hgvs_p", "!=", "ALL")
-    items = []
-    for marker in config["HAPLOTYPES"][w.haplotype].get(key, []):
-        for gene, expression in marker.items():
-            items.append(f"( ANN[*].GENE = '{gene}' & ANN[{index}].HGVS_P {sign} '{expression}')")
+def build_snpsift_hgvs_p_filter(wildcards):
+    items = set()
+    for marker_class in ("include_hgvs_p", "exclude_hgvs_p"):
+        for marker in config["HAPLOTYPES"][w.haplotype].get(marker_class, []):
+            gene, expression = marker["gene"], marker["expression"]
+            items.add(f"(ANN[*].GENE = '{gene}' & ANN[*].HGVS_P = '{expression}')")
     if len(items) > 0:
-        return "& ( " + " & ".join(items) + " )"
+        return f" & ({' | '.join(items)})"
     else:
         return ""
 
 
-rule snpsift_filter:
+rule snpsift_extract_variants:
     group: "group_variants"
     conda: "../envs/annotation.yaml"
     input:
         vcf = "output/variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.annotated.vcf"
     params:
         min_depth = 40,
-        min_quality = 30,
-        include_hgvs_p_filter = lambda w: build_hgvs_p_filter(w, include=True),
-        exclude_hgvs_p_filter = lambda w: build_hgvs_p_filter(w, include=False)
+        hgvs_p_filter = build_snpsift_hgvs_p_filter,
+        extract_columns = ["CHROM", "REF", "POS", "ALT", "DP", '"GEN[*].ALT_DP"', '"GEN[*].ALT_RV"', '"GEN[*].ALT_FREQ"', '"GEN[*].ALT_QUAL"', '"ANN[*].GENE"', '"ANN[*].HGVS_P"']
     output:
-        vcf = "output/variants/snpsift_filter/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.annotated.filtered_{haplotype}.vcf"
-    log: "output/logs/variants/snpsift_filter/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/{haplotype}.txt"
-    shell: 'snpSift filter "( DP >= {params.min_depth} ) & ( QUAL >= {params.min_quality} ){params.include_hgvs_p_filter}{params.exclude_hgvs_p_filter}" {input.vcf:q} >{output.vcf:q} 2>{log:q}'
-
-
-rule snpsift_haplotype_merge:
-    conda: "../envs/annotation.yaml"
-    input:
-        lambda w: build_pangolin_targets(w, "output/variants/snpsift_filter/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.annotated.filtered_{haplotype}.vcf")
-    output:
-        vcf = "output/variants/snpsift_haplotype_merge/{haplotype}.annotated.filtered.vcf"
-    log: "output/logs/variants/snpsift_haplotype_merge/{haplotype}.txt"
-    shell: "bcftools merge {input:q} >{output.vcf:q} 2>{log:q}"
+        vcf = temp("output/variants/snpsift_extract_variants/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/{haplotype}.tsv")
+    log:
+        "output/logs/variants/snpsift_extract_variants/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/{haplotype}_filter.txt",
+        "output/logs/variants/snpsift_extract_variants/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/{haplotype}_extractFields.txt"
+    shell:
+        'SnpSift filter "(DP >= {params.min_depth}){params.hgvs_p_filter}" {input.vcf:q} 2>{log[0]:q} | '
+        'SnpSift extractFields -s "," - {params.extract_columns} >{output.tsv:q} 2>{log[1]:q}'

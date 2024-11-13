@@ -1,5 +1,10 @@
 PY_LOG_FMT: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 SEARCH_LIMIT: 0
+MIN_INCLUDE_FREQ:
+  - 80
+MAX_EXCLUDE_FREQ:
+  - 10
+  - 50
 HAPLOTYPES:
   Rep_69_70:
     include_hgvs_p:

@@ -1,3 +1,18 @@
+rule filter_haplotype:
+    conda: "../envs/pydata.yaml"
+    input:
+        lambda w: build_pangolin_targets(w, f"output/variants/snpsift_extract_variants/{{study}}/{{sample}}/{{platform}}/{{run}}/{{layout}}_{{nfastq}}_{{strategy}}/{w.haplotype}.tsv")
+    params:
+        columns = ["CHROM", "REF", "POS", "ALT", "DP", "ALT_DP", "ALT_RV", "ALT_FREQ", "ALT_QUAL", "GENE", "HGVS_P"],
+        markers = config["HAPLOTYPES"][w.haplotype]
+    output:
+        # inclpct: int - minimum frequency threshold (%) to pass an "included" marker
+        # exclpct: int - maximum frequency threshold (%) to pass an "excluded" marker
+        table = "output/repdel/filter_haplotype/{haplotype}.inclpct_{inclpct}.exclpct_{exclpct}.csv"
+    log: "output/logs/repdel/filter_haplotype/{haplotype}.inclpct_{inclpct}.exclpct_{exclpct}.txt"
+    script: "../scripts/filter_haplotype.py"
+
+
 rule report_region:
     conda: "../envs/rdata.yaml"
     input:
