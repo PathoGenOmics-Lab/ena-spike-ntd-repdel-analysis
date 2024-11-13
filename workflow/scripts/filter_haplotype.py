@@ -15,10 +15,10 @@ def pass_exclude(df: pd.DataFrame, markers: List[Mapping[str, str]], freq_thresh
     checks = []
     for marker in markers:
         gene, expression = marker["gene"], marker["expression"]
-        selection = df[(df.GENE == gene) & (df.HGVS_P == expression) & (df.ALT_FREQ <= freq_threshold)]
+        selection = df[(df.GENE == gene) & (df.HGVS_P == expression) & (df.ALT_FREQ >= freq_threshold)]
         logging.info(f"Found {len(selection)} variants for {gene}:{expression} with frequency <= {freq_threshold}")
         checks.append(len(selection) == 0)
-    pass_checks = all(checks)
+    pass_checks = all(checks)  # empty list passes
     logging.info(f"Pass exclude: {pass_checks}")
     return pass_checks
 
@@ -30,29 +30,32 @@ def pass_include(df: pd.DataFrame, markers: List[Mapping[str, str]], freq_thresh
         selection = df[(df.GENE == gene) & (df.HGVS_P == expression) & (df.ALT_FREQ >= freq_threshold)]
         logging.info(f"Found {len(selection)} variants for {gene}:{expression} with frequency >= {freq_threshold}")
         checks.append(len(selection) >= 1)
-    pass_checks = all(checks)
+    pass_checks = all(checks)  # empty list passes
     logging.info(f"Pass include: {pass_checks}")
     return pass_checks
 
 
 def is_haplotype(df: pd.DataFrame, marker_bunch: Mapping[str, List[Mapping[str, str]]], min_include_freq: float, max_exclude_freq: float) -> bool:
-    return pass_exclude(df, marker_bunch["exclude_hgvs_p"], max_exclude_freq) and pass_include(df, marker_bunch["include_hgvs_p"], min_include_freq)
+    return pass_exclude(df, marker_bunch.get("exclude_hgvs_p", []), max_exclude_freq) and \
+           pass_include(df, marker_bunch.get("include_hgvs_p", []), min_include_freq)
 
 
 def read_variants(path: str, columns: List[str]) -> pd.DataFrame:
     df = pd.read_csv(path, sep="\t")
     df.columns = columns
-    annotation = df.apply(lambda row: list(zip(row["GENE"].split(","), row["HGVS_P"].split(","))), axis=1) \
-        .explode() \
-        .apply(lambda x: pd.Series(x, index=["GENE", "HGVS_P"])) \
-        .groupby(level=0).ffill()
-    return  df.drop(["GENE", "HGVS_P"], axis=1).join(annotation)
+    if len(df) != 0:
+        annotation = df.apply(lambda row: list(zip(row["GENE"].split(","), row["HGVS_P"].split(","))), axis=1) \
+            .explode() \
+            .apply(lambda x: pd.Series(x, index=["GENE", "HGVS_P"])) \
+            .groupby(level=0).ffill()
+        return  df.drop(["GENE", "HGVS_P"], axis=1).join(annotation)
+    else:
+        return df
 
 
 def extract_sample_fields(path: str) -> Mapping[str, str]:
     path = Path(path)
     parts = path.parts
-    print(parts)
     fields = {
         "study": parts[3],
         "sample": parts[4],

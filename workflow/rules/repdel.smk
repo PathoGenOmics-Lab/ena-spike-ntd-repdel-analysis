@@ -1,7 +1,7 @@
 rule filter_haplotype:
     conda: "../envs/pydata.yaml"
     input:
-        lambda w: build_pangolin_targets(w, f"output/variants/snpsift_extract_variants/{{study}}/{{sample}}/{{platform}}/{{run}}/{{layout}}_{{nfastq}}_{{strategy}}/{w.haplotype}.tsv")
+        lambda w: build_pangolin_targets(w, f"output/variants/snpsift_extract_variants/{{}}/{{}}/{{}}/{{}}/{{}}_{{}}_{{}}/{w.haplotype}.tsv")
     params:
         columns = ["CHROM", "REF", "POS", "ALT", "DP", "ALT_DP", "ALT_RV", "ALT_FREQ", "ALT_QUAL", "GENE", "HGVS_P"],
         markers = lambda w: config["HAPLOTYPES"][w.haplotype]

@@ -370,9 +370,13 @@ tech.data <- search %>%
         library_strategy
     )
 
-message("Saving data tables")
+message("Saving country timeline data")
 write_csv(date.country.data, snakemake@output$country_timeline_table)
+message("Saving sequencing tech timeline data")
 write_csv(date.seqtech.data, snakemake@output$tech_timeline_table)
+message("Saving sequencing results timeline data")
 write_csv(date.seqres.data, snakemake@output$seqres_timeline_table)
+message("Saving studies count data")
 write_csv(studies.data, snakemake@output$studies_table)
+message("Saving sequencing technology count data")
 write_csv(tech.data, snakemake@output$tech_table)

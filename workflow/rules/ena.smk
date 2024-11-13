@@ -72,11 +72,11 @@ use rule summarize_ena_search as summarize_ena_search_pangolin with:
 
 
 rule split_ena_search_results:
-    group: "group_prepare_{run}"
+    group: "process"
     input:
         table = "output/ena/search.filtered.tsv"
     output:
-        table = "output/ena/search/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/runs.csv"
+        table = temp("output/ena/search/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/runs.csv")
     resources:
         runtime = "10m",
         mem_gb = 2
@@ -109,7 +109,7 @@ rule split_ena_search_results:
 
 
 rule download_ena_one_fastq:
-    group: "group_prepare_{run}"
+    group: "process"
     input:
         table = "output/ena/search/{study}/{sample}/{platform}/{run}/{layout}_1_{strategy}/runs.csv"
     params:
@@ -127,7 +127,7 @@ rule download_ena_one_fastq:
 
 
 rule download_ena_two_fastq:
-    group: "group_prepare_{run}"
+    group: "process"
     input:
         table = "output/ena/search/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}/runs.csv"
     params:

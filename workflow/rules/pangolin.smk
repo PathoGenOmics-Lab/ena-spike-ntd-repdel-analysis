@@ -1,5 +1,5 @@
 rule consensus_merge:
-    group: "group_pangolin"
+    group: "pangolin_{study}"
     input: lambda w: build_search_targets_filtering(w, f"output/variants/consensus/{w.study}/{{}}/{{}}/{{}}/{{}}_{{}}_{{}}/sample.fasta", ("sample_accession", "instrument_platform", "run_accession", "library_layout", "fastq_ftp", "library_strategy"), study_accession=w.study)
     output: temp("output/pangolin/consensus_merge/{study}/sequences.fasta")
     resources:
@@ -10,7 +10,7 @@ rule consensus_merge:
 
 rule pangolin_assignment:
     threads: 8
-    group: "group_pangolin"
+    group: "pangolin_{study}"
     conda: "../envs/lineages.yaml"
     shadow: "minimal"
     input:
@@ -37,7 +37,8 @@ rule filter_pangolin:
         table = "output/pangolin/pangolin.csv"
     params:
         qc_status = ["pass"],
-        scorpio_call = ["Omicron (BA.1-like)"]
+        scorpio_call = ["Omicron (BA.1-like)"],
+        lineage_base = ["BA.1"]
     output:
         table = "output/pangolin/pangolin.filtered.csv"
     log: "output/logs/pangolin/filter_pangolin.txt"
@@ -59,11 +60,14 @@ rule filter_pangolin:
             writer = csv.DictWriter(fw, fieldnames=reader.fieldnames)
             writer.writeheader()
             for row in reader:
-                if row["qc_status"] in params.qc_status and row["scorpio_call"] in params.scorpio_call:
+                if row["qc_status"] in params.qc_status and any((
+                    row["scorpio_call"] in params.scorpio_call,
+                    any(row["lineage"].startswith(lineage) for lineage in params.lineage_base)
+                )):
                     writer.writerow(row)
                     n += 1
                 ntotal += 1
-        logging.info(f"Wrote {n} of {ntotal} records with qc_status in {params.qc_status} and scorpio_call in {params.scorpio_call}")
+        logging.info(f"Wrote {n} of {ntotal} records with qc_status in {params.qc_status}, and scorpio_call in {params.scorpio_call} or lineage base in {params.lineage_base}")
 
 
 checkpoint filter_search_ena_with_pangolin:
@@ -99,9 +103,10 @@ checkpoint filter_search_ena_with_pangolin:
         logging.info(f"Read {len(pangolin)} records")
         # Extract sample metadata from record ID
         logging.info("Extracting metadata from taxons")
-        pangolin[columns] = pangolin["taxon"].apply(lambda record_id: id_pattern.match(record_id).groups()).tolist()
-        # Keep only sample metadata
-        pangolin = pangolin.drop([col for col in columns if col not in columns], axis="columns")
+        if len(pangolin) != 0:
+            pangolin[columns] = pangolin["taxon"].apply(lambda record_id: id_pattern.match(record_id).groups()).tolist()
+            # Keep only sample metadata
+            pangolin = pangolin.drop([col for col in columns if col not in columns], axis="columns")
         # Read filtered search results
         logging.info("Reading filtered search results")
         search = pd.read_csv(input.search_table, sep="\t")

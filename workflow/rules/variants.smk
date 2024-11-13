@@ -1,5 +1,6 @@
 rule pileup:
-    group: "group_variants"
+    threads: 1
+    group: "process"
     conda: "../envs/reads.yaml"
     input:
         reference = "output/reference/sequence.fasta",
@@ -10,15 +11,16 @@ rule pileup:
     output:
         pileup = temp("output/variants/pileup/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.pileup")
     resources:
-        runtime = lambda wc, attempt: 15 * attempt,
-        mem_gb = lambda wc, attempt: 4 * attempt
+        runtime = lambda wc, attempt: 20 * attempt,
+        mem_gb = lambda wc, attempt: 1 * attempt
     retries: 2
     log: "output/logs/variants/pileup/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}.txt"
     shell: "samtools mpileup -aa -x -A -d {params.max_depth} -B -Q {params.min_quality} -f {input.reference:q} {input.bam:q} >{output.pileup:q} 2>{log:q}"
 
 
 rule consensus:
-    group: "group_variants"
+    threads: 1
+    group: "ivar"
     conda: "../envs/reads.yaml"
     shadow: "minimal"
     input:
@@ -35,7 +37,7 @@ rule consensus:
         quality = "output/variants/consensus/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.qual.txt"
     log: "output/logs/variants/consensus/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}.txt"
     resources:
-        runtime = lambda wc, attempt: 15 * attempt,
+        runtime = lambda wc, attempt: 30 * attempt,
         mem_gb = lambda wc, attempt: 4 * attempt
     retries: 2
     shell:
@@ -44,7 +46,8 @@ rule consensus:
 
 
 rule variant_calling:
-    group: "group_variants"
+    threads: 1
+    group: "ivar"
     conda: "../envs/reads.yaml"
     shadow: "minimal"
     params:
@@ -58,7 +61,7 @@ rule variant_calling:
     output:
         tsv = "output/variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.tsv"
     resources:
-        runtime = lambda wc, attempt: 15 * attempt,
+        runtime = lambda wc, attempt: 20 * attempt,
         mem_gb = lambda wc, attempt: 4 * attempt
     retries: 2
     log: "output/logs/variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/variant_calling.txt"
@@ -66,7 +69,8 @@ rule variant_calling:
 
 
 rule ivar_tsv_to_vcf:
-    group: "group_variants"
+    threads: 1
+    group: "ivar"
     conda: "../envs/pydata.yaml"
     input:
         tsv = "output/variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.tsv",
@@ -79,12 +83,17 @@ rule ivar_tsv_to_vcf:
         sample_name = "{study}_{sample}_{platform}_{run}_{layout}_{strategy}"
     output:
         vcf = temp("output/variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.vcf")
+    resources:
+        runtime = lambda wc, attempt: 5 * attempt,
+        mem_mb = lambda wc, attempt: 100 * attempt
+    retries: 2
     log: "output/logs/variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/ivar_tsv_to_vcf.txt"
     script: "../scripts/ivar_tsv_to_vcf.py"
 
 
 rule snpeff_annotate:
-    group: "group_variants"
+    threads: 1
+    group: "snp"
     conda: "../envs/annotation.yaml"
     input:
         datadir = "output/reference/snpeff/NC_045512.2",
@@ -93,12 +102,17 @@ rule snpeff_annotate:
         reference = "NC_045512.2"
     output:
         vcf = temp("output/variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.annotated.vcf")
+    resources:
+        runtime = lambda wc, attempt: 5 * attempt,
+        mem_mb = lambda wc, attempt: 200 * attempt
+    retries: 2
     log: "output/logs/variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/snpeff_annotate.txt"
     shell: "snpEff eff -dataDir {input.datadir:q} {params.reference} {input.vcf:q} >{output.vcf:q} 2>{log:q}"
 
 
 rule snpsift_extract_variants:
-    group: "group_variants"
+    threads: 1
+    group: "snp"
     conda: "../envs/annotation.yaml"
     input:
         vcf = "output/variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.annotated.vcf"
@@ -107,7 +121,11 @@ rule snpsift_extract_variants:
         hgvs_p_filter = build_snpsift_hgvs_p_filter,
         extract_columns = ["CHROM", "REF", "POS", "ALT", "DP", '"GEN[*].ALT_DP"', '"GEN[*].ALT_RV"', '"GEN[*].ALT_FREQ"', '"GEN[*].ALT_QUAL"', '"ANN[*].GENE"', '"ANN[*].HGVS_P"']
     output:
-        vcf = temp("output/variants/snpsift_extract_variants/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/{haplotype}.tsv")
+        tsv = temp("output/variants/snpsift_extract_variants/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/{haplotype}.tsv")
+    resources:
+        runtime = lambda wc, attempt: 1 * attempt,
+        mem_mb = lambda wc, attempt: 200 * attempt
+    retries: 2
     log:
         "output/logs/variants/snpsift_extract_variants/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/{haplotype}_filter.txt",
         "output/logs/variants/snpsift_extract_variants/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/{haplotype}_extractFields.txt"
