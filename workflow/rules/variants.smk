@@ -97,18 +97,6 @@ rule snpeff_annotate:
     shell: "snpEff eff -dataDir {input.datadir:q} {params.reference} {input.vcf:q} >{output.vcf:q} 2>{log:q}"
 
 
-def build_snpsift_hgvs_p_filter(wildcards):
-    items = set()
-    for marker_class in ("include_hgvs_p", "exclude_hgvs_p"):
-        for marker in config["HAPLOTYPES"][w.haplotype].get(marker_class, []):
-            gene, expression = marker["gene"], marker["expression"]
-            items.add(f"(ANN[*].GENE = '{gene}' & ANN[*].HGVS_P = '{expression}')")
-    if len(items) > 0:
-        return f" & ({' | '.join(items)})"
-    else:
-        return ""
-
-
 rule snpsift_extract_variants:
     group: "group_variants"
     conda: "../envs/annotation.yaml"

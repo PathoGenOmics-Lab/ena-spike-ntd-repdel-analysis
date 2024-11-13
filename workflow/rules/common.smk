@@ -79,3 +79,15 @@ def build_pangolin_targets_filtering(wildcards, template: str, columns=SEARCH_DF
             **kwargs
         )
     )
+
+
+def build_snpsift_hgvs_p_filter(wildcards):
+    items = set()
+    for marker_class in ("include_hgvs_p", "exclude_hgvs_p"):
+        for marker in config["HAPLOTYPES"][w.haplotype].get(marker_class, []):
+            gene, expression = marker["gene"], marker["expression"]
+            items.add(f"(ANN[*].GENE = '{gene}' & ANN[*].HGVS_P = '{expression}')")
+    if len(items) > 0:
+        return f" & ({' | '.join(items)})"
+    else:
+        return ""
