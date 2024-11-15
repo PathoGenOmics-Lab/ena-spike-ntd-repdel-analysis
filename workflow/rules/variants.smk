@@ -43,13 +43,14 @@ rule coverage:
 
 
 rule coverage_merge:
-    shadow: "minimal"
+    shadow: "shallow"
     input: lambda w: build_search_targets(w, "output/variants/coverage/{}/{}/{}/{}/{}_{}_{}/sample.tsv")
     output: "output/variants/coverage.tsv"
     resources:
         runtime = "10m",
         mem_mb = 500
-    shell: "head -n 1 {input[0]:q} >{output:q} && tail -n +2 -q {input:q} >>{output:q}"
+    log: "output/logs/variants/coverage.txt"
+    shell: "head -n 1 {input[0]:q} >{output:q} 2>{log:q} && tail -n +2 -q {input:q} >>{output:q} 2>>{log:q}"
 
 
 rule filter_coverage:
