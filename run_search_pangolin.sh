@@ -9,7 +9,7 @@
 
 NBATCHES=1000
 
-if [ -f summarize_ena_search.done ]; then
+if [ ! -f summarize_ena_search.done ]; then
     echo ">>> SEARCHING"
     srun snakemake --workflow-profile profiles/garnatxa --until summarize_ena_search
     touch summarize_ena_search.done
