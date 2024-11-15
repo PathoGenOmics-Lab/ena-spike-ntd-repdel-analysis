@@ -24,6 +24,6 @@ group-components:
   ivar: 8
   analysis: 4
   mapping: 8
-  coverage: 8
+  coverage: 4
   pangolin_{study}: 4
 scheduler: greedy
