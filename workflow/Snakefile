@@ -12,7 +12,7 @@ rule all:
     input:
         "output/ena/search.tsv",
         "output/ena/summarize_ena_search/summary.png",
-        "output/ena/summarize_ena_search_pangolin/summary.png",
+        "output/ena/summarize_ena_search_after_processing/summary.png",
         lambda w: build_pangolin_targets(w, "output/preproc/multiqc/{}", ("study_accession",)),
         expand(
             "output/repdel/filter_haplotype/{haplotype}.inclpct_{inclpct}.exclpct_{exclpct}.csv",

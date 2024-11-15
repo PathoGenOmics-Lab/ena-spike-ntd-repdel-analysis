@@ -58,17 +58,18 @@ rule summarize_ena_search:
     script: "../scripts/summarize_ena_search.R"
 
 
-use rule summarize_ena_search as summarize_ena_search_pangolin with:
+use rule summarize_ena_search as summarize_ena_search_after_processing with:
     input:
         table = "output/ena/search.filtered.afterproc.tsv"
     output:
-        plot_pdf = "output/ena/summarize_ena_search_pangolin/summary.pdf",
-        plot_png = "output/ena/summarize_ena_search_pangolin/summary.png",
-        country_timeline_table = "output/ena/summarize_ena_search_pangolin/summary_country_timeline.csv",
-        tech_timeline_table = "output/ena/summarize_ena_search_pangolin/summary_tech_timeline.csv",
-        seqres_timeline_table = "output/ena/summarize_ena_search_pangolin/summary_seqres_timeline.csv",
-        studies_table = "output/ena/summarize_ena_search_pangolin/studies.csv"
-    log: "output/logs/ena/summarize_ena_search_pangolin.txt"
+        plot_pdf = "output/ena/summarize_ena_search_after_processing/summary.pdf",
+        plot_png = "output/ena/summarize_ena_search_after_processing/summary.png",
+        country_timeline_table = "output/ena/summarize_ena_search_after_processing/summary_country_timeline.csv",
+        tech_timeline_table = "output/ena/summarize_ena_search_after_processing/summary_tech_timeline.csv",
+        seqres_timeline_table = "output/ena/summarize_ena_search_after_processing/summary_seqres_timeline.csv",
+        studies_table = "output/ena/summarize_ena_search_after_processing/studies.csv",
+        tech_table = "output/ena/summarize_ena_search_after_processing/technologies.csv"
+    log: "output/logs/ena/summarize_ena_search_after_processing.txt"
 
 
 rule split_ena_search_results:
