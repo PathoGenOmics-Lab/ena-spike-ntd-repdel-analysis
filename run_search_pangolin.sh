@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #SBATCH --job-name sp_repdel
-#SBATCH --mem-per-cpu 16GB
+#SBATCH --mem 16GB
 #SBATCH --cpus-per-task 1
 #SBATCH --ntasks 2
 #SBATCH --qos short
@@ -15,10 +15,7 @@ if [ ! -f summarize_ena_search.done ]; then
     touch summarize_ena_search.done
 fi
 
-for i in $(seq 1 2 $NBATCHES); do
+for i in $(seq 1 $NBATCHES); do
     echo ">>> LAUNCHING BATCH $i"
-    srun -n1 snakemake --keep-going --workflow-profile profiles/garnatxa --until summarize_ena_search_after_processing --batch coverage=$i/$NBATCHES &
-    echo ">>> LAUNCHING BATCH $((i+1))"
-    srun -n1 snakemake --keep-going --workflow-profile profiles/garnatxa --until summarize_ena_search_after_processing --batch coverage=$((i+1))/$NBATCHES &
-    wait
+    srun -n1 snakemake --keep-going --workflow-profile profiles/garnatxa --until summarize_ena_search_after_processing --batch coverage_merge=$i/$NBATCHES
 done
