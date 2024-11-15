@@ -20,7 +20,7 @@ rule map_single_nanopore:
     resources:
         runtime = lambda wc, attempt: 15 * attempt,
         mem_gb = lambda wc, attempt: 4 * attempt,
-        qoscpu = 4
+        qoscpu = lambda wc, threads: threads
     retries: 2
     log:
         "output/logs/mapping/map_single_nanopore/{study}/{sample}/OXFORD_NANOPORE/{run}/{layout}_1_{strategy}_minimap2.txt",
@@ -41,7 +41,7 @@ rule map_paired_illumina:
     resources:
         runtime = lambda wc, attempt: 15 * attempt,
         mem_gb = lambda wc, attempt: 4 * attempt,
-        qoscpu = 4
+        qoscpu = lambda wc, threads: threads
     retries: 2
     log:
         "output/logs/mapping/map_paired_illumina/{study}/{sample}/ILLUMINA/{run}/{layout}_2_{strategy}_minimap2.txt",
@@ -61,7 +61,7 @@ rule map_single_illumina:
     resources:
         runtime = lambda wc, attempt: 15 * attempt,
         mem_gb = lambda wc, attempt: 4 * attempt,
-        qoscpu = 4
+        qoscpu = lambda wc, threads: threads
     retries: 2
     log:
         "output/logs/mapping/map_single_illumina/{study}/{sample}/ILLUMINA/{run}/{layout}_1_{strategy}_minimap2.txt",
@@ -108,7 +108,7 @@ rule map_pacbio_hifi:
     resources:
         runtime = lambda wc, attempt: 15 * attempt,
         mem_gb = lambda wc, attempt: 4 * attempt,
-        qoscpu = 4
+        qoscpu = lambda wc, threads: threads
     retries: 2
     log:
         "output/logs/mapping/map_pacbio_hifi/{study}/{sample}/PACBIO_SMRT/{run}/{layout}_1_{strategy}_minimap2.txt",
