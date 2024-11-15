@@ -10,7 +10,7 @@
 
 srun snakemake --workflow-profile profiles/garnatxa --until summarize_ena_search
 
-NBATCHES=100
+NBATCHES=50
 for i in $(seq 1 $NBATCHES); do
-    srun snakemake --keep-going --workflow-profile profiles/garnatxa --until filter_search_ena_with_pangolin --batch $i/$N
+    srun snakemake --keep-going --workflow-profile profiles/garnatxa --until summarize_ena_search_after_processing --batch all=$i/$NBATCHES
 done
