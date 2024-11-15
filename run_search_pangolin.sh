@@ -3,8 +3,7 @@
 #SBATCH --mem-per-cpu 16GB
 #SBATCH --cpus-per-task 1
 #SBATCH --ntasks 2
-#SBATCH --qos interactive
-#SBATCH --part interactive
+#SBATCH --qos short
 #SBATCH --time 1-00:00:00
 #SBATCH --output slurm-%x-%J.out
 
