@@ -56,7 +56,6 @@ rule variant_calling:
         min_depth = 30
     input:
         reference = "output/reference/sequence.fasta",
-        gff = "output/reference/features.filtered.gff3",
         pileup = "output/variants/pileup/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.pileup"
     output:
         tsv = "output/variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.tsv"
@@ -65,7 +64,7 @@ rule variant_calling:
         mem_gb = lambda wc, attempt: 4 * attempt
     retries: 2
     log: "output/logs/variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/variant_calling.txt"
-    shell: "ivar variants -p result -q {params.min_quality} -t {params.min_frequency} -m {params.min_depth} -g {input.gff} -r {input.reference:q} <{input.pileup:q} >{log:q} 2>&1 && mv result.tsv {output.tsv:q}"
+    shell: "ivar variants -p result -q {params.min_quality} -t {params.min_frequency} -m {params.min_depth} -r {input.reference:q} <{input.pileup:q} >{log:q} 2>&1 && mv result.tsv {output.tsv:q}"
 
 
 rule ivar_tsv_to_vcf:
