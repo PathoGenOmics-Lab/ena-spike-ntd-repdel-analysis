@@ -161,6 +161,7 @@ rule snpeff_annotate:
     threads: 1
     group: "snp"
     conda: "../envs/annotation.yaml"
+    shadow: "minimal"
     input:
         datadir = "output/reference/snpeff/NC_045512.2",
         vcf = "output/variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.vcf"
