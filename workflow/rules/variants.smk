@@ -18,7 +18,7 @@ rule pileup:
 
 
 rule coverage:
-    group: "process"
+    group: "coverage"
     shadow: "minimal"
     conda: "../envs/reads.yaml"
     input:
@@ -37,7 +37,7 @@ rule coverage:
 
 
 rule coverage_merge:
-    shadow: "shallow"
+    shadow: "coverage"
     input: lambda w: build_search_targets(w, "output/variants/coverage/{}/{}/{}/{}/{}_{}_{}/sample.tsv")
     output: "output/variants/coverage.tsv"
     resources:
