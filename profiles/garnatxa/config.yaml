@@ -8,14 +8,16 @@ restart-times: 1
 max-status-checks-per-second: 1
 max-jobs-per-timespan: 20/1s
 latency-wait: 60
+resources:
+  ena_api_calls_per_second: 50
+  qoscpu: 200
 default-resources:
   mem_mb: 4000
   slurm_partition: "'global'"
   slurm_extra: "'--qos=short'"
   slurm_account: pgo
   runtime: 30
-resources:
-  ena_api_calls_per_second: 50
+  qoscpu: 1
 group-components:
   process: 8
   ivar: 8

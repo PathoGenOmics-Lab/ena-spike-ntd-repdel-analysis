@@ -18,7 +18,8 @@ rule pangolin_assignment:
     output:
         table = temp("output/pangolin/pangolin_assignment/{study}/pangolin.csv")
     resources:
-        mem_gb = 8
+        mem_gb = 8,
+        qoscpu = 8
     log: "output/logs/pangolin/pangolin_assignment/{study}.txt"
     shell: "pangolin {input.fasta:q} --outfile {output.table:q} --threads {threads} >{log:q} 2>&1"
 

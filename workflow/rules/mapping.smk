@@ -19,7 +19,8 @@ rule map_single_nanopore:
         bam = "output/mapping/sorted_bam/{study}/{sample}/OXFORD_NANOPORE/{run}/{layout}_1_{strategy}/sample.sorted.bam"
     resources:
         runtime = lambda wc, attempt: 15 * attempt,
-        mem_gb = lambda wc, attempt: 4 * attempt
+        mem_gb = lambda wc, attempt: 4 * attempt,
+        qoscpu = 4
     retries: 2
     log:
         "output/logs/mapping/map_single_nanopore/{study}/{sample}/OXFORD_NANOPORE/{run}/{layout}_1_{strategy}_minimap2.txt",
@@ -39,7 +40,8 @@ rule map_paired_illumina:
         bam = "output/mapping/sorted_bam/{study}/{sample}/ILLUMINA/{run}/{layout}_2_{strategy}/sample.sorted.bam"
     resources:
         runtime = lambda wc, attempt: 15 * attempt,
-        mem_gb = lambda wc, attempt: 4 * attempt
+        mem_gb = lambda wc, attempt: 4 * attempt,
+        qoscpu = 4
     retries: 2
     log:
         "output/logs/mapping/map_paired_illumina/{study}/{sample}/ILLUMINA/{run}/{layout}_2_{strategy}_minimap2.txt",
@@ -58,7 +60,8 @@ rule map_single_illumina:
         bam = "output/mapping/sorted_bam/{study}/{sample}/ILLUMINA/{run}/{layout}_1_{strategy}/sample.sorted.bam"
     resources:
         runtime = lambda wc, attempt: 15 * attempt,
-        mem_gb = lambda wc, attempt: 4 * attempt
+        mem_gb = lambda wc, attempt: 4 * attempt,
+        qoscpu = 4
     retries: 2
     log:
         "output/logs/mapping/map_single_illumina/{study}/{sample}/ILLUMINA/{run}/{layout}_1_{strategy}_minimap2.txt",
@@ -68,7 +71,6 @@ rule map_single_illumina:
 
 use rule map_single_illumina as map_single_ion_torrent with:
     group: "mapping"
-    threads: 4
     conda: "../envs/reads.yaml"
     input:
         reference = "output/reference/sr.mmi",
@@ -82,7 +84,6 @@ use rule map_single_illumina as map_single_ion_torrent with:
 
 use rule map_paired_illumina as map_paired_ion_torrent with:
     group: "mapping"
-    threads: 4
     conda: "../envs/reads.yaml"
     input:
         reference = "output/reference/sr.mmi",
@@ -106,7 +107,8 @@ rule map_pacbio_hifi:
         bam = "output/mapping/sorted_bam/{study}/{sample}/PACBIO_SMRT/{run}/{layout}_1_{strategy}/sample.sorted.bam"
     resources:
         runtime = lambda wc, attempt: 15 * attempt,
-        mem_gb = lambda wc, attempt: 4 * attempt
+        mem_gb = lambda wc, attempt: 4 * attempt,
+        qoscpu = 4
     retries: 2
     log:
         "output/logs/mapping/map_pacbio_hifi/{study}/{sample}/PACBIO_SMRT/{run}/{layout}_1_{strategy}_minimap2.txt",
