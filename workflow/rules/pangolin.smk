@@ -19,7 +19,7 @@ rule pangolin_assignment:
         table = temp("output/pangolin/pangolin_assignment/{study}/pangolin.csv")
     resources:
         mem_gb = 8,
-        qoscpu = lambda wc, threads: threads
+        max_cpu_per_node = lambda wc, threads: threads
     log: "output/logs/pangolin/pangolin_assignment/{study}.txt"
     shell: "pangolin {input.fasta:q} --outfile {output.table:q} --threads {threads} >{log:q} 2>&1"
 
