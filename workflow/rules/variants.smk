@@ -66,6 +66,7 @@ rule filter_coverage:
             "meanmapq":  config["COVERAGE_FILTER"]["MIN_MEANMAPQ"]
         }
     output: "output/variants/coverage.filtered.csv"
+    log: "output/logs/variants/filter_coverage.txt"
     run:
         import logging
         import csv
