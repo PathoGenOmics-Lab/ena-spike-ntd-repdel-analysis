@@ -30,6 +30,10 @@ rule coverage:
     output:
         table = temp("output/variants/coverage/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.tsv"),
         index = temp("output/mapping/sorted_bam/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.sorted.bam.bai")
+    resources:
+        runtime = lambda wc, attempt: 2 * attempt,
+        mem_mb = lambda wc, attempt: 200 * attempt
+    retries: 2
     log: "output/logs/variants/coverage/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}.txt"
     shell:
         'printf "sample\n{wildcards.study}__{wildcards.sample}__{wildcards.platform}__{wildcards.run}__{wildcards.layout}__{wildcards.strategy}" >sample.txt && '
