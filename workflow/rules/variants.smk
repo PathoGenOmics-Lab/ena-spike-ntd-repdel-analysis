@@ -1,5 +1,5 @@
 rule pileup:
-    group: "process"
+    group: "pileup"
     conda: "../envs/reads.yaml"
     input:
         reference = "output/reference/sequence.fasta",
@@ -88,7 +88,7 @@ rule filter_coverage:
 
 
 rule consensus:
-    group: "ivar"
+    group: "consensus"
     conda: "../envs/reads.yaml"
     shadow: "minimal"
     input:
@@ -114,7 +114,7 @@ rule consensus:
 
 
 rule variant_calling:
-    group: "ivar"
+    group: "vc"
     conda: "../envs/reads.yaml"
     shadow: "minimal"
     params:
@@ -135,7 +135,7 @@ rule variant_calling:
 
 
 rule ivar_tsv_to_vcf:
-    group: "ivar"
+    group: "snp"
     conda: "../envs/pydata.yaml"
     input:
         tsv = "output/variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.tsv",
