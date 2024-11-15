@@ -57,7 +57,7 @@ def build_search_targets_filtering(wildcards, template: str, columns=SEARCH_DF_C
     )
 
 
-def build_pangolin_targets(wildcards, template: str, columns=SEARCH_DF_COLS) -> list:
+def build_afterproc_targets(wildcards, template: str, columns=SEARCH_DF_COLS) -> list:
     return sorted(
         template.format(*groups) \
         for groups in build_groups(
@@ -68,7 +68,7 @@ def build_pangolin_targets(wildcards, template: str, columns=SEARCH_DF_COLS) -> 
     )
 
 
-def build_pangolin_targets_filtering(wildcards, template: str, columns=SEARCH_DF_COLS, **kwargs) -> list:
+def build_afterproc_targets_filtering(wildcards, template: str, columns=SEARCH_DF_COLS, **kwargs) -> list:
     columns = tuple(list(columns) + [column for column in kwargs.keys()])
     return sorted(
         template.format(*groups) \

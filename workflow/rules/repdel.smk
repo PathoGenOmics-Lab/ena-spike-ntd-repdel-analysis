@@ -1,7 +1,7 @@
-rule filter_haplotype:
+checkpoint filter_haplotype:
     conda: "../envs/pydata.yaml"
     input:
-        lambda w: build_pangolin_targets(w, f"output/variants/snpsift_extract_variants/{{}}/{{}}/{{}}/{{}}/{{}}_{{}}_{{}}/{w.haplotype}.tsv")
+        lambda w: build_afterproc_targets(w, f"output/variants/snpsift_extract_variants/{{}}/{{}}/{{}}/{{}}/{{}}_{{}}_{{}}/{w.haplotype}.tsv")
     params:
         columns = ["CHROM", "REF", "POS", "ALT", "DP", "ALT_DP", "ALT_RV", "ALT_FREQ", "ALT_QUAL", "GENE", "HGVS_P"],
         markers = lambda w: config["HAPLOTYPES"][w.haplotype]
@@ -16,14 +16,23 @@ rule filter_haplotype:
 rule report_region:
     conda: "../envs/rdata.yaml"
     input:
-        tables = lambda w: build_pangolin_targets(w, "output/variants/variant_calling/{}/{}/{}/{}/{}_{}_{}/sample.tsv")
+        bam = "output/mapping/sorted_bam/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.sorted.bam"
     params:
         plot_width_per_position_in = 0.5,
         plot_height_in = 10,
-        positions = [list(range(21765, 21771)) + list(range(21991, 21994)) + list(range(21987, 21996)), list(range(21990, 21999))],
-        filter_pass = True
+        positions = list(range(config["COVERAGE_FILTER"]["START"], config["COVERAGE_FILTER"]["END"]+1)),
+        max_depth = 2e9,
+        min_base_quality = 0,
+        min_mapq = 0,
+        min_nucleotide_depth = 0,
+        min_minor_allele_depth = 0,
+        distinguish_strands = False,
+        distinguish_nucleotides = True,
+        ignore_query_Ns = True,
+        include_deletions = True,
+        include_insertions = False
     output:
-        plot = "output/repdel/report_region/region.png",
-        plot_data = "output/repdel/report_region/region.csv"
-    log: "output/logs/repdel/report_region.txt"
+        plot = "output/repdel/report_region/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.png",
+        plot_data = "output/repdel/report_region/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.csv"
+    log: "output/logs/repdel/report_region/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}.txt"
     script: "../scripts/report_region.R"

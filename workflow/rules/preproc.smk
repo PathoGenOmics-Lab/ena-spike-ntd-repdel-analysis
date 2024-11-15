@@ -11,7 +11,7 @@ rule fastqc:
 rule multiqc:
     conda: "../envs/qc.yaml"
     input:
-        lambda w: build_pangolin_targets_filtering(w, f"output/preproc/fastp/{w.study}/{{}}/{{}}/{{}}/{{}}_{{}}_{{}}/report.json", ("sample_accession", "instrument_platform", "run_accession", "library_layout", "fastq_ftp", "library_strategy"), study_accession=w.study)
+        lambda w: build_afterproc_targets_filtering(w, f"output/preproc/fastp/{w.study}/{{}}/{{}}/{{}}/{{}}_{{}}_{{}}/report.json", ("sample_accession", "instrument_platform", "run_accession", "library_layout", "fastq_ftp", "library_strategy"), study_accession=w.study)
     output:
         directory("output/preproc/multiqc/{study}")
     log: "output/logs/preproc/multiqc/{study}.txt"
