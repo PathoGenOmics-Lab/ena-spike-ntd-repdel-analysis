@@ -1,5 +1,4 @@
 rule fastqc:
-    threads: 1
     group: "process"
     conda: "../envs/qc.yaml"
     shadow: "minimal"
@@ -20,7 +19,6 @@ rule multiqc:
 
 
 rule fastp_single:
-    threads: 1
     group: "process"
     conda: "../envs/qc.yaml"
     input:
@@ -38,7 +36,6 @@ rule fastp_single:
 
 
 rule fastp_paired:
-    threads: 1
     group: "process"
     conda: "../envs/qc.yaml"
     input:

@@ -1,5 +1,4 @@
 rule pileup:
-    threads: 1
     group: "process"
     conda: "../envs/reads.yaml"
     input:
@@ -19,7 +18,6 @@ rule pileup:
 
 
 rule coverage:
-    threads: 1
     group: "process"
     shadow: "minimal"
     conda: "../envs/reads.yaml"
@@ -39,7 +37,6 @@ rule coverage:
 
 
 rule coverage_merge:
-    threads: 1
     shadow: "shallow"
     input: lambda w: build_search_targets(w, "output/variants/coverage/{}/{}/{}/{}/{}_{}_{}/sample.tsv")
     output: "output/variants/coverage.tsv"
@@ -50,7 +47,6 @@ rule coverage_merge:
 
 
 rule filter_coverage:
-    threads: 1
     input: "output/variants/coverage.tsv"
     params:
         # -1 == unfiltered
@@ -86,7 +82,6 @@ rule filter_coverage:
 
 
 rule consensus:
-    threads: 1
     group: "ivar"
     conda: "../envs/reads.yaml"
     shadow: "minimal"
@@ -113,7 +108,6 @@ rule consensus:
 
 
 rule variant_calling:
-    threads: 1
     group: "ivar"
     conda: "../envs/reads.yaml"
     shadow: "minimal"
@@ -135,7 +129,6 @@ rule variant_calling:
 
 
 rule ivar_tsv_to_vcf:
-    threads: 1
     group: "ivar"
     conda: "../envs/pydata.yaml"
     input:
@@ -158,7 +151,6 @@ rule ivar_tsv_to_vcf:
 
 
 rule snpeff_annotate:
-    threads: 1
     group: "snp"
     conda: "../envs/annotation.yaml"
     shadow: "minimal"
@@ -178,7 +170,6 @@ rule snpeff_annotate:
 
 
 rule snpsift_extract_variants:
-    threads: 1
     group: "snp"
     conda: "../envs/annotation.yaml"
     input:
