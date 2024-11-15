@@ -37,7 +37,7 @@ rule coverage:
 
 
 rule coverage_merge:
-    shadow: "coverage"
+    shadow: "minimal"
     input: lambda w: build_search_targets(w, "output/variants/coverage/{}/{}/{}/{}/{}_{}_{}/sample.tsv")
     output: "output/variants/coverage.tsv"
     resources:
