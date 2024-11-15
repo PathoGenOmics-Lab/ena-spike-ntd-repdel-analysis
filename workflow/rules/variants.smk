@@ -28,10 +28,12 @@ rule coverage:
         region_start = config["COVERAGE_FILTER"]["START"],
         region_end = config["COVERAGE_FILTER"]["END"]
     output:
-        table = temp("output/variants/coverage/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.tsv")
+        table = temp("output/variants/coverage/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.tsv"),
+        index = temp("output/mapping/sorted_bam/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.sorted.bam.bai")
     log: "output/logs/variants/coverage/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}.txt"
     shell:
         'printf "sample\n{wildcards.study}__{wildcards.sample}__{wildcards.platform}__{wildcards.run}__{wildcards.layout}__{wildcards.strategy}" >sample.txt && '
+        "samtools index --bai -o {output.index:q} {input.bam:q} && "
         "samtools coverage -d 0 -r {params.chrom}:{params.region_start}-{params.region_end} {input.bam:q} >coverage.txt 2>{log:q} && "
         "paste coverage.txt sample.txt >{output.table:q}"
 
