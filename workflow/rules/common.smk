@@ -62,7 +62,7 @@ def build_pangolin_targets(wildcards, template: str, columns=SEARCH_DF_COLS) -> 
         template.format(*groups) \
         for groups in build_groups(
             wildcards,
-            checkpoints.filter_search_ena_with_pangolin.get(**wildcards).output.search_table,
+            checkpoints.select_samples_after_processing.get(**wildcards).output.search_table,
             columns
         )
     )
@@ -74,7 +74,7 @@ def build_pangolin_targets_filtering(wildcards, template: str, columns=SEARCH_DF
         template.format(*groups) \
         for groups in build_groups_filtering(
             wildcards,
-            checkpoints.filter_search_ena_with_pangolin.get(**wildcards).output.search_table,
+            checkpoints.select_samples_after_processing.get(**wildcards).output.search_table,
             columns,
             **kwargs
         )

@@ -70,50 +70,18 @@ rule filter_pangolin:
         logging.info(f"Wrote {n} of {ntotal} records with qc_status in {params.qc_status}, and scorpio_call in {params.scorpio_call} or lineage base in {params.lineage_base}")
 
 
-checkpoint filter_search_ena_with_pangolin:
+checkpoint select_samples_after_processing:
     input:
         search_table = "output/ena/search.filtered.tsv",
+        coverage_table = "output/variants/coverage.filtered.csv",
         pangolin_table = "output/pangolin/pangolin.filtered.csv"
     params:
-        # Consensus_{study}__{sample}__{platform}__{run}__{layout}__{strategy}_threshold_{threshold}_quality_{quality}
-        pattern = r"Consensus_([A-Z0-9]+)__([A-Z0-9]+)__([A-Z_]+)__([A-Z0-9]+)__([A-Z]+)__([A-Z]+)_threshold_[0-9\.]+_quality_[0-9\.]+"
+        consensus_pattern = r"Consensus_([A-Z0-9]+)__([A-Z0-9]+)__([A-Z_]+)__([A-Z0-9]+)__([A-Z]+)__([A-Z]+)_threshold_[0-9\.]+_quality_[0-9\.]+",
+        coverage_sample_pattern = r"([A-Z0-9]+)__([A-Z0-9]+)__([A-Z_]+)__([A-Z0-9]+)__([A-Z]+)__([A-Z]+)"
     output:
-        search_table = "output/ena/search.filtered.pangolin.tsv"
+        search_table = "output/ena/search.filtered.afterproc.tsv"
     resources:
         mem_mb = 16000,
         runtime = "30m"
-    log: "output/logs/pangolin/filter_search_ena_with_pangolin.txt"
-    run:
-        import logging
-        import re
-        import pandas as pd
-        logging.basicConfig(
-            level=logging.INFO,
-            format=config["PY_LOG_FMT"],
-            filename=log[0]
-        )
-        columns = [
-            "study_accession", "sample_accession", "instrument_platform",
-            "run_accession", "library_layout", "library_strategy"
-        ]
-        id_pattern = re.compile(params.pattern)
-        # Read pangolin assignment
-        logging.info("Reading pangolin assignment")
-        pangolin = pd.read_csv(input.pangolin_table)
-        logging.info(f"Read {len(pangolin)} records")
-        # Extract sample metadata from record ID
-        logging.info("Extracting metadata from taxons")
-        if len(pangolin) != 0:
-            pangolin[columns] = pangolin["taxon"].apply(lambda record_id: id_pattern.match(record_id).groups()).tolist()
-            # Keep only sample metadata
-            pangolin = pangolin.drop([col for col in columns if col not in columns], axis="columns")
-        # Read filtered search results
-        logging.info("Reading filtered search results")
-        search = pd.read_csv(input.search_table, sep="\t")
-        # Keep only search results in the pangolin table and write
-        logging.info("Filtering and writing")
-        search.merge(
-            pangolin,
-            how="right",
-            on=columns
-        ).to_csv(output.search_table, sep="\t", index=False)
+    log: "output/logs/pangolin/select_samples_after_processing.txt"
+    script: "../scripts/select_samples_after_processing.py"

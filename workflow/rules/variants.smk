@@ -18,6 +18,73 @@ rule pileup:
     shell: "samtools mpileup -aa -x -A -d {params.max_depth} -B -Q {params.min_quality} -f {input.reference:q} {input.bam:q} >{output.pileup:q} 2>{log:q}"
 
 
+rule coverage:
+    threads: 1
+    group: "process"
+    shadow: "minimal"
+    conda: "../envs/reads.yaml"
+    input:
+        bam = "output/mapping/sorted_bam/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.sorted.bam"
+    params:
+        chrom = "NC_045512.2",
+        region_start = config["COVERAGE_FILTER"]["START"],
+        region_end = config["COVERAGE_FILTER"]["END"]
+    output:
+        table = temp("output/variants/coverage/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.tsv")
+    log: "output/logs/variants/coverage/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}.txt"
+    shell:
+        'printf "sample\n{wildcards.study}__{wildcards.sample}__{wildcards.platform}__{wildcards.run}__{wildcards.layout}__{wildcards.strategy}" >sample.txt && '
+        "samtools coverage -d 0 -r {params.chrom}:{params.region_start}-{params.region_end} {input.bam:q} >coverage.txt 2>{log:q} && "
+        "paste coverage.txt sample.txt >{output.table:q}"
+
+
+rule coverage_merge:
+    threads: 1
+    shadow: "shallow"
+    input: lambda w: build_search_targets(w, "output/variants/coverage/{}/{}/{}/{}/{}_{}_{}/sample.tsv")
+    output: "output/variants/coverage.tsv"
+    resources:
+        runtime = "10m",
+        mem_mb = 500
+    shell: "head -n 1 {input[0]:q} >{output:q} && tail -n +2 -q {input:q} >>{output:q}"
+
+
+rule filter_coverage:
+    threads: 1
+    input: "output/variants/coverage.tsv"
+    params:
+        # -1 == unfiltered
+        min_threshold = {
+            "numreads":  config["COVERAGE_FILTER"]["MIN_NUMREADS"],
+            "covbases":  config["COVERAGE_FILTER"]["MIN_COVBASES"],
+            "coverage":  config["COVERAGE_FILTER"]["MIN_COVERAGE"],
+            "meandepth": config["COVERAGE_FILTER"]["MIN_MEANDEPTH"],
+            "meanbaseq": config["COVERAGE_FILTER"]["MIN_MEANBASEQ"],
+            "meanmapq":  config["COVERAGE_FILTER"]["MIN_MEANMAPQ"]
+        }
+    output: "output/variants/coverage.filtered.csv"
+    run:
+        import logging
+        import csv
+        logging.basicConfig(
+            level=logging.INFO,
+            format=config["PY_LOG_FMT"],
+            filename=log[0]
+        )
+        n = 0
+        ntotal = 0
+        with open(input.table) as f, open(output.table, "w") as fw:
+            reader = csv.DictReader(f, delimiter="\t")
+            writer = csv.DictWriter(fw, fieldnames=reader.fieldnames)
+            writer.writeheader()
+            for row in reader:
+                if all(float(row[colname]) <= value for colname, value in params.min_threshold.items() if value > -1):
+                    writer.writerow(row)
+                    n += 1
+                ntotal += 1
+        logging.info(f"Wrote {n} of {ntotal} records with all min_threshold={params.min_threshold}")
+
+
 rule consensus:
     threads: 1
     group: "ivar"

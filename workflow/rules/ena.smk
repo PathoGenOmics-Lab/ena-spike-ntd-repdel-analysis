@@ -60,7 +60,7 @@ rule summarize_ena_search:
 
 use rule summarize_ena_search as summarize_ena_search_pangolin with:
     input:
-        table = "output/ena/search.filtered.pangolin.tsv"
+        table = "output/ena/search.filtered.afterproc.tsv"
     output:
         plot_pdf = "output/ena/summarize_ena_search_pangolin/summary.pdf",
         plot_png = "output/ena/summarize_ena_search_pangolin/summary.png",
