@@ -77,7 +77,7 @@ rule filter_coverage:
         )
         n = 0
         ntotal = 0
-        with open(input.table) as f, open(output.table, "w") as fw:
+        with open(input[0]) as f, open(output[0], "w") as fw:
             reader = csv.DictReader(f, delimiter="\t")
             writer = csv.DictWriter(fw, fieldnames=reader.fieldnames)
             writer.writeheader()
