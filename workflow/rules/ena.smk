@@ -1,27 +1,27 @@
 rule search_ena:
     params:
-        start_date = "2021-11-01",       # outbreak.info approx BA.1 start date
-        end_date = "2022-08-01",         # outbreak.info approx BA.1 end date
-        limit = config["SEARCH_LIMIT"],  # 0 means no record limit
-        taxonomy = "2697049",            # SARS-CoV-2
+        start_date = config["START_DATE"],  # outbreak.info approx BA.1 start date
+        end_date = config["END_DATE"],      # outbreak.info approx BA.1 end date
+        limit = config["SEARCH_LIMIT"],     # 0 means no record limit
+        taxonomy = "2697049",               # SARS-CoV-2
         host_scientific_name = "Homo sapiens",
         chunksize = 1024
     output:
-        table = "output/ena/search.tsv",
-        query = "output/ena/search.json"
-    log: "output/logs/ena/search_ena.txt"
+        table = OUTPUT/"ena/search.tsv",
+        query = OUTPUT/"ena/search.json"
+    log: OUTPUT/"logs/ena/search_ena.txt"
     script: "../scripts/search_ena.py"
 
 
 checkpoint filter_search_ena:
     input:
-        table = "output/ena/search.tsv"
+        table = OUTPUT/"ena/search.tsv"
     params:
         omit_platform = ["CAPILLARY", "DNBSEQ", "ELEMENT"],
         omit_library_strategy = ["RNA-Seq"],
         omit_library_source = ["TRANSCRIPTOMIC", "METAGENOMIC", "METATRANSCRIPTOMIC"]
     output:
-        table = "output/ena/search.filtered.tsv",
+        table = OUTPUT/"ena/search.filtered.tsv",
     resources:
         mem_mb = 12000,
         runtime = "15m"
@@ -39,7 +39,7 @@ checkpoint filter_search_ena:
 rule summarize_ena_search:
     conda: "../envs/rdata.yaml"
     input:
-        table = "output/ena/search.filtered.tsv"
+        table = OUTPUT/"ena/search.filtered.tsv"
     params:
         count_bins = 9,
         plot_width_in = 25
@@ -47,41 +47,41 @@ rule summarize_ena_search:
         mem_mb = 12000,
         runtime = "15m"
     output:
-        plot_pdf = "output/ena/summarize_ena_search/summary.pdf",
-        plot_png = "output/ena/summarize_ena_search/summary.png",
-        country_timeline_table = "output/ena/summarize_ena_search/summary_country_timeline.csv",
-        tech_timeline_table = "output/ena/summarize_ena_search/summary_tech_timeline.csv",
-        seqres_timeline_table = "output/ena/summarize_ena_search/summary_seqres_timeline.csv",
-        studies_table = "output/ena/summarize_ena_search/studies.csv",
-        tech_table = "output/ena/summarize_ena_search/technologies.csv"
-    log: "output/logs/ena/summarize_ena_search.txt"
+        plot_pdf = OUTPUT/"ena/summarize_ena_search/summary.pdf",
+        plot_png = OUTPUT/"ena/summarize_ena_search/summary.png",
+        country_timeline_table = OUTPUT/"ena/summarize_ena_search/summary_country_timeline.csv",
+        tech_timeline_table = OUTPUT/"ena/summarize_ena_search/summary_tech_timeline.csv",
+        seqres_timeline_table = OUTPUT/"ena/summarize_ena_search/summary_seqres_timeline.csv",
+        studies_table = OUTPUT/"ena/summarize_ena_search/studies.csv",
+        tech_table = OUTPUT/"ena/summarize_ena_search/technologies.csv"
+    log: OUTPUT/"logs/ena/summarize_ena_search.txt"
     script: "../scripts/summarize_ena_search.R"
 
 
 use rule summarize_ena_search as summarize_ena_search_after_processing with:
     input:
-        table = "output/ena/search.filtered.afterproc.tsv"
+        table = OUTPUT/"ena/search.filtered.afterproc.tsv"
     output:
-        plot_pdf = "output/ena/summarize_ena_search_after_processing/summary.pdf",
-        plot_png = "output/ena/summarize_ena_search_after_processing/summary.png",
-        country_timeline_table = "output/ena/summarize_ena_search_after_processing/summary_country_timeline.csv",
-        tech_timeline_table = "output/ena/summarize_ena_search_after_processing/summary_tech_timeline.csv",
-        seqres_timeline_table = "output/ena/summarize_ena_search_after_processing/summary_seqres_timeline.csv",
-        studies_table = "output/ena/summarize_ena_search_after_processing/studies.csv",
-        tech_table = "output/ena/summarize_ena_search_after_processing/technologies.csv"
-    log: "output/logs/ena/summarize_ena_search_after_processing.txt"
+        plot_pdf = OUTPUT/"ena/summarize_ena_search_after_processing/summary.pdf",
+        plot_png = OUTPUT/"ena/summarize_ena_search_after_processing/summary.png",
+        country_timeline_table = OUTPUT/"ena/summarize_ena_search_after_processing/summary_country_timeline.csv",
+        tech_timeline_table = OUTPUT/"ena/summarize_ena_search_after_processing/summary_tech_timeline.csv",
+        seqres_timeline_table = OUTPUT/"ena/summarize_ena_search_after_processing/summary_seqres_timeline.csv",
+        studies_table = OUTPUT/"ena/summarize_ena_search_after_processing/studies.csv",
+        tech_table = OUTPUT/"ena/summarize_ena_search_after_processing/technologies.csv"
+    log: OUTPUT/"logs/ena/summarize_ena_search_after_processing.txt"
 
 
 rule split_ena_search_results:
     group: "download"
     input:
-        table = "output/ena/search.filtered.tsv"
+        table = OUTPUT/"ena/search.filtered.tsv"
     output:
-        table = temp("output/ena/search/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/runs.csv")
+        table = temp(OUTPUT/"ena/search/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/runs.csv")
     resources:
         runtime = "10m",
         mem_gb = 2
-    log: "output/logs/ena/split_ena_search_results/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}.txt"
+    log: OUTPUT/"logs/ena/split_ena_search_results/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}.txt"
     run:
         import logging
         import csv
@@ -112,14 +112,14 @@ rule split_ena_search_results:
 rule download_ena_one_fastq:
     group: "download"
     input:
-        table = "output/ena/search/{study}/{sample}/{platform}/{run}/{layout}_1_{strategy}/runs.csv"
+        table = OUTPUT/"ena/search/{study}/{sample}/{platform}/{run}/{layout}_1_{strategy}/runs.csv"
     params:
         retries = 5,
         backoff_factor = 1,
         backoff_jitter = 1
     output:
-        fastq = temp("output/ena/downloads/fastq/{study}/{sample}/{platform}/{run}/{layout}_1_{strategy}/sample.fastq.gz")
-    log: "output/logs/ena/download_ena/{study}/{sample}/{platform}/{run}/{layout}_1_{strategy}.txt"
+        fastq = temp(OUTPUT/"ena/downloads/fastq/{study}/{sample}/{platform}/{run}/{layout}_1_{strategy}/sample.fastq.gz")
+    log: OUTPUT/"logs/ena/download_ena/{study}/{sample}/{platform}/{run}/{layout}_1_{strategy}.txt"
     resources:
         ena_api_calls_per_second = 1,
         runtime = "30m"
@@ -130,17 +130,17 @@ rule download_ena_one_fastq:
 rule download_ena_two_fastq:
     group: "download"
     input:
-        table = "output/ena/search/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}/runs.csv"
+        table = OUTPUT/"ena/search/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}/runs.csv"
     params:
         retries = 5,
         backoff_factor = 1,
         backoff_jitter = 1
     output:
-        fastq_1 = temp("output/ena/downloads/fastq/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}/sample.R1.fastq.gz"),
-        fastq_2 = temp("output/ena/downloads/fastq/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}/sample.R2.fastq.gz")
+        fastq_1 = temp(OUTPUT/"ena/downloads/fastq/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}/sample.R1.fastq.gz"),
+        fastq_2 = temp(OUTPUT/"ena/downloads/fastq/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}/sample.R2.fastq.gz")
     resources:
         ena_api_calls_per_second = 1,
         runtime = "30m"
     retries: 2
-    log: "output/logs/ena/download_ena/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}.txt"
+    log: OUTPUT/"logs/ena/download_ena/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}.txt"
     script: "../scripts/download_ena_two_fastq.py"

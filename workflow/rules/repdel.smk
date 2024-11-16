@@ -1,22 +1,22 @@
 checkpoint filter_haplotype:
     conda: "../envs/pydata.yaml"
     input:
-        lambda w: build_afterproc_targets(w, f"output/variants/snpsift_extract_variants/{{}}/{{}}/{{}}/{{}}/{{}}_{{}}_{{}}/{w.haplotype}.tsv")
+        lambda w: build_afterproc_targets(w, fOUTPUT/"variants/snpsift_extract_variants/{{}}/{{}}/{{}}/{{}}/{{}}_{{}}_{{}}/{w.haplotype}.tsv")
     params:
         columns = ["CHROM", "REF", "POS", "ALT", "DP", "ALT_DP", "ALT_RV", "ALT_FREQ", "ALT_QUAL", "GENE", "HGVS_P"],
         markers = lambda w: config["HAPLOTYPES"][w.haplotype]
     output:
         # inclpct: int - minimum frequency threshold (%) to pass an "included" marker
         # exclpct: int - maximum frequency threshold (%) to pass an "excluded" marker
-        table = "output/repdel/filter_haplotype/{haplotype}.inclpct_{inclpct}.exclpct_{exclpct}.csv"
-    log: "output/logs/repdel/filter_haplotype/{haplotype}.inclpct_{inclpct}.exclpct_{exclpct}.txt"
+        table = OUTPUT/"repdel/filter_haplotype/{haplotype}.inclpct_{inclpct}.exclpct_{exclpct}.csv"
+    log: OUTPUT/"logs/repdel/filter_haplotype/{haplotype}.inclpct_{inclpct}.exclpct_{exclpct}.txt"
     script: "../scripts/filter_haplotype.py"
 
 
 rule report_region:
     conda: "../envs/rdata.yaml"
     input:
-        bam = "output/mapping/sorted_bam/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.sorted.bam"
+        bam = OUTPUT/"mapping/sorted_bam/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.sorted.bam"
     params:
         plot_width_per_position_in = 0.5,
         plot_height_in = 10,
@@ -32,7 +32,7 @@ rule report_region:
         include_deletions = True,
         include_insertions = False
     output:
-        plot = "output/repdel/report_region/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.png",
-        plot_data = "output/repdel/report_region/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.csv"
-    log: "output/logs/repdel/report_region/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}.txt"
+        plot = OUTPUT/"repdel/report_region/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.png",
+        plot_data = OUTPUT/"repdel/report_region/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.csv"
+    log: OUTPUT/"logs/repdel/report_region/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}.txt"
     script: "../scripts/report_region.R"

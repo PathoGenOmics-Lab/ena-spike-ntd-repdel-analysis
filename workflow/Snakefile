@@ -3,24 +3,24 @@ import functools
 import csv
 
 configfile: "config/config.yaml"
-
-
 include: "rules/common.smk"
+
+OUTPUT = Path(config["OUTPUT"])
 
 
 rule all:
     input:
-        "output/ena/search.tsv",
-        "output/ena/summarize_ena_search/summary.png",
-        "output/ena/summarize_ena_search_after_processing/summary.png",
-        lambda w: build_afterproc_targets(w, "output/preproc/multiqc/{}", ("study_accession",)),
+        OUTPUT/"ena/search.tsv",
+        OUTPUT/"ena/summarize_ena_search/summary.png",
+        OUTPUT/"ena/summarize_ena_search_after_processing/summary.png",
+        lambda w: build_afterproc_targets(w, OUTPUT/"preproc/multiqc/{}", ("study_accession",)),
         expand(
-            "output/repdel/filter_haplotype/{haplotype}.inclpct_{inclpct}.exclpct_{exclpct}.csv",
+            OUTPUT/"repdel/filter_haplotype/{haplotype}.inclpct_{inclpct}.exclpct_{exclpct}.csv",
             haplotype=config["HAPLOTYPES"].keys(),
             inclpct=config["MIN_INCLUDE_FREQ"],
             exclpct=config["MAX_EXCLUDE_FREQ"]
         ),
-        lambda w: build_afterproc_targets(w, "output/repdel/report_region/{}/{}/{}/{}/{}_{}_{}/sample.png")
+        lambda w: build_afterproc_targets(w, OUTPUT/"repdel/report_region/{}/{}/{}/{}/{}_{}_{}/sample.png")
 
 
 include: "rules/fetch.smk"

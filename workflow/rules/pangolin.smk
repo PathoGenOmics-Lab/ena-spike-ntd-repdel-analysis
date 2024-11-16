@@ -1,7 +1,7 @@
 rule consensus_merge:
     group: "pangolin_{study}"
-    input: lambda w: build_search_targets_filtering(w, f"output/variants/consensus/{w.study}/{{}}/{{}}/{{}}/{{}}_{{}}_{{}}/sample.fasta", ("sample_accession", "instrument_platform", "run_accession", "library_layout", "fastq_ftp", "library_strategy"), study_accession=w.study)
-    output: temp("output/pangolin/consensus_merge/{study}/sequences.fasta")
+    input: lambda w: build_search_targets_filtering(w, fOUTPUT/"variants/consensus/{w.study}/{{}}/{{}}/{{}}/{{}}_{{}}_{{}}/sample.fasta", ("sample_accession", "instrument_platform", "run_accession", "library_layout", "fastq_ftp", "library_strategy"), study_accession=w.study)
+    output: temp(OUTPUT/"pangolin/consensus_merge/{study}/sequences.fasta")
     resources:
         runtime = "15m",
         mem_gb = 2
@@ -14,19 +14,19 @@ rule pangolin_assignment:
     conda: "../envs/lineages.yaml"
     shadow: "minimal"
     input:
-        fasta = "output/pangolin/consensus_merge/{study}/sequences.fasta"
+        fasta = OUTPUT/"pangolin/consensus_merge/{study}/sequences.fasta"
     output:
-        table = temp("output/pangolin/pangolin_assignment/{study}/pangolin.csv")
+        table = temp(OUTPUT/"pangolin/pangolin_assignment/{study}/pangolin.csv")
     resources:
         mem_gb = 8,
         max_cpu_per_node = lambda wc, threads: threads
-    log: "output/logs/pangolin/pangolin_assignment/{study}.txt"
+    log: OUTPUT/"logs/pangolin/pangolin_assignment/{study}.txt"
     shell: "pangolin {input.fasta:q} --outfile {output.table:q} --threads {threads} >{log:q} 2>&1"
 
 
 rule pangolin_assignment_merge:
-    input: lambda w: build_search_targets(w, "output/pangolin/pangolin_assignment/{}/pangolin.csv", ("study_accession",))
-    output: "output/pangolin/pangolin.csv"
+    input: lambda w: build_search_targets(w, OUTPUT/"pangolin/pangolin_assignment/{}/pangolin.csv", ("study_accession",))
+    output: OUTPUT/"pangolin/pangolin.csv"
     resources:
         runtime = "15m",
         mem_gb = 2
@@ -35,14 +35,14 @@ rule pangolin_assignment_merge:
 
 rule filter_pangolin:
     input:
-        table = "output/pangolin/pangolin.csv"
+        table = OUTPUT/"pangolin/pangolin.csv"
     params:
         qc_status = ["pass"],
         scorpio_call = ["Omicron (BA.1-like)"],
         lineage_base = ["BA.1"]
     output:
-        table = "output/pangolin/pangolin.filtered.csv"
-    log: "output/logs/pangolin/filter_pangolin.txt"
+        table = OUTPUT/"pangolin/pangolin.filtered.csv"
+    log: OUTPUT/"logs/pangolin/filter_pangolin.txt"
     resources:
         runtime = "20m",
         mem_gb = 2
@@ -73,16 +73,16 @@ rule filter_pangolin:
 
 checkpoint select_samples_after_processing:
     input:
-        search_table = "output/ena/search.filtered.tsv",
-        coverage_table = "output/variants/coverage.filtered.csv",
-        pangolin_table = "output/pangolin/pangolin.filtered.csv"
+        search_table = OUTPUT/"ena/search.filtered.tsv",
+        coverage_table = OUTPUT/"variants/coverage.filtered.csv",
+        pangolin_table = OUTPUT/"pangolin/pangolin.filtered.csv"
     params:
         consensus_pattern = r"Consensus_([A-Z0-9]+)__([A-Z0-9]+)__([A-Z_]+)__([A-Z0-9]+)__([A-Z]+)__([A-Z]+)_threshold_[0-9\.]+_quality_[0-9\.]+",
         coverage_sample_pattern = r"([A-Z0-9]+)__([A-Z0-9]+)__([A-Z_]+)__([A-Z0-9]+)__([A-Z]+)__([A-Z]+)"
     output:
-        search_table = "output/ena/search.filtered.afterproc.tsv"
+        search_table = OUTPUT/"ena/search.filtered.afterproc.tsv"
     resources:
         mem_mb = 16000,
         runtime = "30m"
-    log: "output/logs/pangolin/select_samples_after_processing.txt"
+    log: OUTPUT/"logs/pangolin/select_samples_after_processing.txt"
     script: "../scripts/select_samples_after_processing.py"

@@ -2,18 +2,18 @@ rule pileup:
     group: "pileup"
     conda: "../envs/reads.yaml"
     input:
-        reference = "output/reference/sequence.fasta",
-        bam = "output/mapping/sorted_bam/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.sorted.bam"
+        reference = OUTPUT/"reference/sequence.fasta",
+        bam = OUTPUT/"mapping/sorted_bam/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.sorted.bam"
     params:
         max_depth = 0,   # 0 means unrestricted
         min_quality = 0  # filtered later with iVar
     output:
-        pileup = temp("output/variants/pileup/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.pileup")
+        pileup = temp(OUTPUT/"variants/pileup/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.pileup")
     resources:
         runtime = lambda wc, attempt: 20 * attempt,
         mem_gb = lambda wc, attempt: 1 * attempt
     retries: 2
-    log: "output/logs/variants/pileup/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}.txt"
+    log: OUTPUT/"logs/variants/pileup/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}.txt"
     shell: "samtools mpileup -aa -x -A -d {params.max_depth} -B -Q {params.min_quality} -f {input.reference:q} {input.bam:q} >{output.pileup:q} 2>{log:q}"
 
 
@@ -22,19 +22,19 @@ rule coverage:
     shadow: "minimal"
     conda: "../envs/reads.yaml"
     input:
-        bam = "output/mapping/sorted_bam/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.sorted.bam"
+        bam = OUTPUT/"mapping/sorted_bam/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.sorted.bam"
     params:
         chrom = "NC_045512.2",
         region_start = config["COVERAGE_FILTER"]["START"],
         region_end = config["COVERAGE_FILTER"]["END"]
     output:
-        table = temp("output/variants/coverage/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.tsv"),
-        index = temp("output/mapping/sorted_bam/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.sorted.bam.bai")
+        table = temp(OUTPUT/"variants/coverage/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.tsv"),
+        index = temp(OUTPUT/"mapping/sorted_bam/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.sorted.bam.bai")
     resources:
         runtime = lambda wc, attempt: 2 * attempt,
         mem_mb = lambda wc, attempt: 200 * attempt
     retries: 2
-    log: "output/logs/variants/coverage/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}.txt"
+    log: OUTPUT/"logs/variants/coverage/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}.txt"
     shell:
         'printf "sample\n{wildcards.study}__{wildcards.sample}__{wildcards.platform}__{wildcards.run}__{wildcards.layout}__{wildcards.strategy}" >sample.txt && '
         "samtools index --bai -o {output.index:q} {input.bam:q} && "
@@ -44,17 +44,17 @@ rule coverage:
 
 rule coverage_merge:
     shadow: "shallow"
-    input: lambda w: build_search_targets(w, "output/variants/coverage/{}/{}/{}/{}/{}_{}_{}/sample.tsv")
-    output: "output/variants/coverage.tsv"
+    input: lambda w: build_search_targets(w, OUTPUT/"variants/coverage/{}/{}/{}/{}/{}_{}_{}/sample.tsv")
+    output: OUTPUT/"variants/coverage.tsv"
     resources:
         runtime = "10m",
         mem_mb = 500
-    log: "output/logs/variants/coverage.txt"
+    log: OUTPUT/"logs/variants/coverage.txt"
     shell: "head -n 1 {input[0]:q} >{output:q} 2>{log:q} && tail -n +2 -q {input:q} >>{output:q} 2>>{log:q}"
 
 
 rule filter_coverage:
-    input: "output/variants/coverage.tsv"
+    input: OUTPUT/"variants/coverage.tsv"
     params:
         # -1 == unfiltered
         min_threshold = {
@@ -65,8 +65,8 @@ rule filter_coverage:
             "meanbaseq": config["COVERAGE_FILTER"]["MIN_MEANBASEQ"],
             "meanmapq":  config["COVERAGE_FILTER"]["MIN_MEANMAPQ"]
         }
-    output: "output/variants/coverage.filtered.csv"
-    log: "output/logs/variants/filter_coverage.txt"
+    output: OUTPUT/"variants/coverage.filtered.csv"
+    log: OUTPUT/"logs/variants/filter_coverage.txt"
     run:
         import logging
         import csv
@@ -94,7 +94,7 @@ rule consensus:
     conda: "../envs/reads.yaml"
     shadow: "minimal"
     input:
-        pileup = "output/variants/pileup/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.pileup"
+        pileup = OUTPUT/"variants/pileup/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.pileup"
     params:
         min_quality = 20,
         min_frequency = 0,
@@ -103,9 +103,9 @@ rule consensus:
         char_under_min_depth = "N",
         prefix = "{study}__{sample}__{platform}__{run}__{layout}__{strategy}"
     output:
-        fasta = "output/variants/consensus/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.fasta",
-        quality = "output/variants/consensus/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.qual.txt"
-    log: "output/logs/variants/consensus/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}.txt"
+        fasta = OUTPUT/"variants/consensus/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.fasta",
+        quality = OUTPUT/"variants/consensus/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.qual.txt"
+    log: OUTPUT/"logs/variants/consensus/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}.txt"
     resources:
         runtime = lambda wc, attempt: 30 * attempt,
         mem_gb = lambda wc, attempt: 4 * attempt
@@ -124,15 +124,15 @@ rule variant_calling:
         min_frequency = 0.05,
         min_depth = 30
     input:
-        reference = "output/reference/sequence.fasta",
-        pileup = "output/variants/pileup/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.pileup"
+        reference = OUTPUT/"reference/sequence.fasta",
+        pileup = OUTPUT/"variants/pileup/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.pileup"
     output:
-        tsv = "output/variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.tsv"
+        tsv = OUTPUT/"variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.tsv"
     resources:
         runtime = lambda wc, attempt: 20 * attempt,
         mem_gb = lambda wc, attempt: 4 * attempt
     retries: 2
-    log: "output/logs/variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/variant_calling.txt"
+    log: OUTPUT/"logs/variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/variant_calling.txt"
     shell: "ivar variants -p result -q {params.min_quality} -t {params.min_frequency} -m {params.min_depth} -r {input.reference:q} <{input.pileup:q} >{log:q} 2>&1 && mv result.tsv {output.tsv:q}"
 
 
@@ -140,8 +140,8 @@ rule ivar_tsv_to_vcf:
     group: "snp"
     conda: "../envs/pydata.yaml"
     input:
-        tsv = "output/variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.tsv",
-        reference = "output/reference/sequence.fasta"
+        tsv = OUTPUT/"variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.tsv",
+        reference = OUTPUT/"reference/sequence.fasta"
     params:
         pass_only = False,
         allele_freq_threshold = 0,
@@ -149,12 +149,12 @@ rule ivar_tsv_to_vcf:
         ignore_merge_codons = False,
         sample_name = "{study}_{sample}_{platform}_{run}_{layout}_{strategy}"
     output:
-        vcf = temp("output/variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.vcf")
+        vcf = temp(OUTPUT/"variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.vcf")
     resources:
         runtime = lambda wc, attempt: 5 * attempt,
         mem_mb = lambda wc, attempt: 100 * attempt
     retries: 2
-    log: "output/logs/variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/ivar_tsv_to_vcf.txt"
+    log: OUTPUT/"logs/variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/ivar_tsv_to_vcf.txt"
     script: "../scripts/ivar_tsv_to_vcf.py"
 
 
@@ -163,17 +163,17 @@ rule snpeff_annotate:
     conda: "../envs/annotation.yaml"
     shadow: "minimal"
     input:
-        datadir = "output/reference/snpeff/NC_045512.2",
-        vcf = "output/variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.vcf"
+        datadir = OUTPUT/"reference/snpeff/NC_045512.2",
+        vcf = OUTPUT/"variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.vcf"
     params:
         reference = "NC_045512.2"
     output:
-        vcf = temp("output/variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.annotated.vcf")
+        vcf = temp(OUTPUT/"variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.annotated.vcf")
     resources:
         runtime = lambda wc, attempt: 5 * attempt,
         mem_mb = lambda wc, attempt: 200 * attempt
     retries: 2
-    log: "output/logs/variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/snpeff_annotate.txt"
+    log: OUTPUT/"logs/variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/snpeff_annotate.txt"
     shell: "snpEff eff -dataDir {input.datadir:q} {params.reference} {input.vcf:q} >{output.vcf:q} 2>{log:q}"
 
 
@@ -181,20 +181,20 @@ rule snpsift_extract_variants:
     group: "snp"
     conda: "../envs/annotation.yaml"
     input:
-        vcf = "output/variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.annotated.vcf"
+        vcf = OUTPUT/"variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.annotated.vcf"
     params:
         min_depth = 40,
         hgvs_p_filter = build_snpsift_hgvs_p_filter,
         extract_columns = ["CHROM", "REF", "POS", "ALT", "DP", '"GEN[*].ALT_DP"', '"GEN[*].ALT_RV"', '"GEN[*].ALT_FREQ"', '"GEN[*].ALT_QUAL"', '"ANN[*].GENE"', '"ANN[*].HGVS_P"']
     output:
-        tsv = temp("output/variants/snpsift_extract_variants/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/{haplotype}.tsv")
+        tsv = temp(OUTPUT/"variants/snpsift_extract_variants/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/{haplotype}.tsv")
     resources:
         runtime = lambda wc, attempt: 1 * attempt,
         mem_mb = lambda wc, attempt: 200 * attempt
     retries: 2
     log:
-        "output/logs/variants/snpsift_extract_variants/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/{haplotype}_filter.txt",
-        "output/logs/variants/snpsift_extract_variants/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/{haplotype}_extractFields.txt"
+        OUTPUT/"logs/variants/snpsift_extract_variants/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/{haplotype}_filter.txt",
+        OUTPUT/"logs/variants/snpsift_extract_variants/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/{haplotype}_extractFields.txt"
     shell:
         'SnpSift filter "(DP >= {params.min_depth}){params.hgvs_p_filter}" {input.vcf:q} 2>{log[0]:q} | '
         'SnpSift extractFields -s "," - {params.extract_columns} >{output.tsv:q} 2>{log[1]:q}'

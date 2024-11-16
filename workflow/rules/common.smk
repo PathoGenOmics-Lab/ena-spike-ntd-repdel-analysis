@@ -8,6 +8,10 @@ def count_fastq(row: dict) -> int:
     return row["fastq_ftp"].count(";") + 1
 
 
+def as_string(path: Path | str) -> str:
+    return path.as_posix() if type(path) is Path else path
+
+
 def build_groups(wildcards, table, columns) -> list:
     delimiter = "\t" if table.endswith(".tsv") else ","
     with open(table) as f:
@@ -35,7 +39,7 @@ def build_groups_filtering(wildcards, table, columns, **kwargs) -> list:
 
 def build_search_targets(wildcards, template: str, columns=SEARCH_DF_COLS) -> list:
     return sorted(
-        template.format(*groups) \
+        as_string(template).format(*groups) \
         for groups in build_groups(
             wildcards,
             checkpoints.filter_search_ena.get(**wildcards).output.table,
@@ -47,7 +51,7 @@ def build_search_targets(wildcards, template: str, columns=SEARCH_DF_COLS) -> li
 def build_search_targets_filtering(wildcards, template: str, columns=SEARCH_DF_COLS, **kwargs) -> list:
     columns = tuple(list(columns) + [column for column in kwargs.keys()])
     return sorted(
-        template.format(*groups) \
+        as_string(template).format(*groups) \
         for groups in build_groups_filtering(
             wildcards,
             checkpoints.filter_search_ena.get(**wildcards).output.table,
@@ -59,7 +63,7 @@ def build_search_targets_filtering(wildcards, template: str, columns=SEARCH_DF_C
 
 def build_afterproc_targets(wildcards, template: str, columns=SEARCH_DF_COLS) -> list:
     return sorted(
-        template.format(*groups) \
+        as_string(template).format(*groups) \
         for groups in build_groups(
             wildcards,
             checkpoints.select_samples_after_processing.get(**wildcards).output.search_table,
@@ -71,7 +75,7 @@ def build_afterproc_targets(wildcards, template: str, columns=SEARCH_DF_COLS) ->
 def build_afterproc_targets_filtering(wildcards, template: str, columns=SEARCH_DF_COLS, **kwargs) -> list:
     columns = tuple(list(columns) + [column for column in kwargs.keys()])
     return sorted(
-        template.format(*groups) \
+        as_string(template).format(*groups) \
         for groups in build_groups_filtering(
             wildcards,
             checkpoints.select_samples_after_processing.get(**wildcards).output.search_table,
