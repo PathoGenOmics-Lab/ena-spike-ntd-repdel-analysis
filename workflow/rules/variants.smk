@@ -82,7 +82,7 @@ rule filter_coverage:
             writer = csv.DictWriter(fw, fieldnames=reader.fieldnames)
             writer.writeheader()
             for row in reader:
-                if all(float(row[colname]) <= value for colname, value in params.min_threshold.items() if value > -1):
+                if all(float(row[colname]) >= value for colname, value in params.min_threshold.items() if value > -1):
                     writer.writerow(row)
                     n += 1
                 ntotal += 1
