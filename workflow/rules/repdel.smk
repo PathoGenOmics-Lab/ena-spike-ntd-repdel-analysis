@@ -1,7 +1,7 @@
 checkpoint filter_haplotype:
     conda: "../envs/pydata.yaml"
     input:
-        lambda w: build_afterproc_targets(w, fOUTPUT/"variants/snpsift_extract_variants/{{}}/{{}}/{{}}/{{}}/{{}}_{{}}_{{}}/{w.haplotype}.tsv")
+        lambda w: build_afterproc_targets(w, OUTPUT/f"variants/snpsift_extract_variants/{{}}/{{}}/{{}}/{{}}/{{}}_{{}}_{{}}/{w.haplotype}.tsv")
     params:
         columns = ["CHROM", "REF", "POS", "ALT", "DP", "ALT_DP", "ALT_RV", "ALT_FREQ", "ALT_QUAL", "GENE", "HGVS_P"],
         markers = lambda w: config["HAPLOTYPES"][w.haplotype]

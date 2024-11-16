@@ -1,6 +1,6 @@
 rule consensus_merge:
     group: "pangolin_{study}"
-    input: lambda w: build_search_targets_filtering(w, fOUTPUT/"variants/consensus/{w.study}/{{}}/{{}}/{{}}/{{}}_{{}}_{{}}/sample.fasta", ("sample_accession", "instrument_platform", "run_accession", "library_layout", "fastq_ftp", "library_strategy"), study_accession=w.study)
+    input: lambda w: build_search_targets_filtering(w, OUTPUT/f"variants/consensus/{w.study}/{{}}/{{}}/{{}}/{{}}_{{}}_{{}}/sample.fasta", ("sample_accession", "instrument_platform", "run_accession", "library_layout", "fastq_ftp", "library_strategy"), study_accession=w.study)
     output: temp(OUTPUT/"pangolin/consensus_merge/{study}/sequences.fasta")
     resources:
         runtime = "15m",
