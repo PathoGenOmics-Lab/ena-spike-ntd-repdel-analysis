@@ -1,7 +1,7 @@
 rule filter_haplotype:
     conda: "../envs/pydata.yaml"
     input:
-        lambda w: build_afterproc_targets(w, OUTPUT/f"variants/snpsift_extract_variants/{{}}/{{}}/{{}}/{{}}/{{}}_{{}}_{{}}/{w.haplotype}.tsv")
+        expand(OUTPUT/"variants/snpsift_extract_variants/{path}/{{haplotype}}.tsv", path=read_sample_paths(config["FILTERED_TABLE"])[0])
     params:
         columns = ["CHROM", "REF", "POS", "ALT", "DP", "ALT_DP", "ALT_RV", "ALT_FREQ", "ALT_QUAL", "GENE", "HGVS_P"],
         markers = lambda w: config["HAPLOTYPES"][w.haplotype]
@@ -18,7 +18,7 @@ rule report_region:
     input:
         bam = OUTPUT/"mapping/sorted_bam/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.sorted.bam"
     params:
-        plot_width_per_position_in = 0.5,
+        plot_width_per_position_in = 0.1,
         plot_height_in = 10,
         positions = list(range(config["COVERAGE_FILTER"]["START"], config["COVERAGE_FILTER"]["END"]+1)),
         max_depth = 2e9,

@@ -9,9 +9,9 @@
 
 set -e
 
-NBATCHES=100
+NBATCHES=1000
 
 for i in $(seq 1 $NBATCHES); do
     echo ">>> START BATCH $i"
-    srun snakemake --workflow-profile profiles/garnatxa --scheduler greedy --batch all=$i/$NBATCHES
+    srun snakemake --workflow-profile profiles/garnatxa --config UNTIL_FILTER=False --batch filter_haplotype=$i/$NBATCHES
 end

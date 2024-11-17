@@ -71,7 +71,7 @@ checkpoint select_samples_after_processing:
         consensus_pattern = r"Consensus_([A-Z0-9]+)__([A-Z0-9]+)__([A-Z_]+)__([A-Z0-9]+)__([A-Z]+)__([A-Z]+)_threshold_[0-9\.]+_quality_[0-9\.]+",
         coverage_sample_pattern = r"([A-Z0-9]+)__([A-Z0-9]+)__([A-Z_]+)__([A-Z0-9]+)__([A-Z]+)__([A-Z]+)"
     output:
-        search_table = OUTPUT/"ena/search.filtered.afterproc.tsv"
+        search_table = config["FILTERED_TABLE"]
     resources:
         mem_mb = 16000,
         runtime = "30m"

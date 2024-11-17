@@ -29,4 +29,5 @@ include: "rules/preproc.smk"
 include: "rules/mapping.smk"
 include: "rules/variants.smk"
 include: "rules/pangolin.smk"
-include: "rules/repdel.smk"
+if not config.get("UNTIL_FILTER", False):
+    include: "rules/repdel.smk"

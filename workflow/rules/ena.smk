@@ -22,7 +22,7 @@ rule summarize_ena_search:
 
 use rule summarize_ena_search as summarize_ena_search_after_processing with:
     input:
-        table = OUTPUT/"ena/search.filtered.afterproc.tsv"
+        table = config["FILTERED_TABLE"]
     output:
         plot_pdf = OUTPUT/"ena/summarize_ena_search_after_processing/summary.pdf",
         plot_png = OUTPUT/"ena/summarize_ena_search_after_processing/summary.png",

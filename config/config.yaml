@@ -1,6 +1,7 @@
 OUTPUT: output
 PY_LOG_FMT: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 SEARCH_TABLE: "search.tsv"
+FILTERED_TABLE: "search.filtered.tsv"
 COVERAGE_FILTER:
   START: 21756  # S:65(1)
   END:   22013  # S:150(3)
