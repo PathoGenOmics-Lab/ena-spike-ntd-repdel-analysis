@@ -32,10 +32,13 @@ def get_ENA_text_fields():
 
 
 def build_query(min_date: str, max_date: str, tax_id: str, host: str) -> str:
+    if min_date == max_date:
+        date_terms = [f"collection_date={min_date}"]
+    else:
+        date_terms = [f"collection_date>={min_date}" if min_date else None, f"collection_date<={max_date}" if max_date else None,]
     items = [
         f"tax_tree({tax_id})" if tax_id else None,
-        f"collection_date>={min_date}" if min_date else None,
-        f"collection_date<={max_date}" if max_date else None,
+        *date_terms,
         f'host_scientific_name="{host}"' if host else None
     ]
     return " AND ".join(item for item in items if item)
