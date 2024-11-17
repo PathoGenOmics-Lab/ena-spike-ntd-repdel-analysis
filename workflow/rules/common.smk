@@ -9,7 +9,7 @@ def count_fastq(row: dict) -> int:
 
 
 def as_string(path: Path | str) -> str:
-    return path.as_posix() if type(path) is Path else path
+    return str(path.as_posix()) if type(path) is Path else path
 
 
 def build_groups(wildcards, table, columns) -> list:
