@@ -60,7 +60,7 @@ if __name__ == "__main__":
     fields = get_ENA_text_fields()
 
     # Perform search
-    logging.info("Performing ENA search")
+    logging.info(f"Performing ENA search from {snakemake.params.start_date} to {snakemake.params.end_date}")
     data = REQUEST_DATA_TEMPLATE.copy()
     query_txt = build_query(
         snakemake.params.start_date,
