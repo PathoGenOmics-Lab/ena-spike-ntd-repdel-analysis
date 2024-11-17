@@ -37,7 +37,7 @@ bam.pileup <- pileup(bam, pileupParam = params)
 
 message("Filtering")
 plot.data <- bam.pileup %>%
-    filter(pos %in% snakemake@param$positions)
+    filter(pos %in% snakemake@params$positions)
 
 message("Plotting")
 p <- plot.data %>%
