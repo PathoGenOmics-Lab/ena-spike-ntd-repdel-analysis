@@ -11,9 +11,6 @@ set -e
 
 NBATCHES=100
 
-echo ">>> PERFORM SEARCH"
-snakemake --workflow-profile profiles/garnatxa --until summarize_ena_search
-
 for i in $(seq 1 $NBATCHES); do
     echo ">>> START BATCH $i"
     srun snakemake --workflow-profile profiles/garnatxa --scheduler greedy --batch all=$i/$NBATCHES

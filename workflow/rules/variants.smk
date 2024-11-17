@@ -44,7 +44,7 @@ rule coverage:
 
 rule coverage_merge:
     shadow: "shallow"
-    input: lambda w: build_search_targets(w, OUTPUT/"variants/coverage/{}/{}/{}/{}/{}_{}_{}/sample.tsv")
+    input: expand(OUTPUT/"variants/coverage/{path}/sample.tsv", path=SAMPLE_PATHS)
     output: OUTPUT/"variants/coverage.tsv"
     resources:
         runtime = "10m",

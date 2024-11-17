@@ -8,14 +8,14 @@ rule fastqc:
     shell: "mkdir out && fastqc --noextract -o out {input:q}/*.fastq.gz 2>{log} && mv out {output:q}"
 
 
-rule multiqc:
-    conda: "../envs/qc.yaml"
-    input:
-        lambda w: build_afterproc_targets_filtering(w, OUTPUT/f"preproc/fastp/{w.study}/{{}}/{{}}/{{}}/{{}}_{{}}_{{}}/report.json", ("sample_accession", "instrument_platform", "run_accession", "library_layout", "fastq_ftp", "library_strategy"), study_accession=w.study)
-    output:
-        directory(OUTPUT/"preproc/multiqc/{study}")
-    log: OUTPUT/"logs/preproc/multiqc/{study}.txt"
-    shell: "mkdir -p {output:q} && multiqc --outdir {output:q} --dirs -dd 5 {input:q} 2>{log:q}"
+# rule multiqc:
+#     conda: "../envs/qc.yaml"
+#     input:
+#         (OUTPUT/f"preproc/fastp/{w.study}/{{}}/{{}}/{{}}/{{}}_{{}}_{{}}/report.json")
+#     output:
+#         directory(OUTPUT/"preproc/multiqc/{study}")
+#     log: OUTPUT/"logs/preproc/multiqc/{study}.txt"
+#     shell: "mkdir -p {output:q} && multiqc --outdir {output:q} --dirs -dd 5 {input:q} 2>{log:q}"
 
 
 rule fastp_single:

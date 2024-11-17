@@ -1,45 +1,7 @@
-rule search_ena:
-    params:
-        start_date = config["START_DATE"],  # outbreak.info approx BA.1 start date
-        end_date = config["END_DATE"],      # outbreak.info approx BA.1 end date
-        limit = config["SEARCH_LIMIT"],     # 0 means no record limit
-        taxonomy = "2697049",               # SARS-CoV-2
-        host_scientific_name = "Homo sapiens",
-        chunksize = 1024
-    output:
-        table = OUTPUT/"ena/search.tsv",
-        query = OUTPUT/"ena/search.json"
-    log: OUTPUT/"logs/ena/search_ena.txt"
-    script: "../scripts/search_ena.py"
-
-
-checkpoint filter_search_ena:
-    input:
-        table = OUTPUT/"ena/search.tsv"
-    params:
-        omit_platform = ["CAPILLARY", "DNBSEQ", "ELEMENT"],
-        omit_library_strategy = ["RNA-Seq"],
-        omit_library_source = ["TRANSCRIPTOMIC", "METAGENOMIC", "METATRANSCRIPTOMIC"]
-    output:
-        table = OUTPUT/"ena/search.filtered.tsv",
-    resources:
-        mem_mb = 12000,
-        runtime = "15m"
-    run:
-        import pandas as pd
-        df = pd.read_csv(input.table, sep="\t")
-        df[
-            ~df["instrument_platform"].isin(params.omit_platform) & \
-            ~df["library_strategy"].isin(params.omit_library_strategy) & \
-            ~df["library_source"].isin(params.omit_library_source) & \
-            df["fastq_ftp"].str.count(";").isin([0, 1])
-        ].to_csv(output.table, sep="\t", index=False)
-
-
 rule summarize_ena_search:
     conda: "../envs/rdata.yaml"
     input:
-        table = OUTPUT/"ena/search.filtered.tsv"
+        table = config["SEARCH_TABLE"]
     params:
         count_bins = 9,
         plot_width_in = 25
@@ -75,7 +37,7 @@ use rule summarize_ena_search as summarize_ena_search_after_processing with:
 rule split_ena_search_results:
     group: "download"
     input:
-        table = OUTPUT/"ena/search.filtered.tsv"
+        table = config["SEARCH_TABLE"]
     output:
         table = temp(OUTPUT/"ena/search/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/runs.csv")
     resources:

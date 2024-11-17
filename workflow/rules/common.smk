@@ -12,6 +12,19 @@ def as_string(path: Path | str) -> str:
     return Path(path).as_posix()
 
 
+def read_sample_paths(table: str):
+    delimiter = "\t" if table.endswith(".tsv") else ","
+    with open(table) as f:
+        reader = csv.DictReader(f, delimiter=delimiter)
+        paths = []
+        studies = []
+        for row in reader:
+            row["nfastq"] = count_fastq(row)
+            paths.append("{study_accession}/{sample_accession}/{instrument_platform}/{run_accession}/{library_layout}_{nfastq}_{library_strategy}".format(**row))
+            studies.append(row["study_accession"])
+    return sorted(paths), sorted(studies)
+
+
 def build_groups(wildcards, table, columns) -> list:
     delimiter = "\t" if table.endswith(".tsv") else ","
     with open(table) as f:
@@ -23,44 +36,6 @@ def build_groups(wildcards, table, columns) -> list:
     return sorted(groups)
 
 
-def build_groups_filtering(wildcards, table, columns, **kwargs) -> list:
-    groups = set()
-    for group in build_groups(wildcards, table, columns):
-        filters = []
-        for column, values in kwargs.items():
-            if type(values) is not list or type(value) is not tuple:
-                values = [values]
-            index = columns.index(column)
-            filters.append(group[index] in values)
-        if all(filters):
-            groups.add(group)
-    return groups
-
-
-def build_search_targets(wildcards, template: str, columns=SEARCH_DF_COLS) -> list:
-    return sorted(
-        as_string(template).format(*groups) \
-        for groups in build_groups(
-            wildcards,
-            checkpoints.filter_search_ena.get(**wildcards).output.table,
-            columns
-        )
-    )
-
-
-def build_search_targets_filtering(wildcards, template: str, columns=SEARCH_DF_COLS, **kwargs) -> list:
-    columns = tuple(list(columns) + [column for column in kwargs.keys()])
-    return sorted(
-        as_string(template).format(*groups) \
-        for groups in build_groups_filtering(
-            wildcards,
-            checkpoints.filter_search_ena.get(**wildcards).output.table,
-            columns,
-            **kwargs
-        )
-    )
-
-
 def build_afterproc_targets(wildcards, template: str, columns=SEARCH_DF_COLS) -> list:
     return sorted(
         as_string(template).format(*groups) \
@@ -68,19 +43,6 @@ def build_afterproc_targets(wildcards, template: str, columns=SEARCH_DF_COLS) ->
             wildcards,
             checkpoints.select_samples_after_processing.get(**wildcards).output.search_table,
             columns
-        )
-    )
-
-
-def build_afterproc_targets_filtering(wildcards, template: str, columns=SEARCH_DF_COLS, **kwargs) -> list:
-    columns = tuple(list(columns) + [column for column in kwargs.keys()])
-    return sorted(
-        as_string(template).format(*groups) \
-        for groups in build_groups_filtering(
-            wildcards,
-            checkpoints.select_samples_after_processing.get(**wildcards).output.search_table,
-            columns,
-            **kwargs
         )
     )
 

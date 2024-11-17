@@ -1,7 +1,7 @@
 rule consensus_merge:
     group: "pangolin_{study}"
-    input: lambda w: build_search_targets_filtering(w, OUTPUT/f"variants/consensus/{w.study}/{{}}/{{}}/{{}}/{{}}_{{}}_{{}}/sample.fasta", ("sample_accession", "instrument_platform", "run_accession", "library_layout", "fastq_ftp", "library_strategy"), study_accession=w.study)
-    output: temp(OUTPUT/"pangolin/consensus_merge/{study}/sequences.fasta")
+    input: expand(OUTPUT/"variants/consensus/{path}/sample.fasta", path=SAMPLE_PATHS)
+    output: temp(OUTPUT/"pangolin/sequences.fasta")
     resources:
         runtime = "15m",
         mem_gb = 2
@@ -9,28 +9,19 @@ rule consensus_merge:
 
 
 rule pangolin_assignment:
-    threads: 8
+    threads: 32
     group: "pangolin_{study}"
     conda: "../envs/lineages.yaml"
     shadow: "minimal"
     input:
-        fasta = OUTPUT/"pangolin/consensus_merge/{study}/sequences.fasta"
+        fasta = OUTPUT/"pangolin/sequences.fasta"
     output:
-        table = temp(OUTPUT/"pangolin/pangolin_assignment/{study}/pangolin.csv")
+        table = OUTPUT/"pangolin/pangolin.csv"
     resources:
         mem_gb = 8,
         max_cpu_per_node = lambda wc, threads: threads
-    log: OUTPUT/"logs/pangolin/pangolin_assignment/{study}.txt"
+    log: OUTPUT/"logs/pangolin/pangolin_assignment.txt"
     shell: "pangolin {input.fasta:q} --outfile {output.table:q} --threads {threads} >{log:q} 2>&1"
-
-
-rule pangolin_assignment_merge:
-    input: lambda w: build_search_targets(w, OUTPUT/"pangolin/pangolin_assignment/{}/pangolin.csv", ("study_accession",))
-    output: OUTPUT/"pangolin/pangolin.csv"
-    resources:
-        runtime = "15m",
-        mem_gb = 2
-    shell: "head -n 1 {input[0]:q} >{output:q} && tail -n +2 -q {input:q} >>{output:q}"
 
 
 rule filter_pangolin:
@@ -41,7 +32,7 @@ rule filter_pangolin:
         scorpio_call = ["Omicron (BA.1-like)"],
         lineage_base = ["BA.1"]
     output:
-        table = OUTPUT/"pangolin/pangolin.filtered.csv"
+        table = temp(OUTPUT/"pangolin/pangolin.filtered.csv")
     log: OUTPUT/"logs/pangolin/filter_pangolin.txt"
     resources:
         runtime = "20m",
@@ -73,7 +64,7 @@ rule filter_pangolin:
 
 checkpoint select_samples_after_processing:
     input:
-        search_table = OUTPUT/"ena/search.filtered.tsv",
+        search_table = config["SEARCH_TABLE"],
         coverage_table = OUTPUT/"variants/coverage.filtered.csv",
         pangolin_table = OUTPUT/"pangolin/pangolin.filtered.csv"
     params:

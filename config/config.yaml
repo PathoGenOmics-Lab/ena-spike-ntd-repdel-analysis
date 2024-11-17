@@ -1,8 +1,6 @@
 OUTPUT: output
 PY_LOG_FMT: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-START_DATE: "2021-11-01"
-END_DATE: "2022-08-01"
-SEARCH_LIMIT: 0
+SEARCH_TABLE: "search.tsv"
 COVERAGE_FILTER:
   START: 21756  # S:65(1)
   END:   22013  # S:150(3)

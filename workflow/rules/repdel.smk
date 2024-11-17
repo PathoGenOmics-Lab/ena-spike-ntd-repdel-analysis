@@ -1,4 +1,4 @@
-checkpoint filter_haplotype:
+rule filter_haplotype:
     conda: "../envs/pydata.yaml"
     input:
         lambda w: build_afterproc_targets(w, OUTPUT/f"variants/snpsift_extract_variants/{{}}/{{}}/{{}}/{{}}/{{}}_{{}}_{{}}/{w.haplotype}.tsv")
