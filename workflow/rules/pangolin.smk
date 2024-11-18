@@ -62,7 +62,7 @@ rule filter_pangolin:
         logging.info(f"Wrote {n} of {ntotal} records with qc_status in {params.qc_status}, and scorpio_call in {params.scorpio_call} or lineage base in {params.lineage_base}")
 
 
-checkpoint select_samples_after_processing:
+rule select_samples_after_processing:
     input:
         search_table = config["SEARCH_TABLE"],
         coverage_table = OUTPUT/"variants/coverage.filtered.csv",
