@@ -16,13 +16,31 @@ def read_sample_paths(table: str):
     delimiter = "\t" if table.endswith(".tsv") else ","
     with open(table) as f:
         reader = csv.DictReader(f, delimiter=delimiter)
-        paths = []
-        studies = []
+        paths = set()
         for row in reader:
             row["nfastq"] = count_fastq(row)
-            paths.append("{study_accession}/{sample_accession}/{instrument_platform}/{run_accession}/{library_layout}_{nfastq}_{library_strategy}".format(**row))
-            studies.append(row["study_accession"])
-    return sorted(paths), sorted(studies)
+            if row["nfastq"] in (1, 2):
+                paths.add("{study_accession}/{sample_accession}/{instrument_platform}/{run_accession}/{library_layout}_{nfastq}_{library_strategy}".format(**row))
+    return sorted(paths)
+
+
+def read_studies(table: str):
+    delimiter = "\t" if table.endswith(".tsv") else ","
+    with open(table) as f:
+        reader = csv.DictReader(f, delimiter=delimiter)
+        return sorted(set(row["study_accession"] for row in reader))
+
+
+def read_sample_paths_from_study(table: str, study: str):
+    delimiter = "\t" if table.endswith(".tsv") else ","
+    with open(table) as f:
+        reader = csv.DictReader(f, delimiter=delimiter)
+        paths = set()
+        for row in reader:
+            row["nfastq"] = count_fastq(row)
+            if study == row["study_accession"] and row["nfastq"] in (1, 2):
+                paths.add("{study_accession}/{sample_accession}/{instrument_platform}/{run_accession}/{library_layout}_{nfastq}_{library_strategy}".format(**row))
+    return sorted(paths)
 
 
 def build_snpsift_hgvs_p_filter(wildcards):

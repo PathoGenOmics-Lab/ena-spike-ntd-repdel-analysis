@@ -6,14 +6,14 @@ configfile: "config/config.yaml"
 include: "rules/common.smk"
 
 OUTPUT = Path(config["OUTPUT"])
-SAMPLE_PATHS, STUDIES = read_sample_paths("search.tsv")
+SAMPLE_PATHS = read_sample_paths(config["SEARCH_TABLE"])
 
 
 rule all:
     input:
         OUTPUT/"ena/summarize_ena_search/summary.png",
         OUTPUT/"ena/summarize_ena_search_after_processing/summary.png",
-        # expand(OUTPUT/"preproc/multiqc/{study}", study=STUDIES),
+        expand(OUTPUT/"preproc/multiqc/{study}", study=read_studies(config["SEARCH_TABLE"])),
         expand(
             OUTPUT/"repdel/filter_haplotype/{haplotype}.inclpct_{inclpct}.exclpct_{exclpct}.csv",
             haplotype=config["HAPLOTYPES"].keys(),
@@ -29,5 +29,6 @@ include: "rules/preproc.smk"
 include: "rules/mapping.smk"
 include: "rules/variants.smk"
 include: "rules/pangolin.smk"
+
 if not config.get("UNTIL_FILTER", False):
     include: "rules/repdel.smk"
