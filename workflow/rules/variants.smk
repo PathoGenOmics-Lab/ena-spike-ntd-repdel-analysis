@@ -11,7 +11,7 @@ rule pileup:
         pileup = temp(OUTPUT/"variants/pileup/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.pileup")
     resources:
         runtime = lambda wc, attempt: 20 * attempt,
-        mem_gb = lambda wc, attempt: 1 * attempt
+        mem_mb = lambda wc, attempt: 1000 * attempt
     retries: 2
     log: OUTPUT/"logs/variants/pileup/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}.txt"
     shell: "samtools mpileup -aa -x -A -d {params.max_depth} -B -Q {params.min_quality} -f {input.reference:q} {input.bam:q} >{output.pileup:q} 2>{log:q}"
@@ -108,7 +108,7 @@ rule consensus:
     log: OUTPUT/"logs/variants/consensus/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}.txt"
     resources:
         runtime = lambda wc, attempt: 30 * attempt,
-        mem_gb = lambda wc, attempt: 4 * attempt
+        mem_mb = lambda wc, attempt: 4000 * attempt
     retries: 2
     shell:
         'ivar consensus -p {params.prefix:q} -q {params.min_quality} -t {params.min_frequency} -m {params.min_depth} -c {params.min_ins_frequency} -n {params.char_under_min_depth} <{input.pileup:q} >{log:q} 2>&1 && '
@@ -130,7 +130,7 @@ rule variant_calling:
         tsv = OUTPUT/"variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.tsv"
     resources:
         runtime = lambda wc, attempt: 20 * attempt,
-        mem_gb = lambda wc, attempt: 4 * attempt
+        mem_mb = lambda wc, attempt: 4000 * attempt
     retries: 2
     log: OUTPUT/"logs/variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/variant_calling.txt"
     shell: "ivar variants -p result -q {params.min_quality} -t {params.min_frequency} -m {params.min_depth} -r {input.reference:q} <{input.pileup:q} >{log:q} 2>&1 && mv result.tsv {output.tsv:q}"

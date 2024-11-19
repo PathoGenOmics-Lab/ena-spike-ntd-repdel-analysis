@@ -29,7 +29,7 @@ rule fastp_single:
         fastq = temp(OUTPUT/"preproc/fastq/{study}/{sample}/{platform}/{run}/{layout}_1_{strategy}/sample.fastp.fastq.gz")
     resources:
         runtime = lambda wc, attempt: 15 * attempt,
-        mem_gb = lambda wc, attempt: 4 * attempt
+        mem_mb = lambda wc, attempt: 4000 * attempt
     retries: 2
     log: OUTPUT/"logs/preproc/fastp_single/{study}/{sample}/{platform}/{run}/{layout}_1_{strategy}.txt"
     shell: "fastp -i {input.fastq:q} -o {output.fastq:q} -h {output.report:q} -j {output.json:q} 2>{log}"
@@ -48,7 +48,7 @@ rule fastp_paired:
         fastq_2 = temp(OUTPUT/"preproc/fastq/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}/sample.fastp.R2.fastq.gz")
     resources:
         runtime = lambda wc, attempt: 15 * attempt,
-        mem_gb = lambda wc, attempt: 4 * attempt
+        mem_mb = lambda wc, attempt: 4000 * attempt
     retries: 2
     log: OUTPUT/"logs/preproc/fastp_paired/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}.txt"
     shell: "fastp -i {input.fastq_1:q} -I {input.fastq_2:q} -o {output.fastq_1:q} -O {output.fastq_2:q} -h {output.report:q} -j {output.json:q} 2>{log}"

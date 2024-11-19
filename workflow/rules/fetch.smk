@@ -4,7 +4,7 @@ rule efetch_fasta_reference:
     output: OUTPUT/"reference/sequence.fasta"
     resources:
         runtime = "10m",
-        mem_gb = 8
+        mem_mb = 8000
     shell: 'curl -s -o {output:q} "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id={params.accession}&rettype=fasta"'
 
 

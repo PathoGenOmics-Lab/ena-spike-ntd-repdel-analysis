@@ -4,7 +4,7 @@ rule consensus_merge:
     output: temp(OUTPUT/"pangolin/sequences.fasta")
     resources:
         runtime = "15m",
-        mem_gb = 2
+        mem_mb = 2000
     shell: "cat {input:q} > {output:q}"
 
 
@@ -18,7 +18,7 @@ rule pangolin_assignment:
     output:
         table = OUTPUT/"pangolin/pangolin.csv"
     resources:
-        mem_gb = 8,
+        mem_mb = 8000,
         max_cpu_per_node = lambda wc, threads: threads
     log: OUTPUT/"logs/pangolin/pangolin_assignment.txt"
     shell: "pangolin {input.fasta:q} --outfile {output.table:q} --threads {threads} >{log:q} 2>&1"
@@ -36,7 +36,7 @@ rule filter_pangolin:
     log: OUTPUT/"logs/pangolin/filter_pangolin.txt"
     resources:
         runtime = "20m",
-        mem_gb = 2
+        mem_mb = 2000
     run:
         import logging
         import csv

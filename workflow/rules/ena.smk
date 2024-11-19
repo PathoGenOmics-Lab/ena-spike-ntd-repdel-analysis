@@ -42,7 +42,7 @@ rule split_ena_search_results:
         table = temp(OUTPUT/"ena/search/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/runs.csv")
     resources:
         runtime = "10m",
-        mem_gb = 2
+        mem_mb = 2000
     log: OUTPUT/"logs/ena/split_ena_search_results/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}.txt"
     run:
         import logging
@@ -85,7 +85,7 @@ rule download_ena_one_fastq:
     resources:
         ena_api_calls_per_second = 1,
         runtime = "30m",
-        mem_gb = 2
+        mem_mb = 2000
     retries: 2
     script: "../scripts/download_ena_one_fastq.py"
 
@@ -104,7 +104,7 @@ rule download_ena_two_fastq:
     resources:
         ena_api_calls_per_second = 1,
         runtime = "30m",
-        mem_gb = 2
+        mem_mb = 2000
     retries: 2
     log: OUTPUT/"logs/ena/download_ena/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}.txt"
     script: "../scripts/download_ena_two_fastq.py"
