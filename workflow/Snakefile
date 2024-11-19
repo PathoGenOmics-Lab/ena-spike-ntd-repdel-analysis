@@ -20,7 +20,13 @@ rule all:
             inclpct=config["MIN_INCLUDE_FREQ"],
             exclpct=config["MAX_EXCLUDE_FREQ"]
         ),
-        expand(OUTPUT/"repdel/report_region/{path}/sample.png", path=SAMPLE_PATHS)
+        expand(OUTPUT/"repdel/report_region/{path}/sample.png", path=SAMPLE_PATHS),
+        "batched.done"
+
+
+rule batcher:
+    input: zip(expand(OUTPUT/"variants/coverage/{path}/sample.tsv", path=SAMPLE_PATHS), expand(OUTPUT/"variants/consensus/{path}/sample.fasta", path=SAMPLE_PATHS))
+    output: touch("batched.done")
 
 
 include: "rules/fetch.smk"

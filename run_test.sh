@@ -20,10 +20,10 @@ fi
 
 for i in $(seq 1 $NBATCHES); do
     echo ">>> [1] START BATCH $i of $NBATCHES"
-    srun snakemake --workflow-profile profiles/garnatxa --config UNTIL_FILTER=True --batch consensus_merge=$i/$NBATCHES search.filtered.tsv
+    srun snakemake --workflow-profile profiles/garnatxa --config UNTIL_FILTER=True --batch batcher=$i/$NBATCHES batched.done
 done
 
 for i in $(seq 1 $NBATCHES); do
     echo ">>> [2] START BATCH $i of $NBATCHES"
-    srun snakemake --workflow-profile profiles/garnatxa --config UNTIL_FILTER=False --batch filter_haplotype=$i/$NBATCHES
+    srun snakemake --workflow-profile profiles/garnatxa --config UNTIL_FILTER=False --batch batcher=$i/$NBATCHES
 end
