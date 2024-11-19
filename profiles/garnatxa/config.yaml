@@ -19,14 +19,14 @@ default-resources:
   runtime: 30
   max_cpu_per_node: 1
 group-components:
-  download: 10
+  download: 20
   mapping: 8
   pangolin_{study}: 4
-  fastqc: 8
-  fastp: 8
-  pileup: 8
-  coverage: 8
-  consensus: 8
-  vc: 8
-  snp: 8
+  fastqc: 16
+  fastp: 16
+  pileup: 16
+  coverage: 16
+  consensus: 16
+  vc: 16
+  snp: 16
 scheduler: greedy
