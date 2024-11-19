@@ -17,5 +17,5 @@ fi
 
 for i in $(seq 1 $NBATCHES); do
     echo ">>> LAUNCHING BATCH $i of $NBATCHES"
-    srun snakemake --workflow-profile profiles/garnatxa --config UNTIL_FILTER=True --batch consensus_merge=$i/$NBATCHES batched.done
+    srun snakemake --workflow-profile profiles/garnatxa --config UNTIL_FILTER=True --batch batcher=$i/$NBATCHES batched.done
 done
