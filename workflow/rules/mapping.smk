@@ -3,7 +3,8 @@ rule map_index:
     input: OUTPUT/"reference/sequence.fasta"
     output: OUTPUT/"reference/{preset}.mmi"
     resources:
-        runtime = "15m"
+        runtime = "15m",
+        mem_mb = 8000
     log: OUTPUT/"logs/mapping/map_index/{preset}.txt"
     shell: "minimap2 -x {wildcards.preset:q} -d {output:q} {input:q} 2>{log}"
 
