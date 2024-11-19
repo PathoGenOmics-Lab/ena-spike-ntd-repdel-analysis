@@ -7,7 +7,17 @@
 #SBATCH --time 1-00:00:00
 #SBATCH --output slurm-%x-%J.out
 
+set -e
+
 NBATCHES=1000
+
+if [ -z "$1" ] && [ -z "$2" ]; then
+    FROM=1
+    TO=$NBATCHES
+else
+    FROM=$1
+    TO=$2
+fi
 
 if [ ! -f search.tsv ]; then
     echo ">>> SEARCHING"
@@ -15,7 +25,7 @@ if [ ! -f search.tsv ]; then
         --start-date "2021-11-01" --end-date "2022-08-01"
 fi
 
-for i in $(seq 1 $NBATCHES); do
+for i in $(seq $FROM $TO); do
     echo ">>> LAUNCHING BATCH $i of $NBATCHES"
     srun snakemake --workflow-profile profiles/garnatxa --config UNTIL_FILTER=True --batch batcher=$i/$NBATCHES batched.done
 done

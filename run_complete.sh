@@ -11,7 +11,15 @@ set -e
 
 NBATCHES=1000
 
-for i in $(seq 1 $NBATCHES); do
+if [ -z "$1" ] && [ -z "$2" ]; then
+    FROM=1
+    TO=$NBATCHES
+else
+    FROM=$1
+    TO=$2
+fi
+
+for i in $(seq $FROM $TO); do
     echo ">>> START BATCH $i"
     srun snakemake --workflow-profile profiles/garnatxa --config UNTIL_FILTER=False --batch filter_haplotype=$i/$NBATCHES
 end
