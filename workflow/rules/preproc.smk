@@ -28,7 +28,7 @@ rule fastp_single:
         json = OUTPUT/"preproc/fastp/{study}/{sample}/{platform}/{run}/{layout}_1_{strategy}/report.json",
         fastq = temp(OUTPUT/"preproc/fastq/{study}/{sample}/{platform}/{run}/{layout}_1_{strategy}/sample.fastp.fastq.gz")
     resources:
-        runtime = lambda wc, attempt: 20 * attempt,
+        runtime = lambda wc, attempt: 15 * attempt,
         mem_mb = lambda wc, attempt: 4000 * attempt
     retries: 2
     log: OUTPUT/"logs/preproc/fastp_single/{study}/{sample}/{platform}/{run}/{layout}_1_{strategy}.txt"
@@ -40,14 +40,14 @@ rule fastp_paired:
     conda: "../envs/qc.yaml"
     input:
         fastq_1 = OUTPUT/"ena/downloads/fastq/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}/sample.R1.fastq.gz",
-        fastq_2 = OUTPUT/"ena/downloads/fastq/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}/sample.R1.fastq.gz"
+        fastq_2 = OUTPUT/"ena/downloads/fastq/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}/sample.R2.fastq.gz"
     output:
         report = OUTPUT/"preproc/fastp/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}/report.html",
         json = OUTPUT/"preproc/fastp/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}/report.json",
         fastq_1 = temp(OUTPUT/"preproc/fastq/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}/sample.fastp.R1.fastq.gz"),
         fastq_2 = temp(OUTPUT/"preproc/fastq/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}/sample.fastp.R2.fastq.gz")
     resources:
-        runtime = lambda wc, attempt: 20 * attempt,
+        runtime = lambda wc, attempt: 15 * attempt,
         mem_mb = lambda wc, attempt: 4000 * attempt
     retries: 2
     log: OUTPUT/"logs/preproc/fastp_paired/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}.txt"
