@@ -16,7 +16,8 @@ rule filter_haplotype:
 rule report_region:
     conda: "../envs/rdata.yaml"
     input:
-        bam = OUTPUT/"mapping/sorted_bam/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.sorted.bam"
+        bam = OUTPUT/"mapping/sorted_bam/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.sorted.bam",
+        reference = OUTPUT/"reference/sequence.fasta"
     params:
         plot_width_per_position_in = 0.1,
         plot_height_in = 10,

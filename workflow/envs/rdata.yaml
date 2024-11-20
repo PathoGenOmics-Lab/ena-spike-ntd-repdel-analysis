@@ -6,4 +6,5 @@ dependencies:
   - r-base==4.3.3
   - r-tidyverse==2.0.0
   - r-ggpubr==0.6.0
+  - r-ape==5.8
   - bioconductor-rsamtools==2.18.0

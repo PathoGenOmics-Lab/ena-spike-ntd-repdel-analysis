@@ -5,6 +5,7 @@ sink(log, type = "output")
 library(Rsamtools)
 library(tidyverse)
 library(ggpubr)
+library(ape)
 
 Sys.setlocale("LC_TIME", "English")
 theme_set(theme_minimal())
@@ -35,15 +36,36 @@ message("Reading BAM file")
 bam <- BamFile(snakemake@input$bam)
 bam.pileup <- pileup(bam, pileupParam = params)
 
-message("Filtering")
+message("Reading reference FASTA file")
+ref.seq <- read.dna(
+  snakemake@input$reference,
+  format = "fasta",
+  as.character = TRUE)[snakemake@params$positions]
+
+message("Building reference data")
+reference <- data.frame(
+  pos = seq_along(ref.seq) + snakemake@params$positions[1] - 1,
+  ref = toupper(ref.seq)
+)
+
+message("Filtering and joining reference sequence")
 plot.data <- bam.pileup %>%
-    filter(pos %in% snakemake@params$positions)
+    filter(pos %in% snakemake@params$positions) %>%
+    left_join(reference, by = "pos")
 
 message("Plotting")
 p <- plot.data %>%
     ggplot(aes(pos, count, fill = nucleotide)) +
     geom_col(position = "stack") +
-    scale_fill_manual(values = NT.PALETTE)
+    geom_text(aes(label = ref, y = -30, color = ref), size = 3) +
+    geom_text(aes(label = "Reference:", y = -30, x = snakemake@params$positions[1] - 5), size = 3) +
+    scale_fill_manual(values = NT.PALETTE) +
+    scale_color_manual(values = NT.PALETTE) +
+    scale_x_continuous(breaks = snakemake@params$positions) +
+      theme(
+      axis.text.x = element_text(size = 7, angle = 90, vjust = 0.5),
+      panel.grid.minor = element_blank()
+    )
 
 message("Writing plot")
 ggsave(
