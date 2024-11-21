@@ -20,6 +20,6 @@ else
 fi
 
 for i in $(seq $FROM $TO); do
-    echo ">>> START BATCH $i"
-    srun snakemake --workflow-profile profiles/garnatxa --config UNTIL_FILTER=False --batch filter_haplotype=$i/$NBATCHES
+    echo ">>> LAUNCHING BATCH $i of $NBATCHES"
+    srun snakemake --workflow-profile profiles/garnatxa --config UNTIL_FILTER=True --batch batcher=$i/$NBATCHES search.filterd.tsv
 done
