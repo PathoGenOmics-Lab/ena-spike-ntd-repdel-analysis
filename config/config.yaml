@@ -14,8 +14,9 @@ COVERAGE_FILTER:
 MIN_INCLUDE_FREQ:
   - 80
 MAX_EXCLUDE_FREQ:
-  - 10
+  - 5
   - 50
+  - 70
 HAPLOTYPES:
   Rep_69_70:
     include_hgvs_p:
