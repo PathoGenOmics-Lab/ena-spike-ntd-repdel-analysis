@@ -42,7 +42,7 @@ rule split_ena_search_results:
         table = temp(OUTPUT/"ena/search/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/runs.csv")
     resources:
         runtime = "10m",
-        mem_mb = lambda wc, attempt: 2000 * attempt
+        mem_mb = lambda wc, attempt: 4000 * attempt
     log: OUTPUT/"logs/ena/split_ena_search_results/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}.txt"
     run:
         import logging
