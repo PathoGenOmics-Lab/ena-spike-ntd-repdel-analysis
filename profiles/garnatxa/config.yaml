@@ -20,8 +20,7 @@ default-resources:
   max_cpu_per_node: 1
 group-components:
   download: 20
-  mapping: 8
-  pangolin: 4
+  mapping: 16
   fastqc: 16
   fastp: 16
   pileup: 16

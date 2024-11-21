@@ -11,7 +11,7 @@ rule map_index:
 
 rule map_single_nanopore:
     group: "mapping"
-    threads: 4
+    threads: 2
     conda: "../envs/reads.yaml"
     input:
         reference = OUTPUT/"reference/map-ont.mmi",
@@ -31,7 +31,7 @@ rule map_single_nanopore:
 
 rule map_paired_illumina:
     group: "mapping"
-    threads: 4
+    threads: 2
     conda: "../envs/reads.yaml"
     input:
         reference = OUTPUT/"reference/sr.mmi",
@@ -52,7 +52,7 @@ rule map_paired_illumina:
 
 rule map_single_illumina:
     group: "mapping"
-    threads: 4
+    threads: 2
     conda: "../envs/reads.yaml"
     input:
         reference = OUTPUT/"reference/sr.mmi",
@@ -99,7 +99,7 @@ use rule map_paired_illumina as map_paired_ion_torrent with:
 
 rule map_pacbio_hifi:
     group: "mapping"
-    threads: 4
+    threads: 2
     conda: "../envs/reads.yaml"
     input:
         reference = OUTPUT/"reference/map-hifi.mmi",

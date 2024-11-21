@@ -1,5 +1,4 @@
 rule consensus_merge:
-    group: "pangolin"
     input: expand(OUTPUT/"variants/consensus/{path}/sample.fasta", path=SAMPLE_PATHS)
     output: temp(OUTPUT/"pangolin/sequences.fasta")
     resources:
@@ -10,7 +9,6 @@ rule consensus_merge:
 
 rule pangolin_assignment:
     threads: 32
-    group: "pangolin"
     conda: "../envs/lineages.yaml"
     shadow: "minimal"
     input:
@@ -18,7 +16,7 @@ rule pangolin_assignment:
     output:
         table = OUTPUT/"pangolin/pangolin.csv"
     resources:
-        mem_mb = 8000,
+        mem_mb = 16000,
         max_cpu_per_node = lambda wc, threads: threads
     log: OUTPUT/"logs/pangolin/pangolin_assignment.txt"
     shell: "pangolin {input.fasta:q} --outfile {output.table:q} --threads {threads} >{log:q} 2>&1"
