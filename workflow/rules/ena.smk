@@ -98,7 +98,8 @@ rule download_ena_two_fastq:
     params:
         retries = 5,
         backoff_factor = 1,
-        backoff_jitter = 1
+        backoff_jitter = 1,
+        chunk_mb = 10
     output:
         fastq_1 = temp(OUTPUT/"ena/downloads/fastq/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}/sample.R1.fastq.gz"),
         fastq_2 = temp(OUTPUT/"ena/downloads/fastq/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}/sample.R2.fastq.gz")
