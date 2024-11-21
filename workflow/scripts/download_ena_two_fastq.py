@@ -12,7 +12,8 @@ def download_file(session, url, path):
     r = session.get(url)
     if r.status_code == 200:
         with open(path, "wb") as fw:
-            fw.write(r.content)
+            for chunk in r.iter_content(snakemake.params.chunk_mb * 1000000):
+                fw.write(chunk)
         logging.debug(f"Downloaded {len(r.content)} bytes; sleeping {snakemake.params.backoff_factor} s")
         time.sleep(snakemake.params.backoff_factor)
     else:
