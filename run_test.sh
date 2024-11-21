@@ -26,4 +26,4 @@ done
 for i in $(seq 1 $NBATCHES); do
     echo ">>> [2] START BATCH $i of $NBATCHES"
     srun snakemake --workflow-profile profiles/garnatxa --config UNTIL_FILTER=False --batch batcher=$i/$NBATCHES
-end
+done
