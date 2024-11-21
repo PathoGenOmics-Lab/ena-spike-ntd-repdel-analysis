@@ -10,7 +10,7 @@ max-jobs-per-timespan: 20/1s
 latency-wait: 60
 resources:
   ena_api_calls_per_second: 50
-  max_cpu_per_node: 70
+  max_cpu_per_node: 200
 default-resources:
   mem_mb: 4000
   slurm_partition: "'global'"
@@ -21,7 +21,7 @@ default-resources:
 group-components:
   download: 20
   mapping: 8
-  pangolin_{study}: 4
+  pangolin: 4
   fastqc: 16
   fastp: 16
   pileup: 16

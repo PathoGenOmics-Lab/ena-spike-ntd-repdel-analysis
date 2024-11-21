@@ -1,5 +1,5 @@
 rule consensus_merge:
-    group: "pangolin_{study}"
+    group: "pangolin"
     input: expand(OUTPUT/"variants/consensus/{path}/sample.fasta", path=SAMPLE_PATHS)
     output: temp(OUTPUT/"pangolin/sequences.fasta")
     resources:
@@ -10,7 +10,7 @@ rule consensus_merge:
 
 rule pangolin_assignment:
     threads: 32
-    group: "pangolin_{study}"
+    group: "pangolin"
     conda: "../envs/lineages.yaml"
     shadow: "minimal"
     input:
