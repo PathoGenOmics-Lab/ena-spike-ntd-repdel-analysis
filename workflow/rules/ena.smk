@@ -35,7 +35,7 @@ use rule summarize_ena_search as summarize_ena_search_after_processing with:
 
 
 rule split_ena_search_results:
-    group: "download"
+    group: "sample"
     input:
         table = config["SEARCH_TABLE"]
     output:
@@ -72,7 +72,7 @@ rule split_ena_search_results:
 
 
 rule download_ena_one_fastq:
-    group: "download"
+    group: "sample"
     input:
         table = OUTPUT/"ena/search/{study}/{sample}/{platform}/{run}/{layout}_1_{strategy}/runs.csv"
     params:
@@ -92,7 +92,7 @@ rule download_ena_one_fastq:
 
 
 rule download_ena_two_fastq:
-    group: "download"
+    group: "sample"
     input:
         table = OUTPUT/"ena/search/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}/runs.csv"
     params:

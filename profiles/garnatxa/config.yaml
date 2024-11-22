@@ -19,13 +19,5 @@ default-resources:
   runtime: 30
   max_cpu_per_node: 1
 group-components:
-  download: 20
-  mapping: 16
-  fastqc: 16
-  fastp: 16
-  pileup: 16
-  coverage: 16
-  consensus: 16
-  vc: 16
-  snp: 16
+  sample: 32
 scheduler: greedy

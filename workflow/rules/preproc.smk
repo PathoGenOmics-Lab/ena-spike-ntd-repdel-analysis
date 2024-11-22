@@ -1,5 +1,5 @@
 rule fastqc:
-    group: "fastqc"
+    group: "sample"
     conda: "../envs/qc.yaml"
     shadow: "minimal"
     input: OUTPUT/"ena/downloads/fastq/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}"
@@ -19,7 +19,7 @@ rule multiqc:
 
 
 rule fastp_single:
-    group: "fastp"
+    group: "sample"
     conda: "../envs/qc.yaml"
     input:
         fastq = OUTPUT/"ena/downloads/fastq/{study}/{sample}/{platform}/{run}/{layout}_1_{strategy}/sample.fastq.gz"
@@ -36,7 +36,7 @@ rule fastp_single:
 
 
 rule fastp_paired:
-    group: "fastp"
+    group: "sample"
     conda: "../envs/qc.yaml"
     input:
         fastq_1 = OUTPUT/"ena/downloads/fastq/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}/sample.R1.fastq.gz",

@@ -1,5 +1,5 @@
 rule pileup:
-    group: "pileup"
+    group: "sample"
     conda: "../envs/reads.yaml"
     input:
         reference = OUTPUT/"reference/sequence.fasta",
@@ -18,7 +18,7 @@ rule pileup:
 
 
 rule coverage:
-    group: "coverage"
+    group: "sample"
     shadow: "minimal"
     conda: "../envs/reads.yaml"
     input:
@@ -90,7 +90,7 @@ rule filter_coverage:
 
 
 rule consensus:
-    group: "consensus"
+    group: "sample"
     conda: "../envs/reads.yaml"
     shadow: "minimal"
     input:
@@ -116,7 +116,7 @@ rule consensus:
 
 
 rule variant_calling:
-    group: "vc"
+    group: "sample"
     conda: "../envs/reads.yaml"
     shadow: "minimal"
     params:
@@ -137,7 +137,7 @@ rule variant_calling:
 
 
 rule ivar_tsv_to_vcf:
-    group: "snp"
+    group: "sample"
     conda: "../envs/pydata.yaml"
     input:
         tsv = OUTPUT/"variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.tsv",
@@ -159,7 +159,7 @@ rule ivar_tsv_to_vcf:
 
 
 rule snpeff_annotate:
-    group: "snp"
+    group: "sample"
     conda: "../envs/annotation.yaml"
     shadow: "minimal"
     input:
@@ -178,7 +178,7 @@ rule snpeff_annotate:
 
 
 rule snpsift_extract_variants:
-    group: "snp"
+    group: "sample"
     conda: "../envs/annotation.yaml"
     input:
         vcf = OUTPUT/"variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.annotated.vcf"
