@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-#SBATCH --job-name t_repdel
+#SBATCH --job-name repdel
 #SBATCH --mem 16GB
 #SBATCH --cpus-per-task 1
 #SBATCH --ntasks 1
-#SBATCH --qos short
-#SBATCH --time 1-00:00:00
+#SBATCH --qos medium
+#SBATCH --time 7-00:00:00
 #SBATCH --output slurm-%x-%J.out
 
 set -e
