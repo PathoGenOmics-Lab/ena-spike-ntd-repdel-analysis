@@ -9,7 +9,7 @@
 
 set -e
 
-NBATCHES=300
+NBATCHES=50
 
 if [ -z "$1" ] && [ -z "$2" ]; then
     FROM=1
@@ -22,7 +22,7 @@ fi
 if [ ! -f search.tsv ]; then
     echo ">>> SEARCHING"
     python search_ena.py search.complete.tsv --start-date "2021-11-01" --end-date "2022-08-01"
-    python search.py search.complete.tsv search.tsv --subsample 100000
+    python subsample.py search.complete.tsv search.tsv --subsample 100000
 fi
 
 for i in $(seq $FROM $TO); do
