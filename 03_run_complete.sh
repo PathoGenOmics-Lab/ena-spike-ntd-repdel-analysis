@@ -9,7 +9,7 @@
 
 set -e
 
-NBATCHES=300
+NBATCHES=50
 
 if [ -z "$1" ] && [ -z "$2" ]; then
     FROM=1
