@@ -49,7 +49,7 @@ if __name__ == "__main__":
     assert(len(run) == 1)
     
     # Download two FASTQ files
-    logging.info("Formatting URL:", run.iloc[0].fastq_ftp)
+    logging.info(f"Formatting URL: {run.iloc[0].fastq_ftp}")
     urls = run.iloc[0].fastq_ftp.split(";")
     assert(len(urls) == 1)
     url = format_url(urls[0])
