@@ -27,7 +27,7 @@ def get_ENA_text_fields():
     return fields
 
 
-def build_query(min_date: str, max_date: str, tax_id: str, host: str, no_platform: List[str], no_lib_strat: List[str], no_lib_src: List[str]) -> str:
+def build_query(min_date: str, max_date: str, tax_id: str, host: str, no_platform: List[str], no_lib_strat: List[str], no_lib_src: List[str], no_empty: List[str]) -> str:
     if min_date == max_date:
         date_terms = [f"collection_date={min_date}"]
     else:
@@ -38,7 +38,8 @@ def build_query(min_date: str, max_date: str, tax_id: str, host: str, no_platfor
         f'host_scientific_name="{host}"' if host else None,
         *[f'instrument_platform!="{item}"' for item in no_platform],
         *[f'library_strategy!="{item}"' for item in no_lib_strat],
-        *[f'library_source!="{item}"' for item in no_lib_src]
+        *[f'library_source!="{item}"' for item in no_lib_src],
+        *[f'{field}!=""' for field in no_empty]
     ]
     return " AND ".join(item for item in items if item)
 
@@ -59,6 +60,7 @@ if __name__ == "__main__":
     parser.add_argument("--end-date", type=str, required=True)
     parser.add_argument("--ncbi-taxonomy", type=str, default="2697049")
     parser.add_argument("--host-scientific-name", type=str, default="Homo sapiens")
+    parser.add_argument("--exclude-empty-fields", type=str, nargs="+", default=["fastq_ftp"])
     parser.add_argument("--exclude-platform", type=str, nargs="+")
     parser.add_argument("--exclude-instrument-platform", type=str, nargs="+", default=["CAPILLARY", "DNBSEQ", "ELEMENT"])
     parser.add_argument("--exclude-library-strategy", type=str, nargs="+", default=["RNA-Seq"])
@@ -91,7 +93,8 @@ if __name__ == "__main__":
         args.host_scientific_name,
         args.exclude_instrument_platform,
         args.exclude_library_strategy,
-        args.exclude_library_source
+        args.exclude_library_source,
+        args.exclude_empty_fields
     )
     data["query"] = urllib.parse.quote(query_txt, safe="")
     data["fields"] = ",".join(fields)
@@ -101,4 +104,4 @@ if __name__ == "__main__":
             logging.info("Writing ENA search results")
             write_iter(r.iter_content(chunk_size=args.chunk_size), args.output)
         else:
-            sys.exit(f"Request failed at record #{n} with code {r.status_code}: {r.text}")
+            sys.exit(f"Request failed with code {r.status_code}: {r.text}")
