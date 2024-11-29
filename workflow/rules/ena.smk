@@ -110,3 +110,18 @@ rule download_ena_two_fastq:
     retries: 2
     log: OUTPUT/"logs/ena/download_ena/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}.txt"
     script: "../scripts/download_ena_two_fastq.py"
+
+
+rule crosslink_gisaid:
+    threads: 1
+    input:
+        table = config["SEARCH_TABLE"]
+    params:
+        columns = ["study_accession", "sample_accession", "instrument_platform", "run_accession", "library_layout", "library_strategy"]
+    output:
+        table = OUTPUT/"ena/crosslink_gisaid.csv"
+    resources:
+        runtime = "60m",
+        mem_mb = 4000
+    log: OUTPUT/"logs/ena/crosslink_gisaid.txt"
+    script: "../scripts/crosslink_gisaid.py"

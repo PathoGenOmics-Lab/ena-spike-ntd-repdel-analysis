@@ -21,6 +21,7 @@ rule all:
             exclpct=config["MAX_EXCLUDE_FREQ"]
         ),
         expand(OUTPUT/"repdel/report_region/{path}/sample.png", path=SAMPLE_PATHS),
+        OUTPUT/"ena/crosslink_gisaid.csv",
         "batched.done"
 
 
