@@ -24,5 +24,5 @@ if __name__ == "__main__":
         writer = csv.DictWriter(fw, fieldnames=reader.fieldnames, delimiter="\t")
         writer.writeheader()
         for record in reader:
-            if not any(record[column] is None for column in args.exclude_empty_values):
+            if not any(record[column] == "" for column in args.exclude_empty_values):
                 writer.writerow(record)
