@@ -14,8 +14,9 @@ LIMIT=1000
 
 if [ ! -f search.tsv ]; then
     echo ">>> SEARCHING"
-    python search_ena.py search.tsv \
+    python scripts/search_ena.py search.raw.tsv \
         --start-date "2021-11-01" --end-date "2022-08-01" --limit $LIMIT
+    python scripts/filter_search_ena.py search.raw.tsv search.tsv
 fi
 
 for i in $(seq 1 $NBATCHES); do

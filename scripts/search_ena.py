@@ -60,7 +60,6 @@ if __name__ == "__main__":
     parser.add_argument("--end-date", type=str, required=True)
     parser.add_argument("--ncbi-taxonomy", type=str, default="2697049")
     parser.add_argument("--host-scientific-name", type=str, default="Homo sapiens")
-    parser.add_argument("--exclude-empty-fields", type=str, nargs="+", default=["fastq_ftp"])
     parser.add_argument("--exclude-platform", type=str, nargs="+")
     parser.add_argument("--exclude-instrument-platform", type=str, nargs="+", default=["CAPILLARY", "DNBSEQ", "ELEMENT"])
     parser.add_argument("--exclude-library-strategy", type=str, nargs="+", default=["RNA-Seq"])
@@ -93,8 +92,7 @@ if __name__ == "__main__":
         args.host_scientific_name,
         args.exclude_instrument_platform,
         args.exclude_library_strategy,
-        args.exclude_library_source,
-        args.exclude_empty_fields
+        args.exclude_library_source
     )
     data["query"] = urllib.parse.quote(query_txt, safe="")
     data["fields"] = ",".join(fields)
