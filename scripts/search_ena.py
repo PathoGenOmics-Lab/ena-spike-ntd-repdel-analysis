@@ -27,7 +27,7 @@ def get_ENA_text_fields():
     return fields
 
 
-def build_query(min_date: str, max_date: str, tax_id: str, host: str, no_platform: List[str], no_lib_strat: List[str], no_lib_src: List[str], no_empty: List[str]) -> str:
+def build_query(min_date: str, max_date: str, tax_id: str, host: str, no_platform: List[str], no_lib_strat: List[str], no_lib_src: List[str]) -> str:
     if min_date == max_date:
         date_terms = [f"collection_date={min_date}"]
     else:
@@ -39,7 +39,6 @@ def build_query(min_date: str, max_date: str, tax_id: str, host: str, no_platfor
         *[f'instrument_platform!="{item}"' for item in no_platform],
         *[f'library_strategy!="{item}"' for item in no_lib_strat],
         *[f'library_source!="{item}"' for item in no_lib_src],
-        *[f'{field}!=""' for field in no_empty]
     ]
     return " AND ".join(item for item in items if item)
 
