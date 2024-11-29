@@ -17,8 +17,8 @@ if [ ! -f search.tsv ]; then
 fi
 
 echo ">>> RUNNING SECTION [1]"
-srun snakemake --workflow-profile profiles/garnatxa --config UNTIL_FILTER=True batched.done
+srun snakemake batched.done --workflow-profile profiles/garnatxa --config UNTIL_FILTER=True
 echo ">>> RUNNING SECTION [2]"
-srun snakemake --workflow-profile profiles/garnatxa --config UNTIL_FILTER=True search.filtered.tsv
+srun snakemake search.filtered.tsv --workflow-profile profiles/garnatxa --config UNTIL_FILTER=True
 echo ">>> RUNNING SECTION [3]"
 srun snakemake --workflow-profile profiles/garnatxa --config UNTIL_FILTER=False

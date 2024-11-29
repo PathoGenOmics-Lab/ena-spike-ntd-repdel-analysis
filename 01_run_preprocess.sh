@@ -28,5 +28,5 @@ fi
 
 for i in $(seq $FROM $TO); do
     echo ">>> LAUNCHING BATCH $i of $NBATCHES"
-    srun snakemake --workflow-profile profiles/garnatxa --config UNTIL_FILTER=True --batch batcher=$i/$NBATCHES batched.done
+    srun snakemake batched.done --workflow-profile profiles/garnatxa --config UNTIL_FILTER=True --batch batcher=$i/$NBATCHES
 done

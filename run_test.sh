@@ -21,12 +21,12 @@ fi
 
 for i in $(seq 1 $NBATCHES); do
     echo ">>> [1] START BATCH $i of $NBATCHES"
-    srun snakemake --workflow-profile profiles/garnatxa --config UNTIL_FILTER=True --batch batcher=$i/$NBATCHES batched.done
+    srun snakemake batched.done --workflow-profile profiles/garnatxa --config UNTIL_FILTER=True --batch batcher=$i/$NBATCHES
 done
 
 for i in $(seq 1 $NBATCHES); do
     echo ">>> [2] START BATCH $i of $NBATCHES"
-    srun snakemake --workflow-profile profiles/garnatxa --config UNTIL_FILTER=True --batch batcher=$i/$NBATCHES search.filtered.tsv 
+    srun snakemake search.filtered.tsv --workflow-profile profiles/garnatxa --config UNTIL_FILTER=True --batch batcher=$i/$NBATCHES
 done
 
 for i in $(seq 1 $NBATCHES); do
