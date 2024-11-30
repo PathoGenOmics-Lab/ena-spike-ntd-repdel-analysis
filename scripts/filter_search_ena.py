@@ -10,7 +10,7 @@ if __name__ == "__main__":
     )
     parser.add_argument("input")
     parser.add_argument("output")
-    parser.add_argument("--omit-list", default="../data/omit.csv")
+    parser.add_argument("--omit-list", default="data/omit.csv")
     parser.add_argument("--omit-list-skip-cols", nargs="+", default="reason")
     parser.add_argument("--exclude-empty-values", nargs="+", default=["fastq_ftp"])
     args = parser.parse_args()
