@@ -1,0 +1,4 @@
+study_accession,sample_accession,instrument_platform,run_accession,library_layout,library_strategy,reason
+PRJNA716985,SAMN30235328,ILLUMINA,SRR21041879,PAIRED,AMPLICON,FASTQ unexpected eof
+PRJNA743046,SAMN29422331,ILLUMINA,SRR21114280,PAIRED,AMPLICON,FASTQ unexpected eof
+PRJNA743046,SAMN29422466,ILLUMINA,SRR21114594,PAIRED,AMPLICON,FASTQ unexpected eof
