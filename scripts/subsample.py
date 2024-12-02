@@ -36,7 +36,7 @@ if __name__ == "__main__":
     random.seed(args.subsample_seed)
     indices = list(range(n_records))
     random.shuffle(indices)
-    indices = indices[:args.subsample]
+    indices = set(indices[:args.subsample])
     
     logging.info("Writing subsample")
     with open(args.input) as f, open(args.output, "w") as fw:
@@ -45,4 +45,5 @@ if __name__ == "__main__":
         # Write rows from subsample
         for i, line in enumerate(f):
             if i in indices:
+                indices.remove(i)
                 fw.write(line)
