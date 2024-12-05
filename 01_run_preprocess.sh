@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#SBATCH --job-name sp_repdel
+#SBATCH --job-name srepdel
 #SBATCH --mem 16GB
 #SBATCH --cpus-per-task 1
 #SBATCH --ntasks 1
@@ -17,13 +17,6 @@ if [ -z "$1" ] && [ -z "$2" ]; then
 else
     FROM=$1
     TO=$2
-fi
-
-if [ ! -f search.tsv ]; then
-    echo ">>> SEARCHING"
-    srun python scripts/search_ena.py search.raw.complete.tsv --start-date "2021-11-01" --end-date "2022-08-01"
-    srun python scripts/filter_search_ena.py search.raw.complete.tsv search.filtered.complete.tsv
-    srun python scripts/subsample.py search.filtered.complete.tsv search.tsv --subsample 100000
 fi
 
 for i in $(seq $FROM $TO); do
