@@ -7,8 +7,6 @@
 #SBATCH --time 7-00:00:00
 #SBATCH --output slurm-%x-%J.out
 
-set -e
-
 NBATCHES=50
 
 if [ -z "$1" ] && [ -z "$2" ]; then
@@ -21,5 +19,5 @@ fi
 
 for i in $(seq $FROM $TO); do
     echo ">>> LAUNCHING BATCH $i of $NBATCHES"
-    srun snakemake batched.done --workflow-profile profiles/garnatxa --config UNTIL_FILTER=True --batch batcher=$i/$NBATCHES
+    srun snakemake batched.done --keep-going --workflow-profile profiles/garnatxa --config UNTIL_FILTER=True --batch batcher=$i/$NBATCHES
 done
