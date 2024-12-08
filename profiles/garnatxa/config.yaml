@@ -19,5 +19,5 @@ default-resources:
   runtime: 30
   max_cpu_per_node: 1
 group-components:
-  sample: 16
+  sample: 8
 scheduler: greedy
