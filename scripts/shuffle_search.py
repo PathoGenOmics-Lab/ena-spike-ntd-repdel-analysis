@@ -22,4 +22,4 @@ if __name__ == "__main__":
     logging.info("Shuffling")
     pd.read_csv(args.input, sep="\t") \
         .sample(frac=1, random_state=args.seed) \
-        .to_csv(args.output, index=False)
+        .to_csv(args.output, sep="\t", index=False)
