@@ -21,3 +21,4 @@ default-resources:
 group-components:
   sample: 8
 scheduler: greedy
+rerun-incomplete: True
