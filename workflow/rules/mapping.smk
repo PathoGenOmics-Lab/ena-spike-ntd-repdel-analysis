@@ -19,7 +19,7 @@ rule map_single_nanopore:
     output:
         bam = OUTPUT/"mapping/sorted_bam/{study}/{sample}/OXFORD_NANOPORE/{run}/{layout}_1_{strategy}/sample.sorted.bam"
     resources:
-        runtime = lambda wc, attempt: 15 * attempt,
+        runtime = lambda wc, attempt: 20 * attempt,
         mem_mb = lambda wc, attempt: 4000 * attempt,
         max_cpu_per_node = lambda wc, threads: threads
     retries: 2
@@ -40,7 +40,7 @@ rule map_paired_illumina:
     output:
         bam = OUTPUT/"mapping/sorted_bam/{study}/{sample}/ILLUMINA/{run}/{layout}_2_{strategy}/sample.sorted.bam"
     resources:
-        runtime = lambda wc, attempt: 15 * attempt,
+        runtime = lambda wc, attempt: 20 * attempt,
         mem_mb = lambda wc, attempt: 4000 * attempt,
         max_cpu_per_node = lambda wc, threads: threads
     retries: 2
@@ -60,7 +60,7 @@ rule map_single_illumina:
     output:
         bam = OUTPUT/"mapping/sorted_bam/{study}/{sample}/ILLUMINA/{run}/{layout}_1_{strategy}/sample.sorted.bam"
     resources:
-        runtime = lambda wc, attempt: 15 * attempt,
+        runtime = lambda wc, attempt: 20 * attempt,
         mem_mb = lambda wc, attempt: 4000 * attempt,
         max_cpu_per_node = lambda wc, threads: threads
     retries: 2
@@ -107,7 +107,7 @@ rule map_pacbio_hifi:
     output:
         bam = OUTPUT/"mapping/sorted_bam/{study}/{sample}/PACBIO_SMRT/{run}/{layout}_1_{strategy}/sample.sorted.bam"
     resources:
-        runtime = lambda wc, attempt: 15 * attempt,
+        runtime = lambda wc, attempt: 20 * attempt,
         mem_mb = lambda wc, attempt: 4000 * attempt,
         max_cpu_per_node = lambda wc, threads: threads
     retries: 2

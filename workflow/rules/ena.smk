@@ -85,7 +85,7 @@ rule download_ena_one_fastq:
     log: OUTPUT/"logs/ena/download_ena/{study}/{sample}/{platform}/{run}/{layout}_1_{strategy}.txt"
     resources:
         ena_api_calls_per_second = 1,
-        runtime = "30m",
+        runtime = lambda wc, attempt: 30 * attempt,
         mem_mb = lambda wc, attempt: 2000 * attempt
     retries: 2
     script: "../scripts/download_ena_one_fastq.py"
@@ -105,7 +105,7 @@ rule download_ena_two_fastq:
         fastq_2 = temp(OUTPUT/"ena/downloads/fastq/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}/sample.R2.fastq.gz")
     resources:
         ena_api_calls_per_second = 1,
-        runtime = "30m",
+        runtime = lambda wc, attempt: 30 * attempt,
         mem_mb = lambda wc, attempt: 2000 * attempt
     retries: 2
     log: OUTPUT/"logs/ena/download_ena/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}.txt"
