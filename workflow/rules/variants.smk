@@ -31,8 +31,8 @@ rule coverage:
         table = temp(OUTPUT/"variants/coverage/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.tsv"),
         index = temp(OUTPUT/"mapping/sorted_bam/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.sorted.bam.bai")
     resources:
-        runtime = lambda wc, attempt: 2 * attempt,
-        mem_mb = lambda wc, attempt: 200 * attempt
+        runtime = lambda wc, attempt: 5 * attempt,
+        mem_mb = lambda wc, attempt: 500 * attempt
     retries: 2
     log: OUTPUT/"logs/variants/coverage/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}.txt"
     shell:
