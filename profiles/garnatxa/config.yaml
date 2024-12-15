@@ -20,5 +20,6 @@ default-resources:
   max_cpu_per_node: 1
 group-components:
   sample: 8
+  download: 5
 scheduler: greedy
 rerun-incomplete: True

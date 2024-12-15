@@ -41,8 +41,9 @@ rule split_ena_search_results:
     output:
         table = temp(OUTPUT/"ena/search/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/runs.csv")
     resources:
-        runtime = "10m",
+        runtime = lambda wc, attempt: 15 * attempt,
         mem_mb = lambda wc, attempt: 4000 * attempt
+    retries: 2
     log: OUTPUT/"logs/ena/split_ena_search_results/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}.txt"
     run:
         import logging
@@ -72,7 +73,7 @@ rule split_ena_search_results:
 
 
 rule download_ena_one_fastq:
-    group: "sample"
+    group: "download"
     input:
         table = OUTPUT/"ena/search/{study}/{sample}/{platform}/{run}/{layout}_1_{strategy}/runs.csv"
     params:
@@ -92,7 +93,7 @@ rule download_ena_one_fastq:
 
 
 rule download_ena_two_fastq:
-    group: "sample"
+    group: "download"
     input:
         table = OUTPUT/"ena/search/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}/runs.csv"
     params:
