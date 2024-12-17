@@ -35,7 +35,7 @@ use rule summarize_ena_search as summarize_ena_search_after_processing with:
 
 
 rule split_ena_search_results:
-    group: "sample"
+    group: "download"
     input:
         table = config["SEARCH_TABLE"]
     output:
