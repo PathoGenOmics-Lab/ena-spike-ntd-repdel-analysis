@@ -25,4 +25,3 @@ scheduler: greedy
 rerun-incomplete: True
 consider-ancient:
   split_ena_search_results: table
-  crosslink_gisaid: table
