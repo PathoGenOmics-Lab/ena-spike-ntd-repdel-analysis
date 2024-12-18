@@ -11,7 +11,7 @@ rule pileup:
         pileup = temp(OUTPUT/"variants/pileup/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.pileup")
     resources:
         runtime = lambda wc, attempt: 20 * attempt,
-        mem_mb = lambda wc, attempt: 1000 * attempt
+        mem_mb = lambda wc, attempt: 2000 * attempt
     retries: 2
     log: OUTPUT/"logs/variants/pileup/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}.txt"
     shell: "samtools mpileup -aa -x -A -d {params.max_depth} -B -Q {params.min_quality} -f {input.reference:q} {input.bam:q} >{output.pileup:q} 2>{log:q}"
@@ -32,7 +32,7 @@ rule coverage:
         index = temp(OUTPUT/"mapping/sorted_bam/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.sorted.bam.bai")
     resources:
         runtime = lambda wc, attempt: 5 * attempt,
-        mem_mb = lambda wc, attempt: 500 * attempt
+        mem_mb = lambda wc, attempt: 1000 * attempt
     retries: 2
     log: OUTPUT/"logs/variants/coverage/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}.txt"
     shell:
