@@ -1,40 +1,30 @@
-rule consensus_merge:
-    input: expand(OUTPUT/"variants/consensus/{path}/sample.fasta", path=SAMPLE_PATHS)
-    output: temp(OUTPUT/"pangolin/sequences.fasta")
-    resources:
-        runtime = "15m",
-        mem_mb = 2000
-    shell: "cat {input:q} > {output:q}"
-
-
 rule pangolin_assignment:
-    threads: 32
+    threads: 1
     conda: "../envs/lineages.yaml"
     shadow: "minimal"
     input:
-        fasta = OUTPUT/"pangolin/sequences.fasta"
+        fasta = OUTPUT/"variants/consensus/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.fasta"
     output:
-        table = OUTPUT/"pangolin/pangolin.csv"
+        table = OUTPUT/"pangolin/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/assignment.csv"
     resources:
-        mem_mb = 16000,
-        max_cpu_per_node = lambda wc, threads: threads
-    log: OUTPUT/"logs/pangolin/pangolin_assignment.txt"
+        mem_mb = 4000
+    log: OUTPUT/"logs/pangolin/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/assignment.txt"
     shell: "pangolin {input.fasta:q} --outfile {output.table:q} --threads {threads} >{log:q} 2>&1"
 
 
 rule filter_pangolin:
     input:
-        table = OUTPUT/"pangolin/pangolin.csv"
+        table = OUTPUT/"pangolin/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/assignment.csv"
     params:
         qc_status = ["pass"],
         scorpio_call = ["Omicron (BA.1-like)"],
         lineage_base = ["BA.1"]
     output:
-        table = temp(OUTPUT/"pangolin/pangolin.filtered.csv")
-    log: OUTPUT/"logs/pangolin/filter_pangolin.txt"
+        table = temp(OUTPUT/"pangolin/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/assignment.filtered.csv")
+    log: OUTPUT/"logs/pangolin/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/filter.txt"
     resources:
-        runtime = "20m",
-        mem_mb = 2000
+        runtime = "10m",
+        mem_mb = 250
     run:
         import logging
         import csv
@@ -43,21 +33,31 @@ rule filter_pangolin:
             format=config["PY_LOG_FMT"],
             filename=log[0]
         )
-        n = 0
-        ntotal = 0
+        passed = False
         with open(input.table) as f, open(output.table, "w") as fw:
             reader = csv.DictReader(f)
             writer = csv.DictWriter(fw, fieldnames=reader.fieldnames)
             writer.writeheader()
-            for row in reader:
-                if row["qc_status"] in params.qc_status and any((
-                    row["scorpio_call"] in params.scorpio_call,
-                    any(row["lineage"].startswith(lineage) for lineage in params.lineage_base)
-                )):
-                    writer.writerow(row)
-                    n += 1
-                ntotal += 1
-        logging.info(f"Wrote {n} of {ntotal} records with qc_status in {params.qc_status}, and scorpio_call in {params.scorpio_call} or lineage base in {params.lineage_base}")
+            row = next(reader)
+            if row["qc_status"] in params.qc_status and any((
+                row["scorpio_call"] in params.scorpio_call,
+                any(row["lineage"].startswith(lineage) for lineage in params.lineage_base)
+            )):
+                writer.writerow(row)
+                passed = True
+        logging.info(f"Record pass={passed}")
+
+
+rule pangolin_merge:
+    shadow: "shallow"
+    input: expand(OUTPUT/"pangolin/{path}/assignment.filtered.tsv", path=SAMPLE_PATHS)
+    output: OUTPUT/"variants/pangolin.filtered.csv"
+    resources:
+        runtime = "10m",
+        mem_mb = 500
+    log: OUTPUT/"logs/pangolin/pangolin_merge.txt"
+    shell: "head -n 1 {input[0]:q} >{output:q} 2>{log:q} && tail -n +2 -q {input:q} >>{output:q} 2>>{log:q}"
+
 
 
 rule select_samples_after_processing:
