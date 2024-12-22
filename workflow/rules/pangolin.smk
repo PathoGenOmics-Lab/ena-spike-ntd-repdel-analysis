@@ -50,7 +50,7 @@ rule filter_pangolin:
 
 use rule cat as pangolin_merge with:
     input: expand(OUTPUT/"pangolin/{path}/assignment.filtered.csv", path=SAMPLE_PATHS)
-    output: OUTPUT/"variants/pangolin.filtered.csv"
+    output: OUTPUT/"pangolin/pangolin.filtered.csv"
 
 
 rule select_samples_after_processing:
