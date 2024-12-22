@@ -25,12 +25,16 @@ rule all:
         "batched.done"
 
 
+rule batcher_merge:
+    input:
+        coverage = OUTPUT/"variants/coverage/{path}/sample.tsv",
+        lineage  = OUTPUT/"pangolin/{path}/assignment.filtered.csv"
+    output:
+        temp(touch(OUTPUT/"batcher/{path}/done"))
+
+
 rule batcher:
-    input: zip(
-        expand(OUTPUT/"variants/coverage/{path}/sample.tsv", path=SAMPLE_PATHS),     # coverage values
-        expand(OUTPUT/"variants/consensus/{path}/sample.fasta", path=SAMPLE_PATHS),  # consensus sequences
-        expand(OUTPUT/"pangolin/{path}/assignment.filtered.tsv", path=SAMPLE_PATHS)  # pangolin assignment
-    )
+    input: expand(OUTPUT/"batcher/{path}/done", path=SAMPLE_PATHS)
     output: touch("batched.done")
 
 

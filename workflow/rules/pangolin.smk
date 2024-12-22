@@ -50,7 +50,7 @@ rule filter_pangolin:
 
 rule pangolin_merge:
     shadow: "shallow"
-    input: expand(OUTPUT/"pangolin/{path}/assignment.filtered.tsv", path=SAMPLE_PATHS)
+    input: expand(OUTPUT/"pangolin/{path}/assignment.filtered.csv", path=SAMPLE_PATHS)
     output: OUTPUT/"variants/pangolin.filtered.csv"
     resources:
         runtime = "10m",
