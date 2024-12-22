@@ -20,8 +20,7 @@ rule map_single_nanopore:
         bam = OUTPUT/"mapping/sorted_bam/{study}/{sample}/OXFORD_NANOPORE/{run}/{layout}_1_{strategy}/sample.sorted.bam"
     resources:
         runtime = lambda wc, attempt: 20 * attempt,
-        mem_mb = lambda wc, attempt: 4000 * attempt,
-        max_cpu_per_node = lambda wc, threads: threads
+        mem_mb = lambda wc, attempt: 4000 * attempt
     retries: 2
     log:
         OUTPUT/"logs/mapping/map_single_nanopore/{study}/{sample}/OXFORD_NANOPORE/{run}/{layout}_1_{strategy}_minimap2.txt",
@@ -41,8 +40,7 @@ rule map_paired_illumina:
         bam = OUTPUT/"mapping/sorted_bam/{study}/{sample}/ILLUMINA/{run}/{layout}_2_{strategy}/sample.sorted.bam"
     resources:
         runtime = lambda wc, attempt: 20 * attempt,
-        mem_mb = lambda wc, attempt: 4000 * attempt,
-        max_cpu_per_node = lambda wc, threads: threads
+        mem_mb = lambda wc, attempt: 4000 * attempt
     retries: 2
     log:
         OUTPUT/"logs/mapping/map_paired_illumina/{study}/{sample}/ILLUMINA/{run}/{layout}_2_{strategy}_minimap2.txt",
@@ -61,8 +59,7 @@ rule map_single_illumina:
         bam = OUTPUT/"mapping/sorted_bam/{study}/{sample}/ILLUMINA/{run}/{layout}_1_{strategy}/sample.sorted.bam"
     resources:
         runtime = lambda wc, attempt: 20 * attempt,
-        mem_mb = lambda wc, attempt: 4000 * attempt,
-        max_cpu_per_node = lambda wc, threads: threads
+        mem_mb = lambda wc, attempt: 4000 * attempt
     retries: 2
     log:
         OUTPUT/"logs/mapping/map_single_illumina/{study}/{sample}/ILLUMINA/{run}/{layout}_1_{strategy}_minimap2.txt",
@@ -108,8 +105,7 @@ rule map_pacbio_hifi:
         bam = OUTPUT/"mapping/sorted_bam/{study}/{sample}/PACBIO_SMRT/{run}/{layout}_1_{strategy}/sample.sorted.bam"
     resources:
         runtime = lambda wc, attempt: 20 * attempt,
-        mem_mb = lambda wc, attempt: 4000 * attempt,
-        max_cpu_per_node = lambda wc, threads: threads
+        mem_mb = lambda wc, attempt: 4000 * attempt
     retries: 2
     log:
         OUTPUT/"logs/mapping/map_pacbio_hifi/{study}/{sample}/PACBIO_SMRT/{run}/{layout}_1_{strategy}_minimap2.txt",

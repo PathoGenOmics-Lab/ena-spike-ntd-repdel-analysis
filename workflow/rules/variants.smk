@@ -49,7 +49,7 @@ rule coverage_merge:
     resources:
         runtime = "10m",
         mem_mb = 500
-    log: OUTPUT/"logs/variants/coverage.txt"
+    log: OUTPUT/"logs/variants/coverage_merge.txt"
     shell: "head -n 1 {input[0]:q} >{output:q} 2>{log:q} && tail -n +2 -q {input:q} >>{output:q} 2>>{log:q}"
 
 
