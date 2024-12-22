@@ -8,3 +8,6 @@ default-resources:
   mem_mb: 4000
   threads: 1
   runtime: 60
+rerun-incomplete: True
+consider-ancient:
+  split_ena_search_results: table
