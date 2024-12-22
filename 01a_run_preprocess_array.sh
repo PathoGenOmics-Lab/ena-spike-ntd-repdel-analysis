@@ -6,14 +6,14 @@
 #SBATCH --qos short
 #SBATCH --time 06:00:00
 #SBATCH --output slurm-%x-%A_%a.out
-#SBATCH --array 0-48183%50
+#SBATCH --array 1-39999%50
 
 i=$SLURM_ARRAY_TASK_ID
-NBATCHES=48184  # 1,541,892 / 32 = 48,184.125
+NBATCHES=40000
 
-echo ">>> LAUNCHING [$i]"
+echo ">>> LAUNCHING [01-$i]"
 srun snakemake batched.done \
     --keep-going \
     --workflow-profile profiles/default \
-    --config UNTIL_FILTER=True SEARCH_TABLE=search.shuffled.complete.tsv \
+    --config UNTIL_FILTER=True SEARCH_TABLE=search.shuffled.filtered.tsv \
     --batch batcher=$i/$NBATCHES

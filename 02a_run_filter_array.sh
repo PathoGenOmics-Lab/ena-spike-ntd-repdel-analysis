@@ -6,13 +6,14 @@
 #SBATCH --qos short
 #SBATCH --time 06:00:00
 #SBATCH --output slurm-%x-%A_%a.out
-#SBATCH --array 0-48183%50
+#SBATCH --array 1-39999%200
 
 i=$SLURM_ARRAY_TASK_ID
-NBATCHES=...
+NBATCHES=40000
 
+echo ">>> LAUNCHING [02-$i]"
 srun snakemake \
     --keep-going \
     --workflow-profile profiles/default \
-    --config UNTIL_FILTER=False SEARCH_TABLE=search.shuffled.complete.tsv \
+    --config UNTIL_FILTER=False SEARCH_TABLE=search.shuffled.filtered.tsv \
     --batch all=$i/$NBATCHES

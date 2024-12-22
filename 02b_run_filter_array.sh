@@ -5,12 +5,13 @@
 #SBATCH --ntasks 1
 #SBATCH --qos short
 #SBATCH --time 06:00:00
-#SBATCH --output slurm-%x-%A_%a.out
+#SBATCH --output slurm-%x-%j.out
 
-NBATCHES=...
+NBATCHES=40000
 
+echo ">>> LAUNCHING [02-$NBATCHES]"
 srun snakemake \
     --keep-going \
     --workflow-profile profiles/default \
-    --config UNTIL_FILTER=False SEARCH_TABLE=search.shuffled.complete.tsv \
+    --config UNTIL_FILTER=False SEARCH_TABLE=search.shuffled.filtered.tsv \
     --batch all=$NBATCHES/$NBATCHES
