@@ -48,16 +48,9 @@ rule filter_pangolin:
         logging.info(f"Record pass={passed}")
 
 
-rule pangolin_merge:
-    shadow: "shallow"
+use rule cat as pangolin_merge with:
     input: expand(OUTPUT/"pangolin/{path}/assignment.filtered.csv", path=SAMPLE_PATHS)
     output: OUTPUT/"variants/pangolin.filtered.csv"
-    resources:
-        runtime = "10m",
-        mem_mb = 500
-    log: OUTPUT/"logs/pangolin/pangolin_merge.txt"
-    shell: "head -n 1 {input[0]:q} >{output:q} 2>{log:q} && tail -n +2 -q {input:q} >>{output:q} 2>>{log:q}"
-
 
 
 rule select_samples_after_processing:

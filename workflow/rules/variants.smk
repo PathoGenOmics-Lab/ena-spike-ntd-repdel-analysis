@@ -42,15 +42,9 @@ rule coverage:
         "paste coverage.txt sample.txt >{output.table:q}"
 
 
-rule coverage_merge:
-    shadow: "shallow"
+use rule cat as coverage_merge with:
     input: expand(OUTPUT/"variants/coverage/{path}/sample.tsv", path=SAMPLE_PATHS)
     output: OUTPUT/"variants/coverage.tsv"
-    resources:
-        runtime = "10m",
-        mem_mb = 500
-    log: OUTPUT/"logs/variants/coverage_merge.txt"
-    shell: "head -n 1 {input[0]:q} >{output:q} 2>{log:q} && tail -n +2 -q {input:q} >>{output:q} 2>>{log:q}"
 
 
 rule filter_coverage:

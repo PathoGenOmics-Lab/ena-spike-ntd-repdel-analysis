@@ -52,3 +52,13 @@ def build_snpsift_hgvs_p_filter(wildcards):
         return f" & ({' | '.join(sorted(items))})"
     else:
         return ""
+
+
+rule cat:
+    threads: 1
+    input: ["placeholder"]
+    output: "placeholder"
+    resources:
+        runtime = "15m",
+        mem_mb = 500
+    script: "../scripts/cat.py"
