@@ -8,7 +8,7 @@ def count_fastq(row: dict) -> int:
 
 if __name__ == "__main__":
     reader = csv.DictReader(sys.stdin, delimiter="\t")
-    writer = csv.DictWriter(sys.stdout, fieldnames=reader.fieldnames)
+    writer = csv.DictWriter(sys.stdout, fieldnames=reader.fieldnames, delimiter="\t")
     writer.writeheader()
     paths = set()
     for row in reader:
