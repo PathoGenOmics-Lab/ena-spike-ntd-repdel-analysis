@@ -7,7 +7,7 @@
 #SBATCH --time 06:00:00
 #SBATCH --output slurm-%x-%j.out
 
-NBATCHES=40000
+NBATCHES=5000
 
 echo ">>> LAUNCHING [01-$NBATCHES]"
 srun snakemake batched.done \

@@ -6,10 +6,10 @@
 #SBATCH --qos short
 #SBATCH --time 06:00:00
 #SBATCH --output slurm-%x-%A_%a.out
-#SBATCH --array 1-39999%200
+#SBATCH --array 1-4999%200
 
 i=$SLURM_ARRAY_TASK_ID
-NBATCHES=40000
+NBATCHES=5000
 
 echo ">>> LAUNCHING [02-$i]"
 srun snakemake \
