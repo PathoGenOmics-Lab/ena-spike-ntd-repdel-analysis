@@ -1,7 +1,7 @@
 executor: local
 use-conda: True
 restart-times: 0
-cores: all
+cores: 32
 resources:
   ena_api_calls_per_second: 50
 default-resources:
