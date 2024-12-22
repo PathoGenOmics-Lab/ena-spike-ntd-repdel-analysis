@@ -19,8 +19,7 @@ def read_sample_paths(table: str):
         paths = set()
         for row in reader:
             row["nfastq"] = count_fastq(row)
-            if row["nfastq"] in (1, 2):
-                paths.add("{study_accession}/{sample_accession}/{instrument_platform}/{run_accession}/{library_layout}_{nfastq}_{library_strategy}".format(**row))
+            paths.add("{study_accession}/{sample_accession}/{instrument_platform}/{run_accession}/{library_layout}_{nfastq}_{library_strategy}".format(**row))
     return sorted(paths)
 
 
@@ -38,7 +37,7 @@ def read_sample_paths_from_study(table: str, study: str):
         paths = set()
         for row in reader:
             row["nfastq"] = count_fastq(row)
-            if study == row["study_accession"] and row["nfastq"] in (1, 2):
+            if study == row["study_accession"]:
                 paths.add("{study_accession}/{sample_accession}/{instrument_platform}/{run_accession}/{library_layout}_{nfastq}_{library_strategy}".format(**row))
     return sorted(paths)
 
