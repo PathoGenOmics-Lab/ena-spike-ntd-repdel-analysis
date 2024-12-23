@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #SBATCH --job-name 01b-srepdel
-#SBATCH --mem 16GB
+#SBATCH --mem 80GB
 #SBATCH --cpus-per-task 32
 #SBATCH --ntasks 1
 #SBATCH --qos short
@@ -8,10 +8,11 @@
 #SBATCH --output slurm-%x-%j.out
 
 NBATCHES=5000
+i=$NBATCHES
 
-echo ">>> LAUNCHING [01-$NBATCHES]"
-srun snakemake batched.done \
+echo ">>> LAUNCHING [03-$i]"
+srun snakemake \
     --keep-going \
     --workflow-profile profiles/default \
-    --config UNTIL_FILTER=True SEARCH_TABLE=search.shuffled.filtered.tsv \
-    --batch batcher=$NBATCHES/$NBATCHES
+    --config SEARCH_TABLE=search.shuffled.filtered.tsv \
+    --batch filter_haplotype=$i/$NBATCHES

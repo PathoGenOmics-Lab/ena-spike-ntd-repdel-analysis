@@ -16,9 +16,9 @@ rule filter_haplotype:
 
 
 use rule cat_csv as merge_haplotypes with:
-    input: expand(OUTPUT/"repdel/filter_haplotype/{path}/{{haplotype}}.inclpct_{{inclpct}}.exclpct_{{exclpct}}.csv", path=read_sample_paths(config["SEARCH_TABLE"]))
-    output: OUTPUT/"repdel/filter_haplotype/{haplotype}.inclpct_{inclpct}.exclpct_{exclpct}.csv"
-    log: OUTPUT/"logs/repdel/filter_haplotype/{haplotype}.inclpct_{inclpct}.exclpct_{exclpct}.txt"
+    input: expand(OUTPUT/"repdel/filter_haplotype/{path}/{{haplotype}}.inclpct_{{inclpct}}.exclpct_{{exclpct}}.csv", path=SAMPLE_PATHS)
+    output: OUTPUT/"repdel/merge_haplotypes/{haplotype}.inclpct_{inclpct}.exclpct_{exclpct}.csv"
+    log: OUTPUT/"logs/repdel/merge_haplotypes/{haplotype}.inclpct_{inclpct}.exclpct_{exclpct}.txt"
 
 
 rule report_region:
