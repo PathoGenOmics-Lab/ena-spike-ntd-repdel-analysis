@@ -93,21 +93,21 @@ if __name__ == "__main__":
         logging.warning("Pangolin filter did not pass")
         passed = False
 
-    results = dict.fromkeys(("study", "sample", "platform", "run", "layout", "nfastq", "strategy", "haplotype"))
-    if passed:
-        logging.info(f"Filters passed")
-        variants = read_variants(snakemake.input.variants, snakemake.params.columns)
-        if is_haplotype(variants, snakemake.params.markers, min_include_freq, max_exclude_freq):
-            logging.debug(f"Filling positive results")
-            # Add sample identifiers
-            results |= extract_sample_fields(snakemake.input.variants)
-            # Add marker data from variant calling
-            for _, row in variants.iterrows():
-                formatted_marker = row["GENE"] + ":" + row["HGVS_P"]
-                logging.debug(f"Adding result column for marker {formatted_marker}")
-                if formatted_marker in unique_markers:
-                    results[formatted_marker] = f"{row['POS']}{row['REF']}>{row['ALT']}," + \
-                        ",".join(str(it) for it in (row["DP"], row["ALT_DP"], row["ALT_RV"], row["ALT_FREQ"], row["ALT_QUAL"]))
-    
-    logging.info(f"Writing record")
-    pd.DataFrame.from_dict(results).to_csv(snakemake.output.table, index=False)
+    columns = ["study", "sample", "platform", "run", "layout", "nfastq", "strategy", "haplotype"] + sorted(unique_markers)
+    variants = read_variants(snakemake.input.variants, snakemake.params.columns)
+    if passed and is_haplotype(variants, snakemake.params.markers, min_include_freq, max_exclude_freq):
+        logging.debug(f"Filling positive result")
+        # Init with sample identifiers
+        result = dict.fromkeys(columns)
+        result.update(extract_sample_fields(snakemake.input.variants))
+        # Add marker data from variant calling
+        for _, row in variants.iterrows():
+            formatted_marker = row["GENE"] + ":" + row["HGVS_P"]
+            logging.debug(f"Adding result column for marker {formatted_marker}")
+            if formatted_marker in unique_markers:
+                result[formatted_marker] = f"{row['POS']}{row['REF']}>{row['ALT']}," + \
+                    ",".join(str(it) for it in (row["DP"], row["ALT_DP"], row["ALT_RV"], row["ALT_FREQ"], row["ALT_QUAL"]))
+        pd.DataFrame(result, index=[0]).to_csv(snakemake.output.table, index=False)
+    else:
+        logging.info(f"Writing record")
+        pd.DataFrame(columns=columns).to_csv(snakemake.output.table, index=False)

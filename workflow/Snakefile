@@ -12,7 +12,6 @@ SAMPLE_PATHS = read_sample_paths(config["SEARCH_TABLE"])
 rule all:
     input:
         OUTPUT/"ena/summarize_ena_search/summary.png",
-        expand(OUTPUT/"preproc/multiqc/{study}", study=read_studies(config["SEARCH_TABLE"])),
         expand(
             OUTPUT/"repdel/merge_haplotypes/{haplotype}.inclpct_{inclpct}.exclpct_{exclpct}.csv",
             haplotype=config["HAPLOTYPES"].keys(),

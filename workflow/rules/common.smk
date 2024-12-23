@@ -38,7 +38,7 @@ def read_sample_paths_from_study(table: str, study: str):
         for row in reader:
             row["nfastq"] = count_fastq(row)
             if study == row["study_accession"]:
-                paths.add("{study_accession}/{sample_accession}/{instrument_platform}/{run_accession}/{library_layout}_{nfastq}_{library_strategy}".format(**row))
+                paths.add("{sample_accession}/{instrument_platform}/{run_accession}/{library_layout}_{nfastq}_{library_strategy}".format(**row))
     return sorted(paths)
 
 
@@ -78,8 +78,9 @@ rule cat_csv:
             writer = csv.DictWriter(fw, fieldnames=header)
             writer.writeheader()
             for table_path in input:
-                reader = csv.DictReader(f)
-                for record in reader:
-                    writer.writerow(record)
-                    n += 1
+                with open(table_path) as f:
+                    reader = csv.DictReader(f)
+                    for record in reader:
+                        writer.writerow(record)
+                        n += 1
         logging.info(f"Wrote {n} records")
