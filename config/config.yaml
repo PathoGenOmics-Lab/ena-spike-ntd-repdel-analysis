@@ -6,11 +6,13 @@ SNPEFF:
   DATADIR: "data/snpEff/data"
   CONFIG: "data/snpEff/my_snpEff.config"
 REPORT:
-  START: 21724  # 20 nts before S:p.Val67_Ile68dup (rep S:69/70)
-  END:   21980  # 20 nts after S:p.Asp140_His141insValTyrTyr (rep S:143/145)
+  START: 21694  # 50 nts before S:p.Val67_Ile68dup (rep S:69/70)
+  END:   22010  # 50 nts after S:p.Asp140_His141insValTyrTyr (rep S:143/145)
 MIN_INCLUDE_FREQ:
   - 95
   - 70
+  - 50
+  - 40
 MAX_EXCLUDE_FREQ:
   - 5
   - 30

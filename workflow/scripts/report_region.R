@@ -11,11 +11,12 @@ Sys.setlocale("LC_TIME", "English")
 theme_set(theme_minimal())
 
 NT.PALETTE <- c(
-  "A" = "#8b008b",
-  "C" = "#ff7f50",
-  "G" = "#6495ed",
-  "T" = "#458b00",
-  "-" = "#3d3d3d"
+  "A" = "#118AB2",
+  "C" = "#06D6A0",
+  "G" = "#F78C6B",
+  "T" = "#FFD166",
+  "-" = "#073B4C",
+  "+" = "#EF476F"
 )
 
 message("Setting params")

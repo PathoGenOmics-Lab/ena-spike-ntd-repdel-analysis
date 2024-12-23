@@ -38,7 +38,7 @@ rule report_region:
         distinguish_nucleotides = True,
         ignore_query_Ns = True,
         include_deletions = True,
-        include_insertions = False
+        include_insertions = True
     output:
         plot = OUTPUT/"repdel/report_region/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.png",
         plot_data = OUTPUT/"repdel/report_region/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.csv"
