@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #SBATCH --job-name 01a-srepdel
-#SBATCH --mem 16GB
+#SBATCH --mem 80GB
 #SBATCH --cpus-per-task 32
 #SBATCH --ntasks 1
 #SBATCH --qos short
