@@ -3,7 +3,10 @@ import csv
 
 
 def count_fastq(row: dict) -> int:
-    return row["fastq_ftp"].count(";") + 1
+    if row["fastq_ftp"]:
+        return row["fastq_ftp"].count(";") + 1
+    else:
+        return 0
 
 
 if __name__ == "__main__":
