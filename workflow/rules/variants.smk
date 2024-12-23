@@ -27,7 +27,7 @@ rule consensus:
         min_quality = 20,
         min_frequency = 0,
         min_ins_frequency = 0.9,
-        min_depth = 30,
+        min_depth = 40,
         char_under_min_depth = "N",
         prefix = "{study}__{sample}__{platform}__{run}__{layout}__{strategy}"
     output:
@@ -50,7 +50,7 @@ rule variant_calling:
     params:
         min_quality = 20,
         min_frequency = 0.05,
-        min_depth = 30
+        min_depth = 40
     input:
         reference = "data/snpEff/data/{}/sequences.fa".format(config["REFERENCE"]),
         pileup = OUTPUT/"variants/pileup/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.pileup"

@@ -46,7 +46,7 @@ rule snpsift_extract_variants:
     input:
         vcf = OUTPUT/"variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.annotated.vcf"
     params:
-        min_depth = 30,
+        min_depth = 40,
         hgvs_p_filter = build_snpsift_hgvs_p_filter,
         extract_columns = ["CHROM", "REF", "POS", "ALT", "DP", '"GEN[*].ALT_DP"', '"GEN[*].ALT_RV"', '"GEN[*].ALT_FREQ"', '"GEN[*].ALT_QUAL"', '"ANN[*].GENE"', '"ANN[*].HGVS_P"']
     output:
