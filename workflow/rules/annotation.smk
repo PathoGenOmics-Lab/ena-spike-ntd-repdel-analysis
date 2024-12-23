@@ -35,6 +35,7 @@ rule snpeff_annotate:
     resources:
         runtime = lambda wc, attempt: 5 * attempt,
         mem_mb = lambda wc, attempt: 200 * attempt
+    retries: 2
     log: OUTPUT/"logs/variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/snpeff_annotate.txt"
     shell: "snpEff eff -c {input.config:q} -dataDir {input.datadir:q} -noStats {params.reference} {input.vcf:q} >{output.vcf:q} 2>{log:q}"
 
