@@ -7,7 +7,7 @@
 #SBATCH --time 06:00:00
 #SBATCH --output slurm-%x-%j.out
 
-echo ">>> LAUNCHING [03-final]"
+echo ">>> LAUNCHING [02-final]"
 srun snakemake \
     --keep-going \
     --workflow-profile profiles/default \

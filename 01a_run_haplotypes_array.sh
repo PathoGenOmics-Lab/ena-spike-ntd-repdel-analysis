@@ -11,7 +11,7 @@
 NBATCHES=5000
 i=$SLURM_ARRAY_TASK_ID
 
-echo ">>> LAUNCHING [03-$i]"
+echo ">>> LAUNCHING [01-$i]"
 srun snakemake \
     --keep-going \
     --workflow-profile profiles/default \

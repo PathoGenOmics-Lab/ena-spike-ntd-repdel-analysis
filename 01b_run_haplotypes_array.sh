@@ -10,7 +10,7 @@
 NBATCHES=5000
 i=$NBATCHES
 
-echo ">>> LAUNCHING [03-$i]"
+echo ">>> LAUNCHING [01-$i]"
 srun snakemake \
     --keep-going \
     --workflow-profile profiles/default \
