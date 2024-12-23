@@ -28,7 +28,7 @@ rule coverage:
         region_start = config["COVERAGE_FILTER"]["START"],
         region_end = config["COVERAGE_FILTER"]["END"]
     output:
-        table = temp(OUTPUT/"variants/coverage/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.tsv"),
+        table = temp(OUTPUT/"variants/coverage/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/coverage.tsv"),
         index = temp(OUTPUT/"mapping/sorted_bam/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.sorted.bam.bai")
     resources:
         runtime = lambda wc, attempt: 5 * attempt,
@@ -42,13 +42,8 @@ rule coverage:
         "paste coverage.txt sample.txt >{output.table:q}"
 
 
-use rule cat as coverage_merge with:
-    input: expand(OUTPUT/"variants/coverage/{path}/sample.tsv", path=SAMPLE_PATHS)
-    output: OUTPUT/"variants/coverage.tsv"
-
-
 rule filter_coverage:
-    input: OUTPUT/"variants/coverage.tsv"
+    input: OUTPUT/"variants/coverage/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/coverage.tsv"
     params:
         # -1 == unfiltered
         min_threshold = {
@@ -59,8 +54,8 @@ rule filter_coverage:
             "meanbaseq": config["COVERAGE_FILTER"]["MIN_MEANBASEQ"],
             "meanmapq":  config["COVERAGE_FILTER"]["MIN_MEANMAPQ"]
         }
-    output: OUTPUT/"variants/coverage.filtered.csv"
-    log: OUTPUT/"logs/variants/filter_coverage.txt"
+    output: OUTPUT/"variants/coverage/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/coverage.filtered.csv"
+    log: OUTPUT/"logs/variants/coverage/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}.txt"
     run:
         import logging
         import csv
@@ -69,18 +64,16 @@ rule filter_coverage:
             format=config["PY_LOG_FMT"],
             filename=log[0]
         )
-        n = 0
-        ntotal = 0
+        passed = False
         with open(input[0]) as f, open(output[0], "w") as fw:
             reader = csv.DictReader(f, delimiter="\t")
             writer = csv.DictWriter(fw, fieldnames=reader.fieldnames)
             writer.writeheader()
-            for row in reader:
-                if all(float(row[colname]) >= value for colname, value in params.min_threshold.items() if value > -1):
-                    writer.writerow(row)
-                    n += 1
-                ntotal += 1
-        logging.info(f"Wrote {n} of {ntotal} records with all min_threshold={params.min_threshold}")
+            row = next(reader)
+            if all(float(row[colname]) >= value for colname, value in params.min_threshold.items() if value > -1):
+                writer.writerow(row)
+                passed = True
+        logging.info(f"Record pass={passed}")
 
 
 rule consensus:

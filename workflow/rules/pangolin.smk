@@ -46,25 +46,3 @@ rule filter_pangolin:
                 writer.writerow(row)
                 passed = True
         logging.info(f"Record pass={passed}")
-
-
-use rule cat as pangolin_merge with:
-    input: expand(OUTPUT/"pangolin/{path}/assignment.filtered.csv", path=SAMPLE_PATHS)
-    output: OUTPUT/"pangolin/pangolin.filtered.csv"
-
-
-rule select_samples_after_processing:
-    input:
-        search_table = config["SEARCH_TABLE"],
-        coverage_table = OUTPUT/"variants/coverage.filtered.csv",
-        pangolin_table = OUTPUT/"pangolin/pangolin.filtered.csv"
-    params:
-        consensus_pattern = r"Consensus_([A-Z0-9]+)__([A-Z0-9]+)__([A-Z_]+)__([A-Z0-9]+)__([A-Z]+)__([A-Z]+)_threshold_[0-9\.]+_quality_[0-9\.]+",
-        coverage_sample_pattern = r"([A-Z0-9]+)__([A-Z0-9]+)__([A-Z_]+)__([A-Z0-9]+)__([A-Z]+)__([A-Z]+)"
-    output:
-        search_table = config["FILTERED_TABLE"]
-    resources:
-        mem_mb = 16000,
-        runtime = "30m"
-    log: OUTPUT/"logs/pangolin/select_samples_after_processing.txt"
-    script: "../scripts/select_samples_after_processing.py"

@@ -54,11 +54,32 @@ def build_snpsift_hgvs_p_filter(wildcards):
         return ""
 
 
-rule cat:
+rule cat_csv:
     threads: 1
     input: ["placeholder"]
     output: "placeholder"
     resources:
         runtime = "15m",
         mem_mb = 500
-    script: "../scripts/cat.py"
+    run:
+        import csv
+        import logging
+        logging.basicConfig(
+            level=logging.INFO,
+            format=config["PY_LOG_FMT"],
+            filename=log[0]
+        )
+        # Read header from first input
+        with open(input[0]) as f:
+            header = csv.DictReader(f).fieldnames
+        # Write records
+        n = 0
+        with open(output[0], "w") as fw:
+            writer = csv.DictWriter(fw, fieldnames=header)
+            writer.writeheader()
+            for table_path in input:
+                reader = csv.DictReader(f)
+                for record in reader:
+                    writer.writerow(record)
+                    n += 1
+        logging.info(f"Wrote {n} records")

@@ -1,16 +1,24 @@
 rule filter_haplotype:
     conda: "../envs/pydata.yaml"
     input:
-        expand(OUTPUT/"variants/snpsift_extract_variants/{path}/{{haplotype}}.tsv", path=read_sample_paths(config["FILTERED_TABLE"]))
+        variants = OUTPUT/"variants/snpsift_extract_variants/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/{haplotype}.tsv",
+        pangolin = OUTPUT/"pangolin/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/assignment.filtered.csv",
+        coverage = OUTPUT/"variants/coverage/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/coverage.filtered.csv"
     params:
         columns = ["CHROM", "REF", "POS", "ALT", "DP", "ALT_DP", "ALT_RV", "ALT_FREQ", "ALT_QUAL", "GENE", "HGVS_P"],
         markers = lambda w: config["HAPLOTYPES"][w.haplotype]
     output:
         # inclpct: int - minimum frequency threshold (%) to pass an "included" marker
         # exclpct: int - maximum frequency threshold (%) to pass an "excluded" marker
-        table = OUTPUT/"repdel/filter_haplotype/{haplotype}.inclpct_{inclpct}.exclpct_{exclpct}.csv"
-    log: OUTPUT/"logs/repdel/filter_haplotype/{haplotype}.inclpct_{inclpct}.exclpct_{exclpct}.txt"
+        table = OUTPUT/"repdel/filter_haplotype/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/{haplotype}.inclpct_{inclpct}.exclpct_{exclpct}.csv"
+    log: OUTPUT/"logs/repdel/filter_haplotype/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/{haplotype}.inclpct_{inclpct}.exclpct_{exclpct}.txt"
     script: "../scripts/filter_haplotype.py"
+
+
+use rule cat_csv as merge_haplotypes with:
+    input: expand(OUTPUT/"repdel/filter_haplotype/{path}/{{haplotype}}.inclpct_{{inclpct}}.exclpct_{{exclpct}}.csv", path=read_sample_paths(config["SEARCH_TABLE"]))
+    output: OUTPUT/"repdel/filter_haplotype/{haplotype}.inclpct_{inclpct}.exclpct_{exclpct}.csv"
+    log: OUTPUT/"logs/repdel/filter_haplotype/{haplotype}.inclpct_{inclpct}.exclpct_{exclpct}.txt"
 
 
 rule report_region:

@@ -20,20 +20,6 @@ rule summarize_ena_search:
     script: "../scripts/summarize_ena_search.R"
 
 
-use rule summarize_ena_search as summarize_ena_search_after_processing with:
-    input:
-        table = config["FILTERED_TABLE"]
-    output:
-        plot_pdf = OUTPUT/"ena/summarize_ena_search_after_processing/summary.pdf",
-        plot_png = OUTPUT/"ena/summarize_ena_search_after_processing/summary.png",
-        country_timeline_table = OUTPUT/"ena/summarize_ena_search_after_processing/summary_country_timeline.csv",
-        tech_timeline_table = OUTPUT/"ena/summarize_ena_search_after_processing/summary_tech_timeline.csv",
-        seqres_timeline_table = OUTPUT/"ena/summarize_ena_search_after_processing/summary_seqres_timeline.csv",
-        studies_table = OUTPUT/"ena/summarize_ena_search_after_processing/studies.csv",
-        tech_table = OUTPUT/"ena/summarize_ena_search_after_processing/technologies.csv"
-    log: OUTPUT/"logs/ena/summarize_ena_search_after_processing.txt"
-
-
 rule split_ena_search_results:
     group: "download"
     input:
