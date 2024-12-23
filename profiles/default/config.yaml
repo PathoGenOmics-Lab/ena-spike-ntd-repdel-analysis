@@ -11,3 +11,4 @@ default-resources:
 rerun-incomplete: True
 consider-ancient:
   split_ena_search_results: table
+scheduler: greedy
