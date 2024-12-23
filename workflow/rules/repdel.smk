@@ -2,8 +2,7 @@ rule filter_haplotype:
     conda: "../envs/pydata.yaml"
     input:
         variants = OUTPUT/"variants/snpsift_extract_variants/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/{haplotype}.tsv",
-        pangolin = OUTPUT/"pangolin/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/assignment.filtered.csv",
-        coverage = OUTPUT/"variants/coverage/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/coverage.filtered.csv"
+        pangolin = OUTPUT/"pangolin/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/assignment.filtered.csv"
     params:
         columns = ["CHROM", "REF", "POS", "ALT", "DP", "ALT_DP", "ALT_RV", "ALT_FREQ", "ALT_QUAL", "GENE", "HGVS_P"],
         markers = lambda w: config["HAPLOTYPES"][w.haplotype]
@@ -25,11 +24,11 @@ rule report_region:
     conda: "../envs/rdata.yaml"
     input:
         bam = OUTPUT/"mapping/sorted_bam/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.sorted.bam",
-        reference = OUTPUT/"reference/sequence.fasta"
+        reference = "data/snpEff/data/{}/sequences.fa".format(config["REFERENCE"])
     params:
         plot_width_per_position_in = 0.1,
         plot_height_in = 10,
-        positions = list(range(config["COVERAGE_FILTER"]["START"], config["COVERAGE_FILTER"]["END"]+1)),
+        positions = list(range(config["REPORT"]["START"], config["REPORT"]["END"]+1)),
         max_depth = 2e9,
         min_base_quality = 0,
         min_mapq = 0,

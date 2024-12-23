@@ -3,7 +3,7 @@ rule ivar_tsv_to_vcf:
     conda: "../envs/pydata.yaml"
     input:
         tsv = OUTPUT/"variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.tsv",
-        reference = OUTPUT/"reference/sequence.fasta"
+        reference = "data/snpEff/data/{}/genes.gff".format(config["REFERENCE"])
     params:
         pass_only = False,
         allele_freq_threshold = 0,
@@ -25,18 +25,18 @@ rule snpeff_annotate:
     conda: "../envs/annotation.yaml"
     shadow: "minimal"
     input:
-        datadir = OUTPUT/"reference/snpeff/NC_045512.2",
+        datadir = Path(config["SNPEFF"]["DATADIR"]).resolve(),
+        config = Path(config["SNPEFF"]["CONFIG"]).resolve(),
         vcf = OUTPUT/"variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.vcf"
     params:
-        reference = "NC_045512.2"
+        reference = config["REFERENCE"]
     output:
         vcf = temp(OUTPUT/"variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.annotated.vcf")
     resources:
         runtime = lambda wc, attempt: 5 * attempt,
         mem_mb = lambda wc, attempt: 200 * attempt
-    retries: 2
     log: OUTPUT/"logs/variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/snpeff_annotate.txt"
-    shell: "snpEff eff -dataDir {input.datadir:q} {params.reference} {input.vcf:q} >{output.vcf:q} 2>{log:q}"
+    shell: "snpEff eff -c {input.config:q} -dataDir {input.datadir:q} -noStats {params.reference} {input.vcf:q} >{output.vcf:q} 2>{log:q}"
 
 
 rule snpsift_extract_variants:
@@ -45,7 +45,7 @@ rule snpsift_extract_variants:
     input:
         vcf = OUTPUT/"variants/variant_calling/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/sample.annotated.vcf"
     params:
-        min_depth = 40,
+        min_depth = 30,
         hgvs_p_filter = build_snpsift_hgvs_p_filter,
         extract_columns = ["CHROM", "REF", "POS", "ALT", "DP", '"GEN[*].ALT_DP"', '"GEN[*].ALT_RV"', '"GEN[*].ALT_FREQ"', '"GEN[*].ALT_QUAL"', '"ANN[*].GENE"', '"ANN[*].HGVS_P"']
     output:

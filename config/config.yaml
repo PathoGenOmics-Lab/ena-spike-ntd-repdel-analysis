@@ -1,40 +1,40 @@
 OUTPUT: output
 PY_LOG_FMT: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 SEARCH_TABLE: "search.tsv"
-FILTERED_TABLE: "search.filtered.tsv"
-COVERAGE_FILTER:
+REFERENCE: "clinical_BA1"  # OZ070629.1
+SNPEFF:
+  DATADIR: "data/snpEff/data"
+  CONFIG: "data/snpEff/my_snpEff.config"
+REPORT:
   START: 21756  # S:65(1)
   END:   22013  # S:150(3)
-  MIN_NUMREADS:  -1
-  MIN_COVBASES:  -1
-  MIN_COVERAGE:  80
-  MIN_MEANDEPTH: 20
-  MIN_MEANBASEQ: 20
-  MIN_MEANMAPQ:  20
+FILTERED_TABLE: "search.filtered.tsv"
 MIN_INCLUDE_FREQ:
-  - 80
+  - 95
+  - 70
 MAX_EXCLUDE_FREQ:
   - 5
-  - 50
-  - 70
+  - 30
 HAPLOTYPES:
+  # Rep69/70 == S:p.Val67_Ile68dup
+  # Rep143/145 == S:p.Asp140_His141insValTyrTyr
   Rep_69_70:
     include_hgvs_p:
       - gene: S
-        expression: p.Gly142_Tyr145delinsAsp
+        expression: p.Val67_Ile68dup
     exclude_hgvs_p:
       - gene: S
-        expression: p.His69_Val70del
+        expression: p.Asp140_His141insValTyrTyr
   Rep_143_145:
     include_hgvs_p:
       - gene: S
-        expression: p.His69_Val70del
+        expression: p.Asp140_His141insValTyrTyr
     exclude_hgvs_p:
       - gene: S
-        expression: p.Gly142_Tyr145delinsAsp
+        expression: p.Val67_Ile68dup
   Rep_Both:
-    exclude_hgvs_p:
+    include_hgvs_p:
       - gene: S
-        expression: p.His69_Val70del
+        expression: p.Val67_Ile68dup
       - gene: S
-        expression: p.Gly142_Tyr145delinsAsp
+        expression: p.Asp140_His141insValTyrTyr

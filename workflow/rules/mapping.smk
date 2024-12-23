@@ -1,6 +1,6 @@
 rule map_index:
     conda: "../envs/reads.yaml"
-    input: OUTPUT/"reference/sequence.fasta"
+    input: "data/snpEff/data/{}/sequences.fa".format(config["REFERENCE"])
     output: OUTPUT/"reference/{preset}.mmi"
     resources:
         runtime = "15m",

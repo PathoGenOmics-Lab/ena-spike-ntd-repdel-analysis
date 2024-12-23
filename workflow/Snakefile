@@ -23,7 +23,6 @@ rule all:
         OUTPUT/"ena/crosslink_gisaid.csv"
 
 
-include: "rules/fetch.smk"
 include: "rules/ena.smk"
 include: "rules/preproc.smk"
 include: "rules/mapping.smk"

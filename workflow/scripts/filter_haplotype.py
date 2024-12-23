@@ -85,17 +85,12 @@ if __name__ == "__main__":
     # Read filters
     logging.info("Reading pangolin assignment")
     pangolin = pd.read_csv(snakemake.input.pangolin)
-    logging.info("Reading coverage")
-    coverage = pd.read_csv(snakemake.input.coverage)
 
     # Check filters
-    logging.info("Checking filters")
+    logging.info("Checking lineages")
     passed = True
     if pangolin.empty:
         logging.warning("Pangolin filter did not pass")
-        passed = False
-    if coverage.empty:
-        logging.warning("Coverage filter did not pass")
         passed = False
 
     results = dict.fromkeys(("study", "sample", "platform", "run", "layout", "nfastq", "strategy", "haplotype"))
