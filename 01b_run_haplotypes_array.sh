@@ -15,4 +15,4 @@ srun snakemake \
     --keep-going \
     --workflow-profile profiles/default \
     --config SEARCH_TABLE=search.shuffled.filtered.tsv \
-    --batch filter_haplotype=$i/$NBATCHES
+    --batch merge_haplotypes=$i/$NBATCHES
