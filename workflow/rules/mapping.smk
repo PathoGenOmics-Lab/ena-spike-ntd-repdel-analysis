@@ -3,8 +3,9 @@ rule map_index:
     input: "data/snpEff/data/{}/sequences.fa".format(config["REFERENCE"])
     output: OUTPUT/"reference/{preset}.mmi"
     resources:
-        runtime = "15m",
-        mem_mb = 16000
+        runtime = lambda wc, attempt: 15 * attempt,
+        mem_mb = lambda wc, attempt: 8000 * attempt
+    retries: 2
     log: OUTPUT/"logs/mapping/map_index/{preset}.txt"
     shell: "minimap2 -x {wildcards.preset:q} -d {output:q} {input:q} 2>{log}"
 
