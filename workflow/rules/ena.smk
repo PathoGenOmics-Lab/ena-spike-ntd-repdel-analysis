@@ -28,7 +28,7 @@ rule split_ena_search_results:
         table = temp(OUTPUT/"ena/search/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/runs.csv")
     resources:
         runtime = lambda wc, attempt: 15 * attempt,
-        mem_mb = lambda wc, attempt: 4000 * attempt
+        mem_mb = lambda wc, attempt: 8000 * attempt
     retries: 2
     log: OUTPUT/"logs/ena/split_ena_search_results/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}.txt"
     run:
@@ -73,7 +73,7 @@ rule download_ena_one_fastq:
     resources:
         ena_api_calls_per_second = 1,
         runtime = lambda wc, attempt: 30 * attempt,
-        mem_mb = lambda wc, attempt: 2000 * attempt
+        mem_mb = lambda wc, attempt: 4000 * attempt
     retries: 2
     script: "../scripts/download_ena_one_fastq.py"
 
@@ -93,7 +93,7 @@ rule download_ena_two_fastq:
     resources:
         ena_api_calls_per_second = 1,
         runtime = lambda wc, attempt: 30 * attempt,
-        mem_mb = lambda wc, attempt: 2000 * attempt
+        mem_mb = lambda wc, attempt: 4000 * attempt
     retries: 2
     log: OUTPUT/"logs/ena/download_ena/{study}/{sample}/{platform}/{run}/{layout}_2_{strategy}.txt"
     script: "../scripts/download_ena_two_fastq.py"
@@ -109,6 +109,6 @@ rule crosslink_gisaid:
         table = OUTPUT/"ena/crosslink_gisaid.csv"
     resources:
         runtime = "60m",
-        mem_mb = 4000
+        mem_mb = 16000
     log: OUTPUT/"logs/ena/crosslink_gisaid.txt"
     script: "../scripts/crosslink_gisaid.py"

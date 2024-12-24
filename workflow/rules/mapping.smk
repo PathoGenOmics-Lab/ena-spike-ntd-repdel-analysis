@@ -4,7 +4,7 @@ rule map_index:
     output: OUTPUT/"reference/{preset}.mmi"
     resources:
         runtime = "15m",
-        mem_mb = 8000
+        mem_mb = 16000
     log: OUTPUT/"logs/mapping/map_index/{preset}.txt"
     shell: "minimap2 -x {wildcards.preset:q} -d {output:q} {input:q} 2>{log}"
 
