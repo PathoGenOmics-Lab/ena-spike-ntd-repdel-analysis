@@ -22,6 +22,18 @@ rule all:
         OUTPUT/"ena/crosslink_gisaid.csv"
 
 
+rule batcher:
+    input:
+        expand(
+            OUTPUT/"repdel/filter_haplotype/{path}/{haplotype}.inclpct_{inclpct}.exclpct_{exclpct}.csv",
+            path=SAMPLE_PATHS,
+            haplotype=config["HAPLOTYPES"].keys(),
+            inclpct=config["MIN_INCLUDE_FREQ"],
+            exclpct=config["MAX_EXCLUDE_FREQ"]
+        )
+    output: touch("batcher.done")
+
+
 include: "rules/ena.smk"
 include: "rules/preproc.smk"
 include: "rules/mapping.smk"

@@ -11,8 +11,8 @@ NBATCHES=5000
 i=$NBATCHES
 
 echo ">>> LAUNCHING [01-$i]"
-srun snakemake \
+srun snakemake batcher.done \
     --keep-going \
     --workflow-profile profiles/default \
     --config SEARCH_TABLE=search.shuffled.filtered.tsv \
-    --batch merge_haplotypes=$i/$NBATCHES
+    --batch batcher=$i/$NBATCHES
