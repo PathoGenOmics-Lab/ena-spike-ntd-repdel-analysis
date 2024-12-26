@@ -22,7 +22,8 @@ for chunk in $(seq 0 $MAX_CHUNK); do
     echo "$(date) | >>> RUNNING FOR CHUNK $chunk OF $N_CHUNKS"
     for sample in $(scripts/iter_samples.py --chunk $chunk --size $CHUNK_SIZE <$TABLE); do
         echo "$(date) | >>> RUNNING FOR SAMPLE $sample"
-        srun --ntasks 1 -c $SLURM_CPUS_PER_TASK --mem-per-cpu $SLURM_MEM_PER_CPU snakemake \
+        srun --ntasks 1 -c $SLURM_CPUS_PER_TASK --mem-per-cpu $SLURM_MEM_PER_CPU --output slurm-%x-%j_%s.out \
+            snakemake \
             "output/repdel/filter_haplotype/$sample/"{Rep_69_70,Rep_143_145,Rep_Both}".inclpct_"{95,75}".exclpct_"{5,25}".csv" \
             --nolock \
             --keep-going \
