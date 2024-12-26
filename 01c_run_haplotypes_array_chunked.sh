@@ -16,7 +16,7 @@ MAX_CHUNK=$(( $N_CHUNKS - 1 ))
 
 head $TABLE >head.tsv  # unused within workflow, saves memory
 
-srun snakemake --conda-create-envs-only --config SEARCH_TABLE=head.tsv
+srun --ntasks 1 -c 4 snakemake --conda-create-envs-only --config SEARCH_TABLE=head.tsv
 
 for chunk in $(seq 0 $MAX_CHUNK); do
     echo "$(date) | >>> RUNNING FOR CHUNK $chunk OF $N_CHUNKS"
@@ -24,6 +24,7 @@ for chunk in $(seq 0 $MAX_CHUNK); do
         echo "$(date) | >>> RUNNING FOR SAMPLE $sample"
         srun --ntasks 1 -c $SLURM_CPUS_PER_TASK --mem-per-cpu $SLURM_MEM_PER_CPU snakemake \
             "output/repdel/filter_haplotype/$sample/"{Rep_69_70,Rep_143_145,Rep_Both}".inclpct_"{95,75}".exclpct_"{5,25}".csv" \
+            --nolock \
             --keep-going \
             --workflow-profile profiles/default --cores $SLURM_CPUS_PER_TASK \
             --config SEARCH_TABLE=head.tsv &
