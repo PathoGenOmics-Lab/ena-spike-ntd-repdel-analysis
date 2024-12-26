@@ -1,27 +1,36 @@
-def count_fastq(row: dict) -> int:
-    return row["fastq_ftp"].count(";") + 1
+def count_fastq(record: dict) -> int:
+    return record["fastq_ftp"].count(";") + 1
 
 
-def read_sample_paths(table: str):
-    delimiter = "\t" if table.endswith(".tsv") else ","
-    with open(table) as f:
-        reader = csv.DictReader(f, delimiter=delimiter)
+def iter_records(cursor):
+    colnames = [field[0] for field in cursor.description]
+    for row_values in cursor:
+        yield {col: value for col, value in zip(colnames, row_values)}
+
+
+def read_sample_paths(database: str):
+    with sqlite3.connect(database, timeout=30) as conn:
+        cursor = conn.execute("SELECT study_accession, sample_accession, instrument_platform, run_accession, library_layout, library_strategy, fastq_ftp FROM ENARecords")
+        if cursor is None:
+            return []
         paths = set()
-        for row in reader:
-            row["nfastq"] = count_fastq(row)
-            paths.add("{study_accession}/{sample_accession}/{instrument_platform}/{run_accession}/{library_layout}_{nfastq}_{library_strategy}".format(**row))
+        for record in iter_records(cursor):
+            print(record)
+            record["nfastq"] = count_fastq(record)
+            paths.add("{study_accession}/{sample_accession}/{instrument_platform}/{run_accession}/{library_layout}_{nfastq}_{library_strategy}".format(**record))
     return sorted(paths)
 
 
-def read_sample_paths_from_study(table: str, study: str):
-    delimiter = "\t" if table.endswith(".tsv") else ","
-    with open(table) as f:
-        reader = csv.DictReader(f, delimiter=delimiter)
+def read_sample_paths_from_study(database: str, study: str):
+    with sqlite3.connect(database, timeout=30) as conn:
+        cursor = conn.execute("SELECT study_accession, sample_accession, instrument_platform, run_accession, library_layout, library_strategy, fastq_ftp FROM ENARecords")
+        if cursor is None:
+            return []
         paths = set()
-        for row in reader:
-            row["nfastq"] = count_fastq(row)
-            if study == row["study_accession"]:
-                paths.add("{sample_accession}/{instrument_platform}/{run_accession}/{library_layout}_{nfastq}_{library_strategy}".format(**row))
+        for record in iter_records(cursor):
+            record["nfastq"] = count_fastq(record)
+            if study == record["study_accession"]:
+                paths.add("{sample_accession}/{instrument_platform}/{run_accession}/{library_layout}_{nfastq}_{library_strategy}".format(**record))
     return sorted(paths)
 
 

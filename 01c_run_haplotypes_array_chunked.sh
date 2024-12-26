@@ -17,7 +17,6 @@ MAX_CHUNK=$(( $N_CHUNKS - 1 ))
 head $TABLE >head.tsv  # unused within workflow, saves memory
 
 srun --ntasks 1 -c 2 snakemake --conda-create-envs-only --config SEARCH_TABLE=head.tsv
-srun --ntasks 1 -c 2 snakemake "output/ena.sqlite" --config SEARCH_TABLE=$TABLE
 
 for chunk in $(seq 0 $MAX_CHUNK); do
     echo "$(date) | >>> RUNNING FOR CHUNK $chunk OF $N_CHUNKS"

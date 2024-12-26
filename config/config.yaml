@@ -1,6 +1,7 @@
 OUTPUT: output
 PY_LOG_FMT: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 SEARCH_TABLE: "search.tsv"
+SEARCH_DB: "search.sqlite"
 REFERENCE: "clinical_BA1"  # OZ070629.1
 SNPEFF:
   DATADIR: "data/snpEff/data"

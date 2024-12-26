@@ -1,12 +1,11 @@
 from pathlib import Path
-import functools
+import sqlite3
 import csv
 
 configfile: "config/config.yaml"
 include: "rules/common.smk"
 
 OUTPUT = Path(config["OUTPUT"])
-SAMPLE_PATHS = read_sample_paths(config["SEARCH_TABLE"])
 
 
 rule all:
@@ -18,7 +17,7 @@ rule all:
             inclpct=config["MIN_INCLUDE_FREQ"],
             exclpct=config["MAX_EXCLUDE_FREQ"]
         ),
-        expand(OUTPUT/"repdel/report_region/{path}/sample.png", path=SAMPLE_PATHS),
+        expand(OUTPUT/"repdel/report_region/{path}/sample.png", path=read_sample_paths(config["SEARCH_DB"])),
         OUTPUT/"ena/crosslink_gisaid.csv"
 
 
@@ -26,7 +25,7 @@ rule batcher:
     input:
         expand(
             OUTPUT/"repdel/filter_haplotype/{path}/{haplotype}.inclpct_{inclpct}.exclpct_{exclpct}.csv",
-            path=SAMPLE_PATHS,
+            path=read_sample_paths(config["SEARCH_DB"]),
             haplotype=config["HAPLOTYPES"].keys(),
             inclpct=config["MIN_INCLUDE_FREQ"],
             exclpct=config["MAX_EXCLUDE_FREQ"]

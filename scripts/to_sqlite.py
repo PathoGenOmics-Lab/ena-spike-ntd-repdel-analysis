@@ -2,6 +2,7 @@
 
 import csv
 import logging
+import argparse
 import sqlite3
 
 
@@ -9,12 +10,16 @@ if __name__ == "__main__":
 
     logging.basicConfig(
         level=logging.INFO,
-        format=snakemake.config["PY_LOG_FMT"],
-        filename=snakemake.log[0]
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     )
 
+    parser = argparse.ArgumentParser()
+    parser.add_argument("input", help="Input TSV")
+    parser.add_argument("output", help="Output SQLite database")
+    args = parser.parse_args()
+
     logging.info("Connecting to database")
-    with open(snakemake.input.table) as f, sqlite3.connect(snakemake.output.database, isolation_level=None) as conn:
+    with open(args.input) as f, sqlite3.connect(args.output, isolation_level=None) as conn:
         cursor = conn.execute("PRAGMA journal_mode=WAL")
         if cursor:
             logging.info(f"Database set to journal mode = {'/'.join(cursor.fetchone())}")

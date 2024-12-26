@@ -11,5 +11,5 @@ default-resources:
   runtime: 60
 rerun-incomplete: True
 consider-ancient:
-  split_ena_search_results: table
+  split_ena_search_results: database
 scheduler: greedy

@@ -1,14 +1,3 @@
-rule to_sqlite:
-    input:
-        table = config["SEARCH_TABLE"]
-    output:
-        database = OUTPUT/"ena.sqlite"
-    resources:
-        sqlite_connections = 1
-    log: OUTPUT/"logs/ena/to_sqlite.txt"
-    script: "../scripts/to_sqlite.py"
-
-
 rule summarize_ena_search:
     conda: "../envs/rdata.yaml"
     input:
@@ -34,7 +23,7 @@ rule summarize_ena_search:
 rule split_ena_search_results:
     group: "download"
     input:
-        database = OUTPUT/"ena.sqlite"  # read-only (no sqlite_connections resource)
+        database = config["SEARCH_DB"]  # read-only and WAL (no sqlite_connections resource)
     params:
         db_timeout = 30
     output:
