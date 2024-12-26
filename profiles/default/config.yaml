@@ -4,6 +4,7 @@ restart-times: 0
 cores: 32
 resources:
   ena_api_calls_per_second: 50
+  sqlite_connections: 1
 default-resources:
   mem_mb: 4000
   threads: 1

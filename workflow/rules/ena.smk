@@ -1,3 +1,14 @@
+rule to_sqlite:
+    input:
+        table = config["SEARCH_TABLE"]
+    output:
+        database = OUTPUT/"ena.sqlite"
+    resources:
+        sqlite_connections = 1
+    log: OUTPUT/"logs/ena/to_sqlite.txt"
+    script: "../scripts/to_sqlite.py"
+
+
 rule summarize_ena_search:
     conda: "../envs/rdata.yaml"
     input:
@@ -23,38 +34,54 @@ rule summarize_ena_search:
 rule split_ena_search_results:
     group: "download"
     input:
-        table = config["SEARCH_TABLE"]
+        database = OUTPUT/"ena.sqlite"  # read-only (no sqlite_connections resource)
+    params:
+        db_timeout = 30
     output:
         table = temp(OUTPUT/"ena/search/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}/runs.csv")
     resources:
         runtime = lambda wc, attempt: 15 * attempt,
-        mem_mb = lambda wc, attempt: 8000 * attempt
+        mem_mb = lambda wc, attempt: 4000 * attempt
     retries: 2
     log: OUTPUT/"logs/ena/split_ena_search_results/{study}/{sample}/{platform}/{run}/{layout}_{nfastq}_{strategy}.txt"
     run:
+        import sqlite3
         import logging
         import csv
         logging.basicConfig(
-            level=logging.INFO,
+            level=logging.DEBUG,
             format=config["PY_LOG_FMT"],
             filename=log[0]
         )
         n = 0
-        with open(input.table) as f, open(output.table, "w") as fw:
-            reader = csv.DictReader(f, delimiter="\t")
-            writer = csv.DictWriter(fw, fieldnames=reader.fieldnames)
+        with sqlite3.connect(input.database, timeout=params.db_timeout) as conn, open(output.table, "w") as fw:
+            logging.info("Reading column names")
+            cursor = conn.execute("SELECT * FROM ENARecords LIMIT 1")
+            if cursor is not None:
+                colnames = [field[0] for field in cursor.description]
+            else:
+                logging.error("Could not read database column names")
+                exit(1)
+            writer = csv.DictWriter(fw, fieldnames=colnames)
             writer.writeheader()
-            for row in reader:
-                if all((
-                    row["run_accession"] == wildcards.run,
-                    row["sample_accession"] == wildcards.sample,
-                    row["study_accession"] == wildcards.study,
-                    row["instrument_platform"] == wildcards.platform,
-                    row["library_layout"] == wildcards.layout,
-                    row["library_strategy"] == wildcards.strategy
-                )):
-                    writer.writerow(row)
+            n = 0
+            logging.info("Selecting records")
+            sql = "SELECT * FROM ENARecords WHERE " \
+                f"run_accession = '{wildcards.run}' AND " \
+                f"sample_accession = '{wildcards.sample}' AND " \
+                f"study_accession = '{wildcards.study}' AND " \
+                f"instrument_platform = '{wildcards.platform}' AND " \
+                f"library_layout = '{wildcards.layout}' AND " \
+                f"library_strategy = '{wildcards.strategy}'"
+            logging.debug(f"SQL: {sql}")
+            cursor = conn.execute(sql)
+            logging.info("Writing records")
+            if cursor is not None:
+                for row_values in cursor:
+                    writer.writerow({colname: value for colname, value in zip(colnames, row_values)})
                     n += 1
+            else:
+                logging.warning("No records found")
         logging.info(f"Wrote {n} records with study={wildcards.study}, sample={wildcards.sample}, platform={wildcards.platform}, run={wildcards.run}, layout={wildcards.layout} and strategy={wildcards.strategy}")
 
 
