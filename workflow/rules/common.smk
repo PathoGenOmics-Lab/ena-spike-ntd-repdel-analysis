@@ -1,15 +1,5 @@
-SEARCH_DF_COLS = (
-    "study_accession", "sample_accession", "instrument_platform",
-    "run_accession", "library_layout", "fastq_ftp", "library_strategy"
-)
-
-
 def count_fastq(row: dict) -> int:
     return row["fastq_ftp"].count(";") + 1
-
-
-def as_string(path: Path | str) -> str:
-    return Path(path).as_posix()
 
 
 def read_sample_paths(table: str):
@@ -21,13 +11,6 @@ def read_sample_paths(table: str):
             row["nfastq"] = count_fastq(row)
             paths.add("{study_accession}/{sample_accession}/{instrument_platform}/{run_accession}/{library_layout}_{nfastq}_{library_strategy}".format(**row))
     return sorted(paths)
-
-
-def read_studies(table: str):
-    delimiter = "\t" if table.endswith(".tsv") else ","
-    with open(table) as f:
-        reader = csv.DictReader(f, delimiter=delimiter)
-        return sorted(set(row["study_accession"] for row in reader))
 
 
 def read_sample_paths_from_study(table: str, study: str):
