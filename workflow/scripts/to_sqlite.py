@@ -14,7 +14,10 @@ if __name__ == "__main__":
     )
 
     logging.info("Connecting to database")
-    with open(snakemake.input.table) as f, sqlite3.connect(snakemake.output.database) as conn:
+    with open(snakemake.input.table) as f, sqlite3.connect(snakemake.output.database, isolation_level=None) as conn:
+        cursor = conn.execute("PRAGMA journal_mode=WAL")
+        if cursor:
+            logging.info(f"Database set to journal mode = {'/'.join(cursor.fetchone())}")
         reader = csv.DictReader(f, delimiter="\t")
         
         # Create table with text fields, using ROWID as PRIMARY KEY
