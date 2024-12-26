@@ -35,4 +35,5 @@ if __name__ == "__main__":
         colnames = ",".join(reader.fieldnames)
         for record in reader:
             values = ",".join(f"'{record[colname]}'" for colname in reader.fieldnames)
-            conn.execute(f"INSERT INTO ENARecords ({colnames}) VALUES ({values})")
+            placeholders = ",".join(["?"] * len(values))
+            conn.execute(f"INSERT INTO ENARecords ({colnames}) VALUES ({placeholders})", values)
