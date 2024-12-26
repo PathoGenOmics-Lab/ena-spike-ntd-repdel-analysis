@@ -11,13 +11,16 @@ CHUNK_SIZE=50
 i=$SLURM_ARRAY_TASK_ID
 TABLE="search.shuffled.filtered.tsv"
 TABLE_LINES=$(wc -l "$TABLE" | cut -f1 -d' ')
+MAX_CHUNK=$(( $TABLE_LINES / $CHUNK_SIZE + 1 ))
 
 head $TABLE >head.tsv
 
-for sample in $(scripts/iter_samples.py --chunk $SLURM_ARRAY_TASK_ID --size $CHUNK_SIZE --nrows $(( $TABLE_LINES - 1 )) <$TABLE); do
-    srun snakemake \
-        "output/repdel/filter_haplotype/$sample/"{Rep_69_70,Rep_143_145,Rep_Both}".inclpct_"{95,75}".exclpct_"{5,25}".csv" \
-        --keep-going \
-        --workflow-profile profiles/default \
-        --config SEARCH_TABLE=head.tsv  # unused within workflow
+for chunk in $(seq 0 $MAX_CHUNK ); do
+    for sample in $(scripts/iter_samples.py --chunk $chunk --size $CHUNK_SIZE --nrows $(( $TABLE_LINES - 1 )) <$TABLE); do
+        srun snakemake \
+            "output/repdel/filter_haplotype/$sample/"{Rep_69_70,Rep_143_145,Rep_Both}".inclpct_"{95,75}".exclpct_"{5,25}".csv" \
+            --keep-going \
+            --workflow-profile profiles/default \
+            --config SEARCH_TABLE=head.tsv  # unused within workflow
+    done
 done
