@@ -11,7 +11,7 @@ rule fastqc:
 rule multiqc:
     conda: "../envs/qc.yaml"
     input:
-        lambda w: expand(OUTPUT/"preproc/fastp/{{study}}/{path}/report.json", path=read_sample_paths_from_study(config["SEARCH_TABLE"], w.study))
+        lambda w: expand(OUTPUT/"preproc/fastp/{{study}}/{path}/report.json", path=read_sample_paths_from_study(config["SEARCH_DB"], w.study))
     output:
         directory(OUTPUT/"preproc/multiqc/{study}")
     log: OUTPUT/"logs/preproc/multiqc/{study}.txt"
