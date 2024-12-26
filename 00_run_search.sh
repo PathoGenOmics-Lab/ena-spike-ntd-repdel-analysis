@@ -25,6 +25,6 @@ srun python scripts/filter_urls.py <search.shuffled.complete.tsv >search.shuffle
 fi
 
 echo ">>> BUILDING DATABASE"
-if [ ! -f data/ena.sqlite ]; then
+if [ ! -f search.sqlite ]; then
 srun python scripts/to_sqlite.py search.shuffled.filtered.tsv search.sqlite
 fi
