@@ -33,9 +33,6 @@ if __name__ == "__main__":
         # Fill table
         logging.info("Filling table ENARecords")
         colnames = ",".join(reader.fieldnames)
-        for record in reader:
-            placeholders = ",".join(["?"] * len(reader.fieldnames))
-            conn.execute(
-                f"INSERT INTO ENARecords ({colnames}) VALUES ({placeholders})",
-                [record[colname] for colname in reader.fieldnames]
-            )
+        records = [tuple(record[colname] for colname in reader.fieldnames) for record in reader]
+        placeholders = ",".join(["?"] * len(reader.fieldnames))
+        conn.executemany(f"INSERT INTO ENARecords ({colnames}) VALUES ({placeholders})", records)
