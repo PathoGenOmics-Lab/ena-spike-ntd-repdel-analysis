@@ -33,7 +33,5 @@ if __name__ == "__main__":
     reader = csv.DictReader(sys.stdin, delimiter="\t")
     
     for i, records in enumerate(it.batched(reader, args.size)):
-        path = args.output / f"chunk_{i}.txt"
-        for record in records:
-            with open(path, "w") as fw:
-                fw.write(TEMPLATE.format(*extract_fields(record)) + "\n")
+        with open(args.output / f"chunk_{i}.txt", "w") as fw:
+            fw.writelines((TEMPLATE.format(*extract_fields(record)) for record in records))
