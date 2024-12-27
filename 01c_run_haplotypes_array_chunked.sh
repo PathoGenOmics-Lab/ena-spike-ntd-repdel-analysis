@@ -4,7 +4,7 @@
 #SBATCH --cpus-per-task 16
 #SBATCH --ntasks 1
 #SBATCH --qos short
-#SBATCH --time 1-00:00:00
+#SBATCH --time 01:00:00
 #SBATCH --output logs/slurm-%x-%A_%a.out
 #SBATCH --array 0-78141%200
 
@@ -13,7 +13,7 @@ CHUNK="chunks/chunk_$SLURM_ARRAY_TASK_ID.txt"
 
 echo "$(date) | >>> RUNNING FOR CHUNK $SLURM_ARRAY_TASK_ID ($CHUNK) OF $SLURM_ARRAY_TASK_MAX ON $SLURM_CPUS_PER_TASK CPUs"
 
-samples=$(tr '\n' ',' <$CHUNK)
+samples=$(paste -s -d, $CHUNK)
 paths="output/repdel/filter_haplotype/{$samples}/{Rep_69_70,Rep_143_145,Rep_Both}.inclpct_{95,75}.exclpct_{5,25}.csv"
 
 srun --nodes 1 --ntasks 1 -c $SLURM_CPUS_PER_TASK --mem-per-cpu $SLURM_MEM_PER_CPU \
