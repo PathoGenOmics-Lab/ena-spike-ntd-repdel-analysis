@@ -8,29 +8,39 @@ include: "rules/common.smk"
 OUTPUT = Path(config["OUTPUT"])
 
 
-rule all:
-    input:
-        OUTPUT/"ena/summarize_ena_search/summary.png",
-        expand(
-            OUTPUT/"repdel/merge_haplotypes/{haplotype}.inclpct_{inclpct}.exclpct_{exclpct}.csv",
-            haplotype=config["HAPLOTYPES"].keys(),
-            inclpct=config["MIN_INCLUDE_FREQ"],
-            exclpct=config["MAX_EXCLUDE_FREQ"]
-        ),
-        expand(OUTPUT/"repdel/report_region/{path}/sample.png", path=read_sample_paths(config["SEARCH_DB"])),
-        OUTPUT/"ena/crosslink_gisaid.csv"
+if config.get("LIGHT", False):
+    print("Omitting heavy rules")
+else:
+    print("Loading heavy rules")
+    SAMPLE_PATHS = read_sample_paths(config["SEARCH_DB"])
 
+    rule all:
+        input:
+            OUTPUT/"ena/summarize_ena_search/summary.png",
+            expand(
+                OUTPUT/"repdel/merge_haplotypes/{haplotype}.inclpct_{inclpct}.exclpct_{exclpct}.csv",
+                haplotype=config["HAPLOTYPES"].keys(),
+                inclpct=config["MIN_INCLUDE_FREQ"],
+                exclpct=config["MAX_EXCLUDE_FREQ"]
+            ),
+            expand(OUTPUT/"repdel/report_region/{path}/sample.png", path=SAMPLE_PATHS),
+            OUTPUT/"ena/crosslink_gisaid.csv"
 
-rule batcher:
-    input:
-        expand(
-            OUTPUT/"repdel/filter_haplotype/{path}/{haplotype}.inclpct_{inclpct}.exclpct_{exclpct}.csv",
-            path=read_sample_paths(config["SEARCH_DB"]),
-            haplotype=config["HAPLOTYPES"].keys(),
-            inclpct=config["MIN_INCLUDE_FREQ"],
-            exclpct=config["MAX_EXCLUDE_FREQ"]
-        )
-    output: touch("batcher.done")
+    rule batcher:
+        input:
+            expand(
+                OUTPUT/"repdel/filter_haplotype/{path}/{haplotype}.inclpct_{inclpct}.exclpct_{exclpct}.csv",
+                path=SAMPLE_PATHS,
+                haplotype=config["HAPLOTYPES"].keys(),
+                inclpct=config["MIN_INCLUDE_FREQ"],
+                exclpct=config["MAX_EXCLUDE_FREQ"]
+            )
+        output: touch("batcher.done")
+
+    use rule cat_csv as merge_haplotypes with:
+        input: expand(OUTPUT/"repdel/filter_haplotype/{path}/{{haplotype}}.inclpct_{{inclpct}}.exclpct_{{exclpct}}.csv", path=SAMPLE_PATHS)
+        output: OUTPUT/"repdel/merge_haplotypes/{haplotype}.inclpct_{inclpct}.exclpct_{exclpct}.csv"
+        log: OUTPUT/"logs/repdel/merge_haplotypes/{haplotype}.inclpct_{inclpct}.exclpct_{exclpct}.txt"
 
 
 include: "rules/ena.smk"

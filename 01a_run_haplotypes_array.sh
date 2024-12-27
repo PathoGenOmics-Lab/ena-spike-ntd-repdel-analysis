@@ -16,5 +16,4 @@ srun snakemake batcher.done \
     --keep-going \
     --nolock \
     --workflow-profile profiles/default \
-    --config SEARCH_TABLE=search.shuffled.filtered.tsv \
     --batch batcher=$i/$NBATCHES

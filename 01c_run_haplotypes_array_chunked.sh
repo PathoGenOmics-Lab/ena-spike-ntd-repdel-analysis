@@ -15,7 +15,6 @@ N_CHUNKS=$(scripts/iter_samples.py --size $CHUNK_SIZE --count <$TABLE)
 MAX_CHUNK=$(( $N_CHUNKS - 1 ))
 
 head $TABLE >head.tsv  # unused within workflow, saves memory
-
 srun --ntasks 1 -c 2 snakemake --conda-create-envs-only --config SEARCH_TABLE=head.tsv
 
 for chunk in $(seq 0 $MAX_CHUNK); do
@@ -28,7 +27,7 @@ for chunk in $(seq 0 $MAX_CHUNK); do
             --nolock \
             --keep-going \
             --workflow-profile profiles/default --cores $SLURM_CPUS_PER_TASK \
-            --config SEARCH_TABLE=head.tsv &
+            --config SEARCH_TABLE=$TABLE LIGHT=True &
     done
     wait
 done

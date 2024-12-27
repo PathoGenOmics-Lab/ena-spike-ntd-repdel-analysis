@@ -14,5 +14,4 @@ echo ">>> LAUNCHING [01-$i]"
 srun snakemake batcher.done \
     --keep-going \
     --workflow-profile profiles/default \
-    --config SEARCH_TABLE=search.shuffled.filtered.tsv \
     --batch batcher=$i/$NBATCHES

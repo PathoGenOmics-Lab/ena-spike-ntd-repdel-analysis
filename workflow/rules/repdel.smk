@@ -14,12 +14,6 @@ rule filter_haplotype:
     script: "../scripts/filter_haplotype.py"
 
 
-use rule cat_csv as merge_haplotypes with:
-    input: expand(OUTPUT/"repdel/filter_haplotype/{path}/{{haplotype}}.inclpct_{{inclpct}}.exclpct_{{exclpct}}.csv", path=read_sample_paths(config["SEARCH_DB"]))
-    output: OUTPUT/"repdel/merge_haplotypes/{haplotype}.inclpct_{inclpct}.exclpct_{exclpct}.csv"
-    log: OUTPUT/"logs/repdel/merge_haplotypes/{haplotype}.inclpct_{inclpct}.exclpct_{exclpct}.txt"
-
-
 rule report_region:
     conda: "../envs/rdata.yaml"
     input:

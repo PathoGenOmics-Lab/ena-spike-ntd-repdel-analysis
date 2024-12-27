@@ -10,5 +10,4 @@
 echo ">>> LAUNCHING [02-final]"
 srun snakemake \
     --keep-going \
-    --workflow-profile profiles/default \
-    --config SEARCH_TABLE=search.shuffled.filtered.tsv
+    --workflow-profile profiles/default
