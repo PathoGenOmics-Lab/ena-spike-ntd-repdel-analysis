@@ -34,4 +34,4 @@ if __name__ == "__main__":
     
     for i, records in enumerate(it.batched(reader, args.size)):
         with open(args.output / f"chunk_{i}.txt", "w") as fw:
-            fw.writelines((TEMPLATE.format(*extract_fields(record)) for record in records))
+            fw.writelines((f"{TEMPLATE.format(*extract_fields(record))}\n" for record in records))
