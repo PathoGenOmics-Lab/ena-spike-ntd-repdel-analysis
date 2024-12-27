@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #SBATCH --job-name 01c-srepdel
 #SBATCH --mem-per-cpu 2GB
-#SBATCH --cpus-per-task 16
+#SBATCH --cpus-per-task 8
 #SBATCH --ntasks 1
 #SBATCH --qos short
 #SBATCH --time 01:00:00
