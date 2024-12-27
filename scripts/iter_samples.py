@@ -39,3 +39,4 @@ if __name__ == "__main__":
             if i == args.chunk:
                 for record in records:
                     sys.stdout.write(TEMPLATE.format(*extract_fields(record)) + "\n")
+                break
