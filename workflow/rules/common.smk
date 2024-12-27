@@ -15,7 +15,6 @@ def read_sample_paths(database: str):
             return []
         paths = set()
         for record in iter_records(cursor):
-            print(record)
             record["nfastq"] = count_fastq(record)
             paths.add("{study_accession}/{sample_accession}/{instrument_platform}/{run_accession}/{library_layout}_{nfastq}_{library_strategy}".format(**record))
     return sorted(paths)
