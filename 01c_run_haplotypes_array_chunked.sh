@@ -21,5 +21,5 @@ srun --nodes 1 --ntasks 1 -c $SLURM_CPUS_PER_TASK --mem-per-cpu $SLURM_MEM_PER_C
     $(eval echo $paths) \
     --nolock \
     --keep-going \
-    --workflow-profile profiles/default --cores $SLURM_CPUS_PER_TASK \
+    --workflow-profile profiles/default --cores $SLURM_CPUS_PER_TASK --scheduler ilp \
     --config SEARCH_TABLE=$TABLE LIGHT=True
