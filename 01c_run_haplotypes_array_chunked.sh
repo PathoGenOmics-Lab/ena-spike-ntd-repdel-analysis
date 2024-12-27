@@ -1,34 +1,26 @@
 #!/usr/bin/env bash
 #SBATCH --job-name 01c-srepdel
 #SBATCH --mem-per-cpu 2GB
-#SBATCH --cpus-per-task 2
-#SBATCH --ntasks 32
+#SBATCH --cpus-per-task 16
+#SBATCH --ntasks 1
 #SBATCH --qos short
 #SBATCH --time 1-00:00:00
-#SBATCH --output slurm-%x-%j.out
-
-CHUNK_SIZE=$SLURM_NTASKS
-i=$SLURM_ARRAY_TASK_ID
+#SBATCH --output logs/slurm-%x-%j_%s.out
+#SBATCH --array 0-78141%200
 
 TABLE="search.shuffled.filtered.tsv"
-N_CHUNKS=$(scripts/iter_samples.py --size $CHUNK_SIZE --count <$TABLE)
-MAX_CHUNK=$(( $N_CHUNKS - 1 ))
-
-head $TABLE >head.tsv  # unused within workflow, saves memory
-srun --ntasks 1 -c $SLURM_CPUS_PER_TASK --mem-per-cpu $(( $SLURM_MEM_PER_CPU * $SLURM_NTASKS )) snakemake --conda-create-envs-only --config SEARCH_TABLE=head.tsv
+CHUNK="chunks/chunk_$SLURM_ARRAY_TASK_ID.txt"
 
 mkdir -p logs/$SLURM_JOB_ID
-for chunk in $(seq 0 $MAX_CHUNK); do
-    echo "$(date) | >>> RUNNING FOR CHUNK $chunk OF $N_CHUNKS"
-    for sample in $(scripts/iter_samples.py --chunk $chunk --size $CHUNK_SIZE <$TABLE); do
-        echo "$(date) | >>> RUNNING FOR SAMPLE $sample"
-        srun --nnodes 1 --ntasks 1 -c $SLURM_CPUS_PER_TASK --mem-per-cpu $SLURM_MEM_PER_CPU --output logs/$SLURM_JOB_ID/slurm-%x-%j_%s.out \
-            snakemake \
-            "output/repdel/filter_haplotype/$sample/"{Rep_69_70,Rep_143_145,Rep_Both}".inclpct_"{95,75}".exclpct_"{5,25}".csv" \
-            --nolock \
-            --keep-going \
-            --workflow-profile profiles/default --cores $SLURM_CPUS_PER_TASK \
-            --config SEARCH_TABLE=$TABLE LIGHT=True &
-    done
-    wait
-done
+echo "$(date) | >>> RUNNING FOR CHUNK $SLURM_ARRAY_TASK_ID ($CHUNK) OF $SLURM_ARRAY_TASK_MAX ON $SLURM_CPUS_PER_TASK CPUs"
+
+samples=$(tr '\n' ',' <$CHUNK)
+paths="output/repdel/filter_haplotype/{$samples}/{Rep_69_70,Rep_143_145,Rep_Both}.inclpct_{95,75}.exclpct_{5,25}.csv"
+
+srun --nnodes 1 --ntasks 1 -c $SLURM_CPUS_PER_TASK --mem-per-cpu $SLURM_MEM_PER_CPU \
+    snakemake \
+    $(eval echo $paths) \
+    --nolock \
+    --keep-going \
+    --workflow-profile profiles/default --cores $SLURM_CPUS_PER_TASK \
+    --config SEARCH_TABLE=$TABLE LIGHT=True
