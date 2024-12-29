@@ -5,7 +5,7 @@
 #SBATCH --ntasks 1
 #SBATCH --qos short
 #SBATCH --time 01:00:00
-#SBATCH --output logs/slurm-%x-%A_%a.out
+#SBATCH --output logs/%A/slurm-%x-%A_%a.out
 #SBATCH --array 0-4999%200
 
 if [ $# -eq 0 ]; then
