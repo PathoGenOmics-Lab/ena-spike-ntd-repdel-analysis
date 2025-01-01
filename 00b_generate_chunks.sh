@@ -22,7 +22,7 @@ srun rm $records
 for group in $groups_dir/group_*; do
     name=${group##*/}
     echo "$(date) | Chunking $name"
-    srun scripts/chunk_samples.py --size 16 chunks/$name <search.shuffled.filtered.tsv
+    srun scripts/chunk_samples.py --size 16 chunks/$name <$group
 done
 
 echo "$(date) | Removing groups directory"
