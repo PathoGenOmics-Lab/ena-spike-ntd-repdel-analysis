@@ -9,11 +9,13 @@
 
 N_PER_GROUP=$(( 5000 * 16 ))  # SLURM MaxArraySize * chunk size
 
+header=$(mktemp)
 records=$(mktemp)
 groups_dir=$(mktemp -d)
 
 echo "$(date) | Extracting records"
 srun tail -n +2 search.shuffled.filtered.tsv >$records
+srun head -n 1 search.shuffled.filtered.tsv >$header
 echo "$(date) | Splitting table"
 srun split -l $N_PER_GROUP -d $records $groups_dir/group_
 echo "$(date) | Removing records file"
@@ -22,7 +24,7 @@ srun rm $records
 for group in $groups_dir/group_*; do
     name=${group##*/}
     echo "$(date) | Chunking $name"
-    srun scripts/chunk_samples.py --size 16 chunks/$name <$group
+    srun cat $header $group | scripts/chunk_samples.py --size 16 chunks/$name
 done
 
 echo "$(date) | Removing groups directory"
