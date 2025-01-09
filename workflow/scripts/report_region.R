@@ -53,6 +53,15 @@ message("Filtering and joining reference sequence")
 plot.data <- bam.pileup %>%
     filter(pos %in% snakemake@params$positions) %>%
     left_join(reference, by = "pos")
+    rename(count_raw = count) %>%
+    group_by(pos) %>%
+    mutate(count = ifelse(
+        nucleotide == ref & "+" %in% nucleotide,
+        count_raw - count_raw[nucleotide == "+"],
+        count_raw
+      )
+    ) %>%
+    ungroup()
 
 message("Plotting")
 p <- plot.data %>%
