@@ -51,40 +51,40 @@ reference <- data.frame(
 
 message("Filtering and joining reference sequence")
 plot.data <- bam.pileup %>%
-    filter(pos %in% snakemake@params$positions) %>%
-    left_join(reference, by = "pos")
-    rename(count_raw = count) %>%
-    group_by(pos) %>%
-    mutate(count = ifelse(
-        nucleotide == ref & "+" %in% nucleotide,
-        count_raw - count_raw[nucleotide == "+"],
-        count_raw
-      )
-    ) %>%
-    ungroup()
+  filter(pos %in% snakemake@params$positions) %>%
+  left_join(reference, by = "pos")
+  rename(count_raw = count) %>%
+  group_by(pos) %>%
+  mutate(count = ifelse(
+      nucleotide == ref & "+" %in% nucleotide,
+      count_raw - count_raw[nucleotide == "+"],
+      count_raw
+    )
+  ) %>%
+  ungroup()
 
 message("Plotting")
 p <- plot.data %>%
-    ggplot(aes(pos, count, fill = nucleotide)) +
-    geom_col(position = "stack") +
-    geom_text(aes(label = ref, y = -30, color = ref), size = 3) +
-    geom_text(aes(label = "Reference:", y = -30, x = snakemake@params$positions[1] - 5), size = 3) +
-    scale_fill_manual(values = NT.PALETTE) +
-    scale_color_manual(values = NT.PALETTE) +
-    scale_x_continuous(breaks = snakemake@params$positions) +
-      theme(
-      axis.text.x = element_text(size = 7, angle = 90, vjust = 0.5),
-      panel.grid.minor = element_blank()
-    )
+  ggplot(aes(pos, count, fill = nucleotide)) +
+  geom_col(position = "stack") +
+  geom_text(aes(label = ref, y = -30, color = ref), size = 3) +
+  geom_text(aes(label = "Reference:", y = -30, x = snakemake@params$positions[1] - 5), size = 3) +
+  scale_fill_manual(values = NT.PALETTE) +
+  scale_color_manual(values = NT.PALETTE) +
+  scale_x_continuous(breaks = snakemake@params$positions) +
+  theme(
+    axis.text.x = element_text(size = 7, angle = 90, vjust = 0.5),
+    panel.grid.minor = element_blank()
+  )
 
 message("Writing plot")
 ggsave(
-    snakemake@output$plot,
-    plot = p,
-    height = snakemake@params$plot_height_in,
-    width = snakemake@params$plot_width_per_position_in *
-        length(snakemake@params$positions),
-    bg = "white"
+  snakemake@output$plot,
+  plot = p,
+  height = snakemake@params$plot_height_in,
+  width = snakemake@params$plot_width_per_position_in *
+      length(snakemake@params$positions),
+  bg = "white"
 )
 
 message("Writing plot data")
