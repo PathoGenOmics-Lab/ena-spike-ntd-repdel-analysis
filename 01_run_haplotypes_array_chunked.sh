@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#SBATCH --job-name 01c-srepdel
+#SBATCH --job-name 01-srepdel
 #SBATCH --mem-per-cpu 4GB
 #SBATCH --cpus-per-task 4
 #SBATCH --ntasks 1
