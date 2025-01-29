@@ -18,7 +18,7 @@ TABLE="search.shuffled.filtered.tsv"
 GROUP=$(printf "%02d" $1)
 CHUNK="chunks/group_$GROUP/chunk_$SLURM_ARRAY_TASK_ID.txt"
 
-echo "$(date) | >>> RUNNING FOR CHUNK $group/$SLURM_ARRAY_TASK_ID ($CHUNK) OF $SLURM_ARRAY_TASK_MAX ON $SLURM_CPUS_PER_TASK CPUs"
+echo "$(date) | >>> RUNNING FOR CHUNK $GROUP/$SLURM_ARRAY_TASK_ID ($CHUNK) OF $SLURM_ARRAY_TASK_MAX ON $SLURM_CPUS_PER_TASK CPUs"
 
 samples=$(paste -s -d, $CHUNK)
 paths="output/repdel/filter_haplotype/{$samples}/{Rep_69_70,Rep_143_145,Rep_Both}.inclpct_{95,75}.exclpct_{5,25}.csv"
