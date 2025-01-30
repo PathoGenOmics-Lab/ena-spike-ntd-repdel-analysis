@@ -21,10 +21,10 @@ fi
 
 echo ">>> FILTERING"
 if [ ! -f search.shuffled.filtered.tsv ]; then
-srun python scripts/filter_urls.py <search.shuffled.complete.tsv >search.shuffled.filtered.tsv
+    srun python scripts/filter_urls.py <search.shuffled.complete.tsv >search.shuffled.filtered.tsv
 fi
 
 echo ">>> BUILDING DATABASE"
 if [ ! -f search.sqlite ]; then
-srun python scripts/to_sqlite.py search.shuffled.filtered.tsv search.sqlite
+    srun python scripts/to_sqlite.py search.shuffled.filtered.tsv search.sqlite
 fi
