@@ -11,9 +11,7 @@ Results generated with this pipeline are available via DOI: [10.20350/digitalCSI
 
 ## Workflow summary
 
-This pipeline fetches and processes SARS-CoV-2 "read run" ENA records with a sample collection date between 1 November 2021 and 1 August 2022, filtered for NCBI taxonomy code 2697049 (SARS-CoV-2) and *Homo sapiens* host, excluding sequencing platforms DNBseq, Element and capillary sequencing, and RNAseq, transcriptomic, metagenomic, and metatranscriptomic library strategies.
-
-The workflow consists of the following steps:
+This pipeline fetches and processes SARS-CoV-2 "read run" ENA records with a sample collection date between 1 November 2021 and 1 August 2022, filtered for NCBI taxonomy code 2697049 (SARS-CoV-2) and *Homo sapiens* host, excluding sequencing platforms DNBseq, Element and capillary sequencing, and RNAseq, transcriptomic, metagenomic, and metatranscriptomic library strategies. Then, the following steps are run for each resulting record:
 
 1. FASTQ retrieval via the ENA metadata FTP URLs.
 2. Read preprocessing and quality filtering using [`fastp`](https://github.com/OpenGene/fastp) v0.23.4.
@@ -21,7 +19,7 @@ The workflow consists of the following steps:
 4. Consensus genome generation with [`samtools`](https://github.com/samtools/samtools) v1.20 and [`iVar`](https://github.com/andersen-lab/ivar) v1.4.3.
 5. Lineage assignment using [`pangolin`](https://github.com/cov-lineages/pangolin) v4.3.
 6. Variant calling with [`iVar`](https://github.com/andersen-lab/ivar) v1.4.3, annotated with [`SnpEff`](https://github.com/pcingola/SnpEff) v5.2 and filtered with [`SnpSift`](https://github.com/pcingola/SnpSift) v5.2.
-7. Classification in three "haplotypes", based on the presence or absence of S gene deletions ΔH69/V70 and ΔV143/Y145 (alleles encoded as insertions in [HGVS nomenclature](https://hgvs-nomenclature.org) given the reference genome):
+7. Classification in three "haplotypes", based on the presence or absence of S gene deletions ΔH69/V70 and ΔV143/Y145. Alleles are encoded as insertions in [HGVS nomenclature](https://hgvs-nomenclature.org), given the reference genome:
    - `Rep_69_70`: repair of S:ΔH69/V70 (`S:p.Val67_Ile68dup` detected, `S:p.Asp140_His141insValTyrTyr` absent).
    - `Rep_143_145`: repair of S:ΔV143/Y145 (`S:p.Asp140_His141insValTyrTyr` detected, `S:p.Val67_Ile68dup` absent).
    - `Rep_Both`: repair of both deletions (`S:p.Val67_Ile68dup` and `S:p.Asp140_His141insValTyrTyr` detected).
@@ -29,18 +27,18 @@ The workflow consists of the following steps:
 
 ## Usage
 
-This repository contains a Snakemake workflow for processing sequencing data from FASTQ retrieval to classification and result summarization. The pipeline is conceptualized in two main sections: (1) an independent, linear processing pipeline for each record, and (2) summarization jobs that aggregate results and generate reports. Due to the large dataset size, a `LIGHT` configuration flag is available to execute only the first section of the DAG, reducing computational load.
+This repository contains a Snakemake workflow for processing sequencing data from FASTQ retrieval to classification and result summarization. The pipeline is conceptualized in two main sections: (1) an independent, linear processing pipeline for each record, and (2) summarization tasks that aggregate results and generate reports. Due to the large dataset size, a `LIGHT` configuration flag is available to execute only the first section of the DAG, reducing computational load.
 
 ### 1. Data retrieval and chunking
 
 - [`00a_run_search.sh`](/00a_run_search.sh): queries the ENA Portal API to retrieve sequencing records.
-- [`00b_generate_chunks.sh`](/00b_generate_chunks.sh): splits survey results into manageable chunks for processing via SLURM job arrays. The dataset is divided into 16 groups, each containing up to 5000 chunks, with each chunk holding 16 records. This approach addressed Snakemake limitations when handling large DAGs at the time of execution.
+- [`00b_generate_chunks.sh`](/00b_generate_chunks.sh): splits survey results into manageable chunks for processing via SLURM job arrays. The dataset is divided into 16 groups, each containing up to 5000 chunks, with each chunk holding 16 records. This approach addressed Snakemake limitations when handling large DAGs at the time of execution. Chunk settings were set considering [our HPC](https://garnatxadoc.uv.es) resource limits.
 
-### 2. Haplotype Classification
+### 2. Haplotype classification
 
-- [`01_run_haplotypes_array_chunked.sh <group number>`](/01_run_haplotypes_array_chunked.sh): runs the analysis for a specified chunk group. Each execution launches up to 5000 SLURM jobs through a job array. This step must be run for each group. For the final manuscript, only a subset of groups was analyzed. This step is executed with `LIGHT=True`.
+- [`01_run_haplotypes_array_chunked.sh <group number>`](/01_run_haplotypes_array_chunked.sh): runs the analysis for a specified chunk group. Each execution launches up to 5000 SLURM jobs through a job array. This step must be run for each group. For the final manuscript, only a subset of groups was analyzed. This step is executed with `LIGHT=True`. Most parameters can be tweaked via [the Snakemake `config.yaml` file](/config/config.yaml).
 
-### 3. Summary and Reporting
+### 3. Summary and reporting
 
 - [`02_run_complete.sh`](/02_run_complete.sh): Executes the full workflow to generate summary tables, visualizations, and reports. This step is executed with `LIGHT=False`. Given computational constraints, the final manuscript analysis used [`scripts/summarize_results.py`](/scripts/summarize_results.py) instead, which parses result files to produce a summary table with key measurements, and data visualizations were created manually using the same code integrated into the workflow.
 
