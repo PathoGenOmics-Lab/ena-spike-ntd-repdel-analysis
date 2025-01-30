@@ -27,7 +27,7 @@ This pipeline fetches and processes SARS-CoV-2 "read run" ENA records with a sam
 
 ## Usage
 
-This repository contains a Snakemake workflow for processing sequencing data from FASTQ retrieval to classification and result summarization. The pipeline is conceptualized in two main sections: (1) an independent, linear processing pipeline for each record, and (2) summarization tasks that aggregate results and generate reports. Due to the large dataset size, a `LIGHT` configuration flag is available to execute only the first section of the DAG, reducing computational load.
+This repository contains a Snakemake workflow for processing sequencing data from FASTQ retrieval to classification and result summarization. The pipeline is conceptualized in two main sections: (1) an independent, linear processing pipeline for each record, and (2) summarization tasks that aggregate results and generate reports. Due to the large dataset size, a `LIGHT` configuration flag is available to execute only the first section of the DAG, reducing computational load. This also enables a `batcher` rule that allows execution using [Snakemake batches](https://snakemake.readthedocs.io/en/v8.25.3/executing/cli.html#dealing-with-very-large-workflows) if needed.
 
 ### 1. Data retrieval and chunking
 
