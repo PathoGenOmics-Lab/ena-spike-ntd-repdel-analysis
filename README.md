@@ -1,11 +1,11 @@
 # ENA spike NTD repaired deletion analysis
 
 [![PGO badge](https://img.shields.io/badge/PathoGenOmics-Lab-yellow.svg)](https://pathogenomics.github.io/)
-[![DOI](https://img.shields.io/badge/Manuscript-under_review-387088.svg)]()
+[![DOI](https://img.shields.io/badge/Virus_Evolution-10.1093/ve/veaf015-387088.svg)](https://doi.org/10.1093/ve/veaf015)
 [![Release](https://img.shields.io/github/v/release/PathoGenOmics-Lab/ena-spike-ntd-repdel-analysis)](https://github.com/PathoGenOmics-Lab/ena-spike-ntd-repdel-analysis/releases)
 [![Snakemake](https://img.shields.io/badge/Snakemake-8.25.3-brightgreen.svg?style=flat)](https://snakemake.readthedocs.io)
 
-A Snakemake workflow with associated scripts used for detecting spike NTD repaired deletions in SARS-CoV-2 Omicron BA.1 lineage reads. The workflow processes sequencing data retrieved from the ENA Portal API, performing quality filtering, read mapping, variant calling, and classification of the deletion repair genotype. This pipeline was developed as part of a larger study. The associated manuscript is currently under review.
+A Snakemake workflow with associated scripts used for detecting spike NTD repaired deletions in SARS-CoV-2 Omicron BA.1 lineage reads. The workflow processes sequencing data retrieved from the ENA Portal API, performing quality filtering, read mapping, variant calling, and classification of the deletion repair genotype. This pipeline was developed as part of a [larger study](https://doi.org/10.1093/ve/veaf015).
 
 Results generated with this pipeline are available via DOI: [10.20350/digitalCSIC/17032](https://doi.org/10.20350/digitalCSIC/17032). We ran [Snakemake v8.25.3](https://snakemake.readthedocs.io/en/v8.25.3/getting_started/installation.html) with [Python v3.12.7](https://www.python.org/downloads/release/python-3127/).
 
@@ -44,4 +44,6 @@ This repository contains a Snakemake workflow for processing sequencing data fro
 
 ## Citation
 
-The manuscript is currently under review.
+> Álvarez-Herrera M, Ruiz-Rodriguez P, Navarro-Domínguez B, Zulaica J, Grau B, Bracho MA, Guerreiro M, Aguilar-Gallardo C, González-Candelas F, Comas I, Geller R & Coscollá M (2025). Genome data artifacts and functional studies of deletion repair in the BA.1 SARS-CoV-2 spike protein. Virus Evolution, 11(1), veaf015. https://doi.org/10.1093/ve/veaf015
+
+See also [CITATION.cff](/CITATION.cff).
